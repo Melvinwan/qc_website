@@ -10,4 +10,3 @@
 2023-06-20 16:23:18,553 - INFO - The connection has already been established.
 2023-06-20 16:23:19,668 - INFO - The connection has already been established.
 2023-06-20 16:23:49,815 - INFO - The connection has already been established.
-2023-06-20 16:40:52,057 - INFO - The connection has already been established.
