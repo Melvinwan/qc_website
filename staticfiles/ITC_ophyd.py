@@ -142,11 +142,9 @@ class ITCController(OphydObject): #On off laser similar to controller
         logger.info("The connection has already been established.")
         try:
             self.connect()
-            self.htr = self.ITC.modules[1] #main htr
-            self.temp = self.ITC.modules[2]
-            self.aux = self.ITC.modules[0]
-        except:
-            print("Connection cannot be estrablished please retry")
+
+        except Exception as err:
+            print("Connection cannot be established please retry")
         # self._set_default_values()
         self.name = "MercuryITC"
         # self.is_open = True
@@ -160,13 +158,18 @@ class ITCController(OphydObject): #On off laser similar to controller
         return self._connected
 
     def connect(self):
-        print(f"connecting to {self.host}")
+        print("connecting to Mercury ITC")
         try:
+
             self.ITC = MercuryITC(f"TCPIP0::{self.host}::7020::SOCKET")
-            # self.name = "self.ITC.system_model.get()+self.ITC.system_type.get()+ self.ITC.serial_number.get()"
+            self.htr = self.ITC.modules[1] #main htr
+            self.temp = self.ITC.modules[2]
+            self.aux = self.ITC.modules[0]
             self._connected = True
+            print("Mercury ITC has been connected")
             return True
-        except:
+        except Exception as err:
+            print("Mercury ITC cannot be connected")
             self._connected = False
             return False
     # def open(self):

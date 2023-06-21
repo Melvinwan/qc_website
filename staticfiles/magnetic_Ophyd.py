@@ -72,12 +72,14 @@ class MagneticController(Controller):
             try:
                 self.sock.open()
                 self.connected = True
+                print("Caylar connection has already been established.")
                 return True
             except:
+                print("Caylar connection cannot already been established.")
                 self.connected = False
                 return False
         else:
-            logger.info("The connection has already been established.")
+            logger.info("Caylar connection has already been established.")
             # warnings.warn(f"The connection has already been established.", stacklevel=2)
             return True
 

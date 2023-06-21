@@ -26,12 +26,12 @@ def index(request):
     else:
         laser_status = "OFF"
 
-    if Caylar.try_connect():
+    if mercuryITC.try_connect():
         mercury_status = "ON"
     else:
         mercury_status = "OFF"
 
-    if mercuryITC.try_connect():
+    if Caylar.try_connect():
         caylar_status = "ON"
     else:
         caylar_status = "OFF"
