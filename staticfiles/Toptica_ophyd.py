@@ -129,6 +129,7 @@ class LaserController(OphydObject): #On off laser similar to controller
         attr_name="",
         parent=None,
         labels=None,
+        config_host=None,
         kind=None,
     ):
         if not hasattr(self, "_initialized"):
@@ -137,8 +138,12 @@ class LaserController(OphydObject): #On off laser similar to controller
             )
 
             self._lock = threading.RLock()
-            self.host = host
-            self.port = port
+            if config_host == None:
+                self.host = host
+                self.port = port
+            else:
+                self.host = config_host["host"]
+                self.port = config_host["port"]
             self._initialized = True
             self._initialize()
 
@@ -453,8 +458,12 @@ class LaserToptica(Device):
     ctl_wavelength_act = Cpt(LaserMainCtlWavelengthAct, signal_name="wavelength_act")
     low_limit_wavelength = Cpt(Signal, value=1510, kind="omitted")
 
-    def __init__(self, prefix,name, host, port=None, kind=None,configuration_attrs=None, parent=None,**kwargs):
-        self.lasercontroller = LaserController(host=host,port=port)
+    def __init__(self, prefix,name, host, port=None, kind=None,configuration_attrs=None, parent=None,config_host=None,**kwargs):
+        if config_host==None:
+            self.lasercontroller = LaserController(host=host,port=port)
+        else:
+            self.lasercontroller = LaserController(host=config_host["host"],port=config_host["port"])
+
         super().__init__(
             prefix=prefix,
             name=name,

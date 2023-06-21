@@ -277,7 +277,7 @@ class MagneticWaterFlow(MagneticSignalRO):
     def _socket_get(self):
         return float(self.controller.get_water_flow()[1])
 
-class Magnetic(Device):
+class CaylarMagnet(Device):
     USER_ACCESS = ["controller"]
     magnetic_current = Cpt(MagneticCurrent, signal_name = "Magnetic current",kind="hinted")
     magnetic_field = Cpt(MagneticField, signal_name = "Magnetic field",kind="hinted")
@@ -307,10 +307,13 @@ class Magnetic(Device):
         socket_cls=SocketIO,
         device_manager=None,
         limits=None,
-        **kwargs,
+        config_host=None,**kwargs,
     ):
         self.sign = sign
-        self.controller = MagneticController(socket=socket_cls(host=host, port=port))
+        if config_host==None:
+            self.controller = MagneticController(socket=socket_cls(host=host, port=port))
+        else:
+            self.controller = MagneticController(socket=socket_cls(host=config_host["host"], port=config_host["port"]))
         self.controller.on()
         self.device_manager = device_manager
         super().__init__(
@@ -385,7 +388,7 @@ class Magnetic(Device):
 
 
 if __name__ == "__main__":
-    magneticIR = Magnetic("H", name="magneticIR")
+    magneticIR = CaylarMagnet("H", name="magneticIR")
     # print(magneticIR.stage())
 
     print(magneticIR.read())
@@ -397,7 +400,7 @@ if __name__ == "__main__":
 
     # from sockets import SocketMock
 
-    # magneticIR = Magnetic(
+    # magneticIR = Magnet(
     #     "H", name="magneticIR", host="mpc2680.psi.ch", port=8081, socket_cls=SocketMock
     # )
     # magneticIR.stage()

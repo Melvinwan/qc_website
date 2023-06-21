@@ -341,8 +341,11 @@ class MercuryITCDevice(Device):
     heater_power = Cpt(ITCHeaterPower, signal_name="heater_power",kind="hinted")
     temperature = Cpt(ITCTemperature, signal_name="temperature", kind="hinted")
 
-    def __init__(self, prefix,name, host, port=None, kind=None,configuration_attrs=None, parent=None,**kwargs):
-        self.itccontroller = ITCController(host=host,port=port)
+    def __init__(self, prefix,name, host, port=None, kind=None,configuration_attrs=None, parent=None,config_host=None,**kwargs):
+        if config_host==None:
+            self.itccontroller = ITCController(host=host,port=port)
+        else:
+            self.itccontroller = ITCController(host=config_host["host"],port=config_host["port"])
         super().__init__(
             prefix=prefix,
             name=name,
