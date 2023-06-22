@@ -5,7 +5,7 @@ Copyright (c) 2019 - present AppSeed.us
 
 from django import template
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
 from django.template import loader
 from django.urls import reverse
 from django.shortcuts import render
@@ -38,7 +38,37 @@ def index(request):
 
     return render(request, 'home/index.html', {'rfsoc_status':rfsoc_status, 'laser_status':laser_status,'caylar_status':caylar_status,'mercury_status':mercury_status})
     # return HttpResponse(html_template.render(context, request, {'rfsoc_status':"ON"}))
+def status(request):
+    RFSoC, Laser, Caylar, mercuryITC = construct_object()
 
+    if RFSoC.try_connect():
+        rfsoc_status = "ON"
+    else:
+        rfsoc_status = "OFF"
+
+    if Laser.try_connect():
+        laser_status = "ON"
+    else:
+        laser_status = "OFF"
+
+    if mercuryITC.try_connect():
+        mercury_status = "ON"
+    else:
+        mercury_status = "OFF"
+
+    if Caylar.try_connect():
+        caylar_status = "ON"
+    else:
+        caylar_status = "OFF"
+
+    status = {
+        'rfsoc_status': rfsoc_status,
+        'laser_status': laser_status,
+        'mercury_status': mercury_status,
+        'caylar_status': caylar_status,
+    }
+
+    return JsonResponse(status)
 
 @login_required(login_url="/login/")
 def pages(request):

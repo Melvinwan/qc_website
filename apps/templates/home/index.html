@@ -28,7 +28,7 @@
               <div class="row">
                 <div class="col">
                   <h5 class="card-title text-uppercase text-muted mb-0">Laser Toptica</h5>
-                  <span class="h2 font-weight-bold mb-0">{{laser_status}}</span>
+                  <span class="h2 font-weight-bold mb-0" id="laser_status">{{laser_status}}</span>
                 </div>
                 <div class="col-auto">
                   <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
@@ -49,7 +49,7 @@
               <div class="row">
                 <div class="col">
                   <h5 class="card-title text-uppercase text-muted mb-0">RFSoC</h5>
-                  <span class="h2 font-weight-bold mb-0">{{rfsoc_status}}</span>
+                  <span class="h2 font-weight-bold mb-0" id="rfsoc_status">{{rfsoc_status}}</span>
                 </div>
                 <div class="col-auto">
                   <div class="icon icon-shape bg-gradient-orange text-white rounded-circle shadow">
@@ -70,7 +70,7 @@
               <div class="row">
                 <div class="col">
                   <h5 class="card-title text-uppercase text-muted mb-0">Caylar Magnetic</h5>
-                  <span class="h2 font-weight-bold mb-0">{{caylar_status}}</span>
+                  <span class="h2 font-weight-bold mb-0" id="caylar_status">{{caylar_status}}</span>
                 </div>
                 <div class="col-auto">
                   <div class="icon icon-shape bg-gradient-green text-white rounded-circle shadow">
@@ -91,7 +91,7 @@
               <div class="row">
                 <div class="col">
                   <h5 class="card-title text-uppercase text-muted mb-0">MercuryITC (Cryostat)</h5>
-                  <span class="h2 font-weight-bold mb-0">{{mercury_status}}</span>
+                  <span class="h2 font-weight-bold mb-0" id="mercury_status">{{mercury_status}}</span>
                 </div>
                 <div class="col-auto">
                   <div class="icon icon-shape bg-gradient-info text-white rounded-circle shadow">
@@ -334,6 +334,31 @@
 
 <!-- Specific JS goes HERE -->
 {% block javascripts %}
+<script>
+  function updateStatus() {
+    $.ajax({
+      url: "{% url 'status' %}", // URL mapped to the status view
+      type: "GET",
+      dataType: "json",
+      success: function (data) {
+        document.getElementById("rfsoc_status").innerHTML = data.rfsoc_status;
+        document.getElementById("laser_status").innerHTML = data.laser_status;
+        document.getElementById("mercury_status").innerHTML = data.mercury_status;
+        document.getElementById("caylar_status").innerHTML = data.caylar_status;
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      },
+    });
+  }
+
+  $(document).ready(function () {
+    setTimeout(function () {
+      updateStatus(); // Update status initially
+      setInterval(updateStatus, 20000); // Update status every 5 seconds
+    }, 20000); // Delay the start of the script by 10 seconds
+  });
+</script>
 
 <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
 <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
