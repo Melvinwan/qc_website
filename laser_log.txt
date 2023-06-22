@@ -41,3 +41,30 @@
 2023-06-21 15:44:18,366 - INFO - The connection has already been established.
 2023-06-21 15:46:27,379 - INFO - The connection has already been established.
 2023-06-21 15:50:22,356 - INFO - The connection has already been established.
+2023-06-21 15:51:32,648 - INFO - The connection has already been established.
+2023-06-21 16:57:58,318 - INFO - The connection has already been established.
+2023-06-22 10:35:45,471 - INFO - The connection has already been established.
+2023-06-22 10:47:35,735 - INFO - The connection has already been established.
+2023-06-22 11:01:49,060 - INFO - The connection has already been established.
+2023-06-22 13:26:49,676 - INFO - The connection has already been established.
+2023-06-22 14:28:24,259 - INFO - The connection has already been established.
+2023-06-22 14:29:44,148 - INFO - The connection has already been established.
+2023-06-22 14:40:43,765 - INFO - The connection has already been established.
+2023-06-22 15:18:53,166 - INFO - The connection has already been established.
+2023-06-22 15:19:28,088 - INFO - The connection has already been established.
+2023-06-22 15:20:28,205 - INFO - The connection has already been established.
+2023-06-22 15:21:28,212 - INFO - The connection has already been established.
+2023-06-22 16:01:43,951 - DEBUG - recv scan end
+2023-06-22 16:02:17,892 - DEBUG - recv scan end
+2023-06-22 16:03:08,129 - INFO - The connection has already been established.
+2023-06-22 16:03:08,129 - DEBUG - recv scan end
+2023-06-22 16:03:08,137 - DEBUG - recv scan start
+2023-06-22 16:03:08,154 - DEBUG - recv scan offset
+2023-06-22 16:03:08,163 - DEBUG - recv scan frequency
+2023-06-22 16:03:08,170 - DEBUG - recv wavelength act
+2023-06-22 16:07:44,202 - DEBUG - recv scan end
+2023-06-22 16:26:29,330 - INFO - The connection has already been established.
+2023-06-22 16:26:45,212 - INFO - The connection has already been established.
+2023-06-22 16:28:16,424 - INFO - The connection has already been established.
+2023-06-22 16:28:32,449 - INFO - The connection has already been established.
+2023-06-22 16:32:25,185 - INFO - The connection has already been established.

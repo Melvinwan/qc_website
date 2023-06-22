@@ -134,7 +134,7 @@ class ITCController(OphydObject): #On off laser similar to controller
             self.host = host
             self.port = port
             self._initialized = True
-            self._initialize()
+            # self._initialize()
 
     def _initialize(self):
         # self._connected = False

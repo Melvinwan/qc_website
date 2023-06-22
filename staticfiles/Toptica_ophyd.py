@@ -19,11 +19,9 @@ from ophyd.utils import LimitError, ReadOnlyError
 
 from ophyd.ophydobj import OphydObject
 
-# import asyncio
+import asyncio
 from IPython.display import clear_output
-from toptica.lasersdk.client import Client, NetworkConnection, DeviceNotFoundError
-from toptica.lasersdk.client import UserLevel, Subscription, Timestamp, SubscriptionValue
-from toptica.lasersdk.dlcpro.v2_0_3 import DLCpro, NetworkConnection, DeviceNotFoundError, DecopError, UserLevel
+from toptica.lasersdk.dlcpro.v2_0_3 import DLCpro, NetworkConnection
 
 logger = log_ophyd("laser_log.txt",__name__)
 
@@ -129,7 +127,6 @@ class LaserController(OphydObject): #On off laser similar to controller
         attr_name="",
         parent=None,
         labels=None,
-        config_host=None,
         kind=None,
     ):
         if not hasattr(self, "_initialized"):
@@ -138,20 +135,14 @@ class LaserController(OphydObject): #On off laser similar to controller
             )
 
             self._lock = threading.RLock()
-            if config_host == None:
-                self.host = host
-                self.port = port
-            else:
-                self.host = config_host["host"]
-                self.port = config_host["port"]
+            self.host = host
+            self.port = port
             self._initialized = True
             self._initialize()
 
     def _initialize(self):
         # self._connected = False
-        print(f"connecting to {self.host}")
-        logger.info("The connection has already been established.")
-        self.open()
+        # self.try_connect()
         # self.name = "self.dlc.system_model.get()+self.dlc.system_type.get()+ self.dlc.serial_number.get()"
         # self._connected = True
         self._set_default_values()
@@ -167,29 +158,27 @@ class LaserController(OphydObject): #On off laser similar to controller
         # self._wide_scan_amplitude = 120
         # self._wide_scan_offset = 1570
 
-    @property
     def connected(self):
         return self._connected
 
     def try_connect(self):
         print(f"connecting to {self.host}")
         try:
-            self.dlc = DLCpro(NetworkConnection(self.host)).open()
-            # self.name = "self.dlc.system_model.get()+self.dlc.system_type.get()+ self.dlc.serial_number.get()"
-            self._connected = True
-            return True
-        except:
-            print("Laser cannot be connected")
-            return False
-
-    def open(self):
-        self._connected = self.try_connect()
-        try:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            self.dlc = DLCpro(NetworkConnection(self.host))
             self.dlc.open()
             self.is_open = True
+            # self.name = "self.dlc.system_model.get()+self.dlc.system_type.get()+ self.dlc.serial_number.get()"
+            self._connected = True
+            print("Laser has been connected")
+            logger.info("The connection has already been established.")
             return True
-        except:
+        except Exception as e:
+            print(e)
             self.is_open = False
+            self._connected = False
+            print("Laser cannot be connected")
             return False
 
     # def start_wide_scan(self):
@@ -208,7 +197,7 @@ class LaserController(OphydObject): #On off laser similar to controller
         """Close the connection to the laser"""
         logger.info("The connection is already closed.")
         self.dlc.close()
-        self.connected = False
+        self.is_open = False
 
     def get_laser_data(self):
         signals = {
@@ -458,7 +447,7 @@ class LaserToptica(Device):
     ctl_wavelength_act = Cpt(LaserMainCtlWavelengthAct, signal_name="wavelength_act")
     low_limit_wavelength = Cpt(Signal, value=1510, kind="omitted")
 
-    def __init__(self, prefix,name, host, port=None, kind=None,configuration_attrs=None, parent=None,config_host=None,**kwargs):
+    def __init__(self, prefix,name, host=None, port=None, kind=None,configuration_attrs=None, parent=None,config_host=None,**kwargs):
         if config_host==None:
             self.lasercontroller = LaserController(host=host,port=port)
         else:
@@ -482,7 +471,10 @@ class LaserToptica(Device):
         self.ctl_wavelength_act.kind = "hinted"
 
     def try_connect(self):
-        self.lasercontroller.open()
+        return self.lasercontroller.try_connect()
+
+    def disconnect(self):
+        return self.lasercontroller.off()
 
     # def update_widescan_amplitude(self,val):
     #     self.widescan_amplitude.put(val)
@@ -531,7 +523,7 @@ class LaserToptica(Device):
 
 
 if __name__ == "__main__":
-    LTDLC = LaserToptica(prefix="...",name="LTDLC", host="129.129.98.110")
+    LTDLC = LaserToptica(prefix="...",name="LTDLC", host="129.129.131.136")
     LTDLC.stage()
     print(LTDLC.read())
 
