@@ -1,5 +1,4 @@
-<!-- laser.html -->
-{% extends 'layouts/base.html' %} {% block title %} Profile {% endblock title %} {% block content %}
+{% extends 'layouts/base.html' %} {% block title %} Laser {% endblock title %} {% block content %}
 <!-- Page content -->
 <div class="container-fluid">
   <div class="row">
@@ -11,9 +10,9 @@
           </div>
         </div>
         <div class="card-body">
-          {% if success_message %}
-          <div class="alert alert-success" role="alert">{{ success_message }}</div>
-          {% endif %}
+          {% if messages %} {% for message in messages %}
+          <div class="alert alert-success" role="alert">{{ message }}</div>
+          {% endfor %} {% endif %}
           <form method="post" action="{% url 'laser_page' %}">
             {% csrf_token %}
             <h6 class="heading-small text-muted mb-4">Laser information</h6>
@@ -51,8 +50,5 @@
       </div>
     </div>
   </div>
-
-  {% include "includes/footer.html" %}
 </div>
-
 {% endblock content %}

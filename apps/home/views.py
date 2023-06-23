@@ -14,11 +14,11 @@ from .construct_object import construct_object
 from .forms import LaserForm
 from staticfiles.XMLGenerator import xml_config_to_dict, dict_to_xml_file
 
+from django.contrib import messages
+
 def laser_page_view(request):
     # Load the data from the laser XML file
     toptica_host = xml_config_to_dict("staticfiles/toptica.xml")
-
-    success_message = None
 
     if request.method == 'POST':
         form = LaserForm(request.POST)
@@ -27,7 +27,8 @@ def laser_page_view(request):
             toptica_host["port"] = form.cleaned_data['laser_port']
             dict_to_xml_file(toptica_host, "staticfiles/toptica.xml")
 
-            success_message = 'Changes saved successfully!'
+            # Add success message to the Django messages framework
+            messages.success(request, 'Changes saved successfully!')
 
             # Redirect to the laser page to reload the page with the updated values
             return redirect('laser_page')
@@ -45,10 +46,10 @@ def laser_page_view(request):
 
     return render(request, 'home/laser.html', {
         'form': form,
-        'success_message': success_message,
         'laser_host': laser_host,
         'laser_port': laser_port,
     })
+
 
 
 
