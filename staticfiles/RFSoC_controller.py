@@ -1,10 +1,8 @@
 from .ssh import SSH
 import os
-from .XMLGenerator import xml_config_to_dict, add_value_to_xml
+from .XMLGenerator import xml_config_to_dict, dict_to_xml_file
 
 from .create_json import import_json_file, save_list_to_json_file
-
-
 
 class RFSoC_controller:
     def __init__(self, host="129.129.131.153", username="xilinx", password="xilinx", config_host=None):
@@ -136,7 +134,7 @@ dict_to_xml_file(config, "xilinx.xml")
 
         if not os.path.exists(file_path):
             try:
-                self.RFSoC.download_file(r"/home/xilinx/jupyter_notebooks/qick/qick_demos/ssh_control/config.xml",r"config.xml")
+                self.RFSoC.download_file(r"/home/xilinx/jupyter_notebooks/qick/qick_demos/ssh_control/xilinx.xml",r"xilinx.xml")
             except Exception as e:
                 return False
         try:
@@ -148,35 +146,52 @@ dict_to_xml_file(config, "xilinx.xml")
         except Exception as e:
             return False
 
-    def set_config(self, category, value, key): #EXCEPT FREQUENCY FOR EOM ONLY FOR TTL AND GENERAL EOM AND AOM
+    def set_config(self, category, key,value="",delete=False): #EXCEPT FREQUENCY FOR EOM ONLY FOR TTL AND GENERAL EOM AND AOM
         if category == "G":
             try:
-                self.config[value] = key
+                if delete:
+                    del self.config[key]
+                else:
+                    self.config[key] =value
             except Exception as e:
                 # Exception handling code
                 print(f"An error occurred: {str(e)}")
         elif category == "EOM":
             try:
-                self.configEOM[value] = key
+                if delete:
+                    del self.config["EOM"][key]
+                else:
+                    self.config["EOM"][key] =value
             except Exception as e:
                 # Exception handling code
                 print(f"An error occurred: {str(e)}")
         elif category == "AOM":
             try:
-                self.configAOM[value] = key
+                if delete:
+                    del self.config["AOM"][key]
+                else:
+                    self.config["AOM"][key] =value
             except Exception as e:
                 # Exception handling code
                 print(f"An error occurred: {str(e)}")
         elif category == "freqA":
             try:
-                self.freqA[value] = key
+                if delete:
+                    del self.config["EOM"]["freqA"][key]
+                else:
+                    self.config["EOM"]["freqA"][key] =value
             except Exception as e:
                 # Exception handling code
                 print(f"An error occurred: {str(e)}")
         elif category == "freqB":
             try:
-                self.freqB[value] = key
+                if delete:
+                    del self.config["EOM"]["freqB"][key]
+                else:
+                    self.config["EOM"]["freqB"][key] =value
             except Exception as e:
                 # Exception handling code
                 print(f"An error occurred: {str(e)}")
+        dict_to_xml_file(self.config, "xilinx.xml")
+        self.RFSoC.transfer_file(r"xilinx.xml",r"/home/xilinx/jupyter_notebooks/qick/qick_demos/ssh_control/xilinx.xml")
         return "Configuration set successfully"

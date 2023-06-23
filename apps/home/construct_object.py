@@ -8,7 +8,7 @@ def construct_object():
     rfsoc_host = xml_config_to_dict("staticfiles/xilinx_host.xml")["database"]
     caylar_host = xml_config_to_dict("staticfiles/caylar.xml")["database"]
     itc_host = xml_config_to_dict("staticfiles/mercuryITC.xml")["database"]
-    toptica_host = xml_config_to_dict("staticfiles/toptica.xml")["database"]
+    toptica_host = xml_config_to_dict("staticfiles/toptica.xml")
     LTDLC = LaserToptica(prefix="...",name="LTDLC",config_host=toptica_host)
     RFSoC = RFSoC_controller(config_host=rfsoc_host)
     magneticIR = CaylarMagnet("H", name="magneticIR",config_host=caylar_host)

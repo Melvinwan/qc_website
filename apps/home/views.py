@@ -8,8 +8,49 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
 from django.template import loader
 from django.urls import reverse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .construct_object import construct_object
+
+from .forms import LaserForm
+from staticfiles.XMLGenerator import xml_config_to_dict, dict_to_xml_file
+
+def laser_page_view(request):
+    # Load the data from the laser XML file
+    toptica_host = xml_config_to_dict("staticfiles/toptica.xml")
+
+    success_message = None
+
+    if request.method == 'POST':
+        form = LaserForm(request.POST)
+        if form.is_valid():
+            toptica_host["host"] = form.cleaned_data['laser_host']
+            toptica_host["port"] = form.cleaned_data['laser_port']
+            dict_to_xml_file(toptica_host, "staticfiles/toptica.xml")
+
+            success_message = 'Changes saved successfully!'
+
+            # Redirect to the laser page to reload the page with the updated values
+            return redirect('laser_page')
+
+    else:
+        # Initialize the form with the current laser information
+        form = LaserForm(initial={
+            'laser_host': toptica_host["host"] if toptica_host["host"] is not None else '',
+            'laser_port': toptica_host["port"] if toptica_host["port"] is not None else '',
+        })
+
+    # Assign the variables with the initial values
+    laser_host = toptica_host["host"] if toptica_host["host"] is not None else ''
+    laser_port = toptica_host["port"] if toptica_host["port"] is not None else ''
+
+    return render(request, 'home/laser.html', {
+        'form': form,
+        'success_message': success_message,
+        'laser_host': laser_host,
+        'laser_port': laser_port,
+    })
+
+
 
 @login_required(login_url="/login/")
 def index(request):

@@ -24,18 +24,21 @@
         <div class="col-xl-3 col-md-6">
           <div class="card card-stats">
             <!-- Card body -->
+
             <div class="card-body">
-              <div class="row">
-                <div class="col">
-                  <h5 class="card-title text-uppercase text-muted mb-0">Laser Toptica</h5>
-                  <span class="h2 font-weight-bold mb-0" id="laser_status">{{laser_status}}</span>
-                </div>
-                <div class="col-auto">
-                  <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
-                    <i class="ni ni-active-40"></i>
+              <a href="{% url 'laser_page' %}">
+                <div class="row">
+                  <div class="col">
+                    <h5 class="card-title text-uppercase text-muted mb-0">Laser Toptica</h5>
+                    <span class="h2 font-weight-bold mb-0" id="laser_status">{{laser_status}}</span>
+                  </div>
+                  <div class="col-auto">
+                    <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
+                      <i class="ni ni-active-40"></i>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </a>
               <!-- <p class="mt-3 mb-0 text-sm">
                 <span class="text-nowrap">Since last month</span>
               </p> -->
@@ -355,8 +358,8 @@
   $(document).ready(function () {
     setTimeout(function () {
       updateStatus(); // Update status initially
-      setInterval(updateStatus, 20000); // Update status every 5 seconds
-    }, 20000); // Delay the start of the script by 10 seconds
+      setInterval(updateStatus, 60000); // Update status every 5 seconds
+    }, 60000); // Delay the start of the script by 10 seconds
   });
 </script>
 
