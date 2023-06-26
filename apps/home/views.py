@@ -174,10 +174,10 @@ def rfsoc_page_view(request):
         # Initialize the form with the current rfsoc information
 
         form = RFSoCConfigForm(initial={
-            'rfsoc_host': xilinx_host["host"] if xilinx_host["host"] is not None else '',
-            'rfsoc_port': xilinx_host["port"] if xilinx_host["port"] is not None else '',
-            'rfsoc_username': xilinx_host["username"] if xilinx_host["username"] is not None else '',
-            'rfsoc_password': xilinx_host["password"] if xilinx_host["password"] is not None else '',
+            'rfsoc_host': xilinx_host["host"],
+            'rfsoc_port': xilinx_host["port"],
+            'rfsoc_username': xilinx_host["username"],
+            'rfsoc_password': xilinx_host["password"],
             'adc_trig_offset': rfsoc_config["adc_trig_offset"],
             'soft_avgs': rfsoc_config["soft_avgs"],
             'relax_delay': rfsoc_config["relax_delay"],

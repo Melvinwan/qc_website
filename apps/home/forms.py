@@ -27,6 +27,8 @@ class MercuryForm(forms.Form):
 class RFSoCConfigForm(forms.Form):
     rfsoc_host = forms.CharField(label='IP Address', max_length=100)
     rfsoc_port = forms.IntegerField(label='Port', required=False)
+    rfsoc_username = forms.CharField(label='Username', required=False)
+    rfsoc_password = forms.CharField(label='Password', required=False)
     adc_trig_offset = forms.IntegerField(label='ADC Trigger Offset', required=False)
     soft_avgs = forms.IntegerField(label='Soft Averages', required=False)
     relax_delay = forms.FloatField(label='Relax Delay', required=False)
