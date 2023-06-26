@@ -120,14 +120,14 @@ def rfsoc_page_view(request):
 
 def mercury_page_view(request):
     # Load the data from the cryostat XML file
-    mercury_host = xml_config_to_dict("staticfiles/mercury.xml")
+    mercury_host = xml_config_to_dict("staticfiles/mercuryITC.xml")
 
     if request.method == 'POST':
         form = MercuryForm(request.POST)
         if form.is_valid():
             mercury_host["host"] = form.cleaned_data['cryostat_host']
             mercury_host["port"] = form.cleaned_data['cryostat_port']
-            dict_to_xml_file(mercury_host, "staticfiles/mercury.xml")
+            dict_to_xml_file(mercury_host, "staticfiles/mercuryITC.xml")
 
             # Add success message to the Django messages framework
             messages.success(request, 'Changes saved successfully!')
