@@ -1,3 +1,4 @@
+<!-- mercury.html -->
 {% extends 'layouts/base.html' %} {% block title %} Mercury ITC {% endblock title %} {% block content %}
 <!-- Page content -->
 <div class="container-fluid">
@@ -15,13 +16,13 @@
           {% endfor %} {% endif %}
           <form method="post" action="{% url 'mercury_page' %}">
             {% csrf_token %}
-            <h6 class="heading-small text-muted mb-4">Mercury ITC information</h6>
+            <h6 class="heading-small text-muted mb-4">Mercury ITC Information</h6>
             <div class="pl-lg-4">
               <div class="row">
                 <div class="col-md-12">
                   <div class="form-group">
                     <label class="form-control-label" for="input-host">IP Address</label>
-                    <input id="input-host" class="form-control" name="cryostat_host" placeholder="Mercury ITC IP Address" type="text" value="{{ cryostat_host }}" />
+                    <input id="input-host" class="form-control" name="mercury_host" placeholder="Mercury ITC IP Address" type="text" value="{{ mercury_host }}" />
                   </div>
                 </div>
               </div>
@@ -29,7 +30,27 @@
                 <div class="col-lg-4">
                   <div class="form-group">
                     <label class="form-control-label" for="input-port">Port</label>
-                    <input type="number" id="input-port" class="form-control" name="cryostat_port" placeholder="Port" value="{{ cryostat_port }}" />
+                    <input type="number" id="input-port" class="form-control" name="mercury_port" placeholder="Port" value="{{ mercury_port }}" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <hr class="my-4" />
+            <h6 class="heading-small text-muted mb-4">Mercury ITC Configuration</h6>
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-heater-power">Heater Power</label>
+                    <input id="input-heater-power" class="form-control" name="mercury_heater_power" placeholder="Heater Power" type="text" value="{{ mercury_heater_power }}" />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-itc-temperature">ITC Temperature</label>
+                    <input id="input-itc-temperature" class="form-control" name="mercury_itc_temperature" placeholder="ITC Temperature" type="text" value="{{ mercury_itc_temperature }}" />
                   </div>
                 </div>
               </div>

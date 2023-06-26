@@ -25,6 +25,11 @@ def laser_page_view(request):
         if form.is_valid():
             toptica_host["host"] = form.cleaned_data['laser_host']
             toptica_host["port"] = form.cleaned_data['laser_port']
+            toptica_host["wavelength_act"] = form.cleaned_data['wavelength_act']
+            toptica_host["scan_end"] = form.cleaned_data['scan_end']
+            toptica_host["scan_start"] = form.cleaned_data['scan_start']
+            toptica_host["scan_freq"] = form.cleaned_data['scan_freq']
+            toptica_host["scan_offset"] = form.cleaned_data['scan_offset']
             dict_to_xml_file(toptica_host, "staticfiles/toptica.xml")
 
             # Add success message to the Django messages framework
@@ -38,27 +43,46 @@ def laser_page_view(request):
         form = LaserForm(initial={
             'laser_host': toptica_host["host"] if toptica_host["host"] is not None else '',
             'laser_port': toptica_host["port"] if toptica_host["port"] is not None else '',
+            'wavelength_act': toptica_host["wavelength_act"] if toptica_host["wavelength_act"] is not None else '',
+            'scan_end': toptica_host["scan_end"] if toptica_host["scan_end"] is not None else '',
+            'scan_start': toptica_host["scan_start"] if toptica_host["scan_start"] is not None else '',
+            'scan_freq': toptica_host["scan_freq"] if toptica_host["scan_freq"] is not None else '',
+            'scan_offset': toptica_host["scan_offset"] if toptica_host["scan_offset"] is not None else '',
         })
 
     # Assign the variables with the initial values
     laser_host = toptica_host["host"] if toptica_host["host"] is not None else ''
     laser_port = toptica_host["port"] if toptica_host["port"] is not None else ''
+    wavelength_act = toptica_host["wavelength_act"] if toptica_host["wavelength_act"] is not None else ''
+    scan_end = toptica_host["scan_end"] if toptica_host["scan_end"] is not None else ''
+    scan_start = toptica_host["scan_start"] if toptica_host["scan_start"] is not None else ''
+    scan_freq = toptica_host["scan_freq"] if toptica_host["scan_freq"] is not None else ''
+    scan_offset = toptica_host["scan_offset"] if toptica_host["scan_offset"] is not None else ''
 
     return render(request, 'home/laser.html', {
         'form': form,
         'laser_host': laser_host,
         'laser_port': laser_port,
+        'wavelength_act': wavelength_act,
+        'scan_end': scan_end,
+        'scan_start': scan_start,
+        'scan_freq': scan_freq,
+        'scan_offset': scan_offset,
     })
 
+
+# views.py
 def caylar_page_view(request):
     # Load the data from the magnet XML file
     caylar_host = xml_config_to_dict("staticfiles/caylar.xml")
 
     if request.method == 'POST':
-        form = LaserForm(request.POST)
+        form = CaylarForm(request.POST)
         if form.is_valid():
-            caylar_host["host"] = form.cleaned_data['magnet_host']
-            caylar_host["port"] = form.cleaned_data['magnet_port']
+            caylar_host["host"] = form.cleaned_data['caylar_host']
+            caylar_host["port"] = form.cleaned_data['caylar_port']
+            caylar_host["current"] = form.cleaned_data['caylar_current']
+            caylar_host["field"] = form.cleaned_data['caylar_field']
             dict_to_xml_file(caylar_host, "staticfiles/caylar.xml")
 
             # Add success message to the Django messages framework
@@ -70,19 +94,26 @@ def caylar_page_view(request):
     else:
         # Initialize the form with the current magnet information
         form = CaylarForm(initial={
-            'magnet_host': caylar_host["host"] if caylar_host["host"] is not None else '',
-            'magnet_port': caylar_host["port"] if caylar_host["port"] is not None else '',
+            'caylar_host': caylar_host["host"] if caylar_host["host"] is not None else '',
+            'caylar_port': caylar_host["port"] if caylar_host["port"] is not None else '',
+            'caylar_current': caylar_host["current"] if caylar_host["current"] is not None else '',
+            'caylar_field': caylar_host["field"] if caylar_host["field"] is not None else '',
         })
 
     # Assign the variables with the initial values
     magnet_host = caylar_host["host"] if caylar_host["host"] is not None else ''
     magnet_port = caylar_host["port"] if caylar_host["port"] is not None else ''
+    magnet_current = caylar_host["current"] if caylar_host["current"] is not None else ''
+    magnet_field = caylar_host["field"] if caylar_host["field"] is not None else ''
 
     return render(request, 'home/caylar.html', {
         'form': form,
         'magnet_host': magnet_host,
         'magnet_port': magnet_port,
+        'magnet_current': magnet_current,
+        'magnet_field': magnet_field,
     })
+
 
 def rfsoc_page_view(request):
     # Load the data from the rfsoc XML file
@@ -122,11 +153,16 @@ def mercury_page_view(request):
     # Load the data from the cryostat XML file
     mercury_host = xml_config_to_dict("staticfiles/mercuryITC.xml")
 
+    if isinstance(mercury_host, str):
+        mercury_host = {}
+
     if request.method == 'POST':
         form = MercuryForm(request.POST)
         if form.is_valid():
-            mercury_host["host"] = form.cleaned_data['cryostat_host']
-            mercury_host["port"] = form.cleaned_data['cryostat_port']
+            mercury_host["host"] = form.cleaned_data['mercury_host']
+            mercury_host["port"] = form.cleaned_data['mercury_port']
+            mercury_host["heater_power"] = form.cleaned_data['mercury_heater_power']
+            mercury_host["ITC_temperature"] = form.cleaned_data['mercury_itc_temperature']
             dict_to_xml_file(mercury_host, "staticfiles/mercuryITC.xml")
 
             # Add success message to the Django messages framework
@@ -137,20 +173,25 @@ def mercury_page_view(request):
 
     else:
         # Initialize the form with the current cryostat information
-        form = LaserForm(initial={
-            'cryostat_host': mercury_host["host"] if mercury_host["host"] is not None else '',
-            'cryostat_port': mercury_host["port"] if mercury_host["port"] is not None else '',
+        form = MercuryForm(initial={
+            'mercury_host': mercury_host.get("host", ""),
+            'mercury_port': mercury_host.get("port", ""),
+            'mercury_heater_power': mercury_host.get("heater_power", ""),
+            'mercury_itc_temperature': mercury_host.get("ITC_temperature", ""),
         })
 
     # Assign the variables with the initial values
-    cryostat_host = mercury_host["host"] if mercury_host["host"] is not None else ''
-    cryostat_port = mercury_host["port"] if mercury_host["port"] is not None else ''
+    cryostat_host = mercury_host.get("host", "")
+    cryostat_port = mercury_host.get("port", "")
 
     return render(request, 'home/mercury.html', {
         'form': form,
-        'cryostat_host': cryostat_host,
-        'cryostat_port': cryostat_port,
+        'mercury_host': cryostat_host,
+        'mercury_port': cryostat_port,
+        'mercury_heater_power': mercury_host.get("heater_power", ""),
+        'mercury_itc_temperature': mercury_host.get("ITC_temperature", ""),
     })
+
 
 @login_required(login_url="/login/")
 def index(request):
