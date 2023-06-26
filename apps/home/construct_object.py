@@ -14,3 +14,23 @@ def construct_object():
     magneticIR = CaylarMagnet("H", name="magneticIR",config_host=caylar_host)
     ITCD = MercuryITCDevice(prefix="...",name="ITCD", host="itc-optistat.psi.ch",config_host=itc_host)
     return RFSoC, LTDLC, magneticIR, ITCD
+
+def construct_toptica():
+    toptica_host = xml_config_to_dict("staticfiles/toptica.xml")
+    LTDLC = LaserToptica(prefix="...",name="LTDLC",config_host=toptica_host)
+    return LTDLC
+
+def construct_rfsoc():
+    rfsoc_host = xml_config_to_dict("staticfiles/xilinx_host.xml")
+    RFSoC = RFSoC_controller(config_host=rfsoc_host)
+    return RFSoC
+
+def construct_caylar():
+    caylar_host = xml_config_to_dict("staticfiles/caylar.xml")
+    magneticIR = CaylarMagnet("H", name="magneticIR",config_host=caylar_host)
+    return magneticIR
+
+def construct_itc():
+    itc_host = xml_config_to_dict("staticfiles/mercuryITC.xml")
+    ITCD = MercuryITCDevice(prefix="...",name="ITCD", host="itc-optistat.psi.ch",config_host=itc_host)
+    return ITCD

@@ -340,6 +340,7 @@
 
 <!-- Specific JS goes HERE -->
 {% block javascripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   function updateStatus() {
     $.ajax({
@@ -358,11 +359,12 @@
     });
   }
 
-  $(document).ready(function () {
+  // Start the script once the HTML has finished loading
+  $(window).on("load", function () {
     setTimeout(function () {
       updateStatus(); // Update status initially
-      setInterval(updateStatus, 60000); // Update status every 5 seconds
-    }, 60000); // Delay the start of the script by 10 seconds
+      setInterval(updateStatus, 10000); // Update status every 10 seconds
+    }, 10000); // Delay the start of the script by 10 seconds
   });
 </script>
 

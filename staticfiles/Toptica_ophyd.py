@@ -484,6 +484,13 @@ class LaserToptica(Device):
     #     self.widescan_offset.put(val)
     # def update_widescan_time(self,val):
     #     self.widescan_time.put(val)
+    def update_all_xml(self, xml):
+        from .XMLGenerator import xml_config_to_dict
+        try:
+            self.config = xml_config_to_dict(xml)
+            print(self.config)
+        except:
+            print("XML not Found")
     def limit_wavelength(self):
         return self.low_limit_wavelength.get()
     def update_scan_end(self,val):
