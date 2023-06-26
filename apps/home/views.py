@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.shortcuts import render, redirect
 from .construct_object import construct_object
 
-from .forms import LaserForm, RFSoCForm, CaylarForm, MercuryForm
+from .forms import LaserForm, RFSoCConfigForm, CaylarForm, MercuryForm
 from staticfiles.XMLGenerator import xml_config_to_dict, dict_to_xml_file
 
 from django.contrib import messages
@@ -118,13 +118,51 @@ def caylar_page_view(request):
 def rfsoc_page_view(request):
     # Load the data from the rfsoc XML file
     xilinx_host = xml_config_to_dict("staticfiles/xilinx_host.xml")
-
+    rfsoc_config = xml_config_to_dict("staticfiles/xilinx.xml")
     if request.method == 'POST':
-        form = LaserForm(request.POST)
+        form = RFSoCConfigForm(request.POST)
         if form.is_valid():
+            # Update RFSoC host and port
             xilinx_host["host"] = form.cleaned_data['rfsoc_host']
+            xilinx_host["username"] = form.cleaned_data['rfsoc_username']
+            xilinx_host["password"] = form.cleaned_data['rfsoc_password']
             xilinx_host["port"] = form.cleaned_data['rfsoc_port']
             dict_to_xml_file(xilinx_host, "staticfiles/xilinx_host.xml")
+
+            # Update General configuration
+            rfsoc_config["adc_trig_offset"] = form.cleaned_data['adc_trig_offset']
+            rfsoc_config["soft_avgs"] = form.cleaned_data['soft_avgs']
+            rfsoc_config["relax_delay"] = form.cleaned_data['relax_delay']
+            rfsoc_config["readout_length"] = form.cleaned_data['readout_length']
+            rfsoc_config["pulse_freq"] = form.cleaned_data['pulse_freq']
+            rfsoc_config["reps"] = form.cleaned_data['reps']
+
+            # Update EOM configuration
+            rfsoc_config["EOM"]["out_ch"] = form.cleaned_data['eom_outch']
+            rfsoc_config["EOM"]["freq_seq"] = form.cleaned_data['eom_freqseq']
+            rfsoc_config["EOM"]["time_seq"] = form.cleaned_data['eom_timeseq']
+            rfsoc_config["EOM"]["length"] = form.cleaned_data['eom_length']
+            rfsoc_config["EOM"]["pulse_freq"] = form.cleaned_data['eom_pulsefreq']
+            rfsoc_config["EOM"]["zone"] = form.cleaned_data['eom_zone']
+            rfsoc_config["EOM"]["mode"] = form.cleaned_data['eom_mode']
+
+            # Update Frequency A configuration
+            rfsoc_config["EOM"]["freqA"]["res_phase"] = form.cleaned_data['freqA_res_phase']
+            rfsoc_config["EOM"]["freqA"]["pulse_gain"] = form.cleaned_data['freqA_pulse_gain']
+            rfsoc_config["EOM"]["freqA"]["pulse_freq"] = form.cleaned_data['freqA_pulse_freq']
+
+            # Update Frequency B configuration
+            rfsoc_config["EOM"]["freqB"]["res_phase"] = form.cleaned_data['freqB_res_phase']
+            rfsoc_config["EOM"]["freqB"]["pulse_gain"] = form.cleaned_data['freqB_pulse_gain']
+            rfsoc_config["EOM"]["freqB"]["pulse_freq"] = form.cleaned_data['freqB_pulse_freq']
+
+            # Update AOM configuration
+            rfsoc_config["AOM"]["length"] = form.cleaned_data['aom_length']
+            rfsoc_config["AOM"]["pins"] = form.cleaned_data['aom_pins']
+            rfsoc_config["AOM"]["time"] = form.cleaned_data['aom_time']
+
+            # Update the rfsoc.xml file
+            dict_to_xml_file(rfsoc_config, "staticfiles/rfsoc.xml")
 
             # Add success message to the Django messages framework
             messages.success(request, 'Changes saved successfully!')
@@ -134,20 +172,40 @@ def rfsoc_page_view(request):
 
     else:
         # Initialize the form with the current rfsoc information
-        form = RFSoCForm(initial={
+
+        form = RFSoCConfigForm(initial={
             'rfsoc_host': xilinx_host["host"] if xilinx_host["host"] is not None else '',
             'rfsoc_port': xilinx_host["port"] if xilinx_host["port"] is not None else '',
+            'rfsoc_username': xilinx_host["username"] if xilinx_host["username"] is not None else '',
+            'rfsoc_password': xilinx_host["password"] if xilinx_host["password"] is not None else '',
+            'adc_trig_offset': rfsoc_config["adc_trig_offset"],
+            'soft_avgs': rfsoc_config["soft_avgs"],
+            'relax_delay': rfsoc_config["relax_delay"],
+            'readout_length': rfsoc_config["readout_length"],
+            'pulse_freq': rfsoc_config["pulse_freq"],
+            'reps': rfsoc_config["reps"],
+            'eom_outch': rfsoc_config["EOM"]["out_ch"],
+            'eom_freqseq': rfsoc_config["EOM"]["freq_seq"],
+            'eom_timeseq': rfsoc_config["EOM"]["time_seq"],
+            'eom_length': rfsoc_config["EOM"]["length"],
+            'eom_pulsefreq': rfsoc_config["EOM"]["pulse_freq"],
+            'eom_zone': rfsoc_config["EOM"]["zone"],
+            'eom_mode': rfsoc_config["EOM"]["mode"],
+            'freqA_res_phase': rfsoc_config["EOM"]["freqA"]["res_phase"],
+            'freqA_pulse_gain': rfsoc_config["EOM"]["freqA"]["pulse_gain"],
+            'freqA_pulse_freq': rfsoc_config["EOM"]["freqA"]["pulse_freq"],
+            'freqB_res_phase': rfsoc_config["EOM"]["freqB"]["res_phase"],
+            'freqB_pulse_gain': rfsoc_config["EOM"]["freqB"]["pulse_gain"],
+            'freqB_pulse_freq': rfsoc_config["EOM"]["freqB"]["pulse_freq"],
+            'aom_length': rfsoc_config["AOM"]["length"],
+            'aom_pins': rfsoc_config["AOM"]["pins"],
+            'aom_time': rfsoc_config["AOM"]["time"],
         })
-
-    # Assign the variables with the initial values
-    rfsoc_host = xilinx_host["host"] if xilinx_host["host"] is not None else ''
-    rfsoc_port = xilinx_host["port"] if xilinx_host["port"] is not None else ''
 
     return render(request, 'home/rfsoc.html', {
         'form': form,
-        'rfsoc_host': rfsoc_host,
-        'rfsoc_port': rfsoc_port,
     })
+
 
 def mercury_page_view(request):
     # Load the data from the cryostat XML file

@@ -15,6 +15,7 @@
           {% endfor %} {% endif %}
           <form method="post" action="{% url 'rfsoc_page' %}">
             {% csrf_token %}
+            <!-- RFSoC information -->
             <h6 class="heading-small text-muted mb-4">RFSoC information</h6>
             <div class="pl-lg-4">
               <div class="row">
@@ -33,8 +34,228 @@
                   </div>
                 </div>
               </div>
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-username">Username</label>
+                    <input type="number" id="input-username" class="form-control" name="rfsoc_username" placeholder="Username" value="{{ rfsoc_username }}" />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-password">Password</label>
+                    <input type="number" id="input-password" class="form-control" name="rfsoc_password" placeholder="Password" value="{{ rfsoc_password }}" />
+                  </div>
+                </div>
+              </div>
             </div>
+
             <hr class="my-4" />
+
+            <!-- Configuration - General -->
+            <h6 class="heading-small text-muted mb-4">Configuration - General</h6>
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-adc-trig-offset">ADC Trigger Offset</label>
+                    <input type="number" id="input-adc-trig-offset" class="form-control" name="adc_trig_offset" placeholder="ADC Trigger Offset" value="{{ form.adc_trig_offset.value }}" />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-soft-avgs">Soft Averages</label>
+                    <input type="number" id="input-soft-avgs" class="form-control" name="soft_avgs" placeholder="Soft Averages" value="{{ form.soft_avgs.value }}" />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-relax-delay">Relax Delay</label>
+                    <input type="number" id="input-relax-delay" class="form-control" name="relax_delay" placeholder="Relax Delay" value="{{ form.relax_delay.value }}" />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-readout-length">Readout Length</label>
+                    <input type="number" id="input-readout-length" class="form-control" name="readout_length" placeholder="Readout Length" value="{{ form.readout_length.value }}" />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-pulse-freq">Pulse Frequency</label>
+                    <input type="number" id="input-pulse-freq" class="form-control" name="pulse_freq" placeholder="Pulse Frequency" value="{{ form.pulse_freq.value }}" />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-reps">Reps</label>
+                    <input type="number" id="input-reps" class="form-control" name="reps" placeholder="Reps" value="{{ form.reps.value }}" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <hr class="my-4" />
+
+            <!-- Configuration - EOM -->
+            <h6 class="heading-small text-muted mb-4">Configuration - EOM</h6>
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-eom-outch">Out Ch</label>
+                    <input type="text" id="input-eom-outch" class="form-control" name="eom_outch" placeholder="Out Ch" value="{{ form.eom_outch.value }}" />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-eom-freqseq">Freq Seq</label>
+                    <input type="text" id="input-eom-freqseq" class="form-control" name="eom_freqseq" placeholder="Freq Seq" value="{{ form.eom_freqseq.value }}" />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-eom-timeseq">Time Seq</label>
+                    <input type="text" id="input-eom-timeseq" class="form-control" name="eom_timeseq" placeholder="Time Seq" value="{{ form.eom_timeseq.value }}" />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-eom-length">Length</label>
+                    <input type="number" id="input-eom-length" class="form-control" name="eom_length" placeholder="Length" value="{{ form.eom_length.value }}" />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-eom-pulsefreq">Pulse Freq</label>
+                    <input type="number" id="input-eom-pulsefreq" class="form-control" name="eom_pulsefreq" placeholder="Pulse Freq" value="{{ form.eom_pulsefreq.value }}" />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-eom-zone">Zone</label>
+                    <input type="number" id="input-eom-zone" class="form-control" name="eom_zone" placeholder="Zone" value="{{ form.eom_zone.value }}" />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-eom-mode">Mode</label>
+                    <input type="text" id="input-eom-mode" class="form-control" name="eom_mode" placeholder="Mode" value="{{ form.eom_mode.value }}" />
+                  </div>
+                </div>
+                <!-- Add more fields for EOM configuration if needed -->
+              </div>
+            </div>
+
+            <!-- Add more configuration fields as necessary -->
+
+            <hr class="my-4" />
+
+            <!-- Configuration - Frequency A -->
+            <h6 class="heading-small text-muted mb-4">Configuration - Frequency A</h6>
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-freqA-res_phase">Res Phase</label>
+                    <input type="number" id="input-freqA-res_phase" class="form-control" name="freqA_res_phase" placeholder="Res Phase" value="{{ form.freqA_res_phase.value }}" />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-freqA-pulse_gain">Pulse Gain</label>
+                    <input type="number" id="input-freqA-pulse_gain" class="form-control" name="freqA_pulse_gain" placeholder="Pulse Gain" value="{{ form.freqA_pulse_gain.value }}" />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-freqA-pulse_freq">Pulse Freq</label>
+                    <input type="number" id="input-freqA-pulse_freq" class="form-control" name="freqA_pulse_freq" placeholder="Pulse Freq" value="{{ form.freqA_pulse_freq.value }}" />
+                  </div>
+                </div>
+                <!-- Add more fields for Frequency A configuration if needed -->
+              </div>
+            </div>
+
+            <hr class="my-4" />
+
+            <!-- Configuration - Frequency B -->
+            <h6 class="heading-small text-muted mb-4">Configuration - Frequency B</h6>
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-freqB-res_phase">Res Phase</label>
+                    <input type="number" id="input-freqB-res_phase" class="form-control" name="freqB_res_phase" placeholder="Res Phase" value="{{ form.freqB_res_phase.value }}" />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-freqB-pulse_gain">Pulse Gain</label>
+                    <input type="number" id="input-freqB-pulse_gain" class="form-control" name="freqB_pulse_gain" placeholder="Pulse Gain" value="{{ form.freqB_pulse_gain.value }}" />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-freqB-pulse_freq">Pulse Freq</label>
+                    <input type="number" id="input-freqB-pulse_freq" class="form-control" name="freqB_pulse_freq" placeholder="Pulse Freq" value="{{ form.freqB_pulse_freq.value }}" />
+                  </div>
+                </div>
+                <!-- Add more fields for Frequency B configuration if needed -->
+              </div>
+            </div>
+
+            <hr class="my-4" />
+
+            <!-- Configuration - AOM -->
+            <h6 class="heading-small text-muted mb-4">Configuration - AOM</h6>
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-aom-length">Length</label>
+                    <input type="number" id="input-aom-length" class="form-control" name="aom_length" placeholder="Length" value="{{ form.aom_length.value }}" />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-aom-pins">Pins</label>
+                    <input type="text" id="input-aom-pins" class="form-control" name="aom_pins" placeholder="Pins" value="{{ form.aom_pins.value }}" />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-aom-time">Time</label>
+                    <input type="text" id="input-aom-time" class="form-control" name="aom_time" placeholder="Time" value="{{ form.aom_time.value }}" />
+                  </div>
+                </div>
+                <!-- Add more fields for AOM configuration if needed -->
+              </div>
+            </div>
+
+            <!-- Add more configuration fields as necessary -->
+
+            <hr class="my-4" />
+
+            <!-- Form submission buttons -->
             <div class="col-12">
               <div class="row">
                 <div class="col-6">
