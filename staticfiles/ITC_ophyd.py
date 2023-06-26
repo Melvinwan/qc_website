@@ -138,13 +138,13 @@ class ITCController(OphydObject): #On off laser similar to controller
 
     def _initialize(self):
         # self._connected = False
-        print(f"connecting to {self.host}")
-        logger.info("The connection has already been established.")
-        try:
-            self.connect()
+        # print(f"connecting to {self.host}")
+        # logger.info("The connection has already been established.")
+        # try:
+        #     self.connect()
 
-        except Exception as err:
-            print("Connection cannot be established please retry")
+        # except Exception as err:
+        #     print("Connection cannot be established please retry")
         # self._set_default_values()
         self.name = "MercuryITC"
         # self.is_open = True

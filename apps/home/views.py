@@ -86,7 +86,7 @@ def caylar_page_view(request):
 
 def rfsoc_page_view(request):
     # Load the data from the rfsoc XML file
-    xilinx_host = xml_config_to_dict("staticfiles/xilinx_host.xml")["database"]
+    xilinx_host = xml_config_to_dict("staticfiles/xilinx_host.xml")
 
     if request.method == 'POST':
         form = LaserForm(request.POST)
