@@ -1,0 +1,54 @@
+{% extends 'layouts/base.html' %} {% block title %} Caylar {% endblock title %} {% block content %}
+<!-- Page content -->
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xl-8 order-xl-1">
+      <div class="card">
+        <div class="card-header">
+          <div class="row align-items-center">
+            <div class="col-8"></div>
+          </div>
+        </div>
+        <div class="card-body">
+          {% if messages %} {% for message in messages %}
+          <div class="alert alert-success" role="alert">{{ message }}</div>
+          {% endfor %} {% endif %}
+          <form method="post" action="{% url 'caylar_page' %}">
+            {% csrf_token %}
+            <h6 class="heading-small text-muted mb-4">Caylar information</h6>
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-host">IP Address</label>
+                    <input id="input-host" class="form-control" name="caylar_host" placeholder="Caylar IP Address" type="text" value="{{ caylar_host }}" />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-port">Port</label>
+                    <input type="number" id="input-port" class="form-control" name="caylar_port" placeholder="Port" value="{{ caylar_port }}" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <hr class="my-4" />
+            <div class="col-12">
+              <div class="row">
+                <div class="col-6">
+                  <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                </div>
+                <div class="col-6 text-right">
+                  <a href="{% url 'home' %}" class="btn btn-sm btn-secondary">Back</a>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

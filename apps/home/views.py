@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.shortcuts import render, redirect
 from .construct_object import construct_object
 
-from .forms import LaserForm
+from .forms import LaserForm, RFSoCForm, CaylarForm, MercuryForm
 from staticfiles.XMLGenerator import xml_config_to_dict, dict_to_xml_file
 
 from django.contrib import messages
@@ -50,8 +50,107 @@ def laser_page_view(request):
         'laser_port': laser_port,
     })
 
+def caylar_page_view(request):
+    # Load the data from the magnet XML file
+    caylar_host = xml_config_to_dict("staticfiles/caylar.xml")
 
+    if request.method == 'POST':
+        form = LaserForm(request.POST)
+        if form.is_valid():
+            caylar_host["host"] = form.cleaned_data['magnet_host']
+            caylar_host["port"] = form.cleaned_data['magnet_port']
+            dict_to_xml_file(caylar_host, "staticfiles/caylar.xml")
 
+            # Add success message to the Django messages framework
+            messages.success(request, 'Changes saved successfully!')
+
+            # Redirect to the magnet page to reload the page with the updated values
+            return redirect('caylar_page')
+
+    else:
+        # Initialize the form with the current magnet information
+        form = CaylarForm(initial={
+            'magnet_host': caylar_host["host"] if caylar_host["host"] is not None else '',
+            'magnet_port': caylar_host["port"] if caylar_host["port"] is not None else '',
+        })
+
+    # Assign the variables with the initial values
+    magnet_host = caylar_host["host"] if caylar_host["host"] is not None else ''
+    magnet_port = caylar_host["port"] if caylar_host["port"] is not None else ''
+
+    return render(request, 'home/caylar.html', {
+        'form': form,
+        'magnet_host': magnet_host,
+        'magnet_port': magnet_port,
+    })
+
+def rfsoc_page_view(request):
+    # Load the data from the rfsoc XML file
+    xilinx_host = xml_config_to_dict("staticfiles/xilinx_host.xml")["database"]
+
+    if request.method == 'POST':
+        form = LaserForm(request.POST)
+        if form.is_valid():
+            xilinx_host["host"] = form.cleaned_data['rfsoc_host']
+            xilinx_host["port"] = form.cleaned_data['rfsoc_port']
+            dict_to_xml_file(xilinx_host, "staticfiles/xilinx_host.xml")
+
+            # Add success message to the Django messages framework
+            messages.success(request, 'Changes saved successfully!')
+
+            # Redirect to the rfsoc page to reload the page with the updated values
+            return redirect('rfsoc_page')
+
+    else:
+        # Initialize the form with the current rfsoc information
+        form = RFSoCForm(initial={
+            'rfsoc_host': xilinx_host["host"] if xilinx_host["host"] is not None else '',
+            'rfsoc_port': xilinx_host["port"] if xilinx_host["port"] is not None else '',
+        })
+
+    # Assign the variables with the initial values
+    rfsoc_host = xilinx_host["host"] if xilinx_host["host"] is not None else ''
+    rfsoc_port = xilinx_host["port"] if xilinx_host["port"] is not None else ''
+
+    return render(request, 'home/rfsoc.html', {
+        'form': form,
+        'rfsoc_host': rfsoc_host,
+        'rfsoc_port': rfsoc_port,
+    })
+
+def mercury_page_view(request):
+    # Load the data from the cryostat XML file
+    mercury_host = xml_config_to_dict("staticfiles/mercury.xml")
+
+    if request.method == 'POST':
+        form = MercuryForm(request.POST)
+        if form.is_valid():
+            mercury_host["host"] = form.cleaned_data['cryostat_host']
+            mercury_host["port"] = form.cleaned_data['cryostat_port']
+            dict_to_xml_file(mercury_host, "staticfiles/mercury.xml")
+
+            # Add success message to the Django messages framework
+            messages.success(request, 'Changes saved successfully!')
+
+            # Redirect to the cryostat page to reload the page with the updated values
+            return redirect('mercury_page')
+
+    else:
+        # Initialize the form with the current cryostat information
+        form = LaserForm(initial={
+            'cryostat_host': mercury_host["host"] if mercury_host["host"] is not None else '',
+            'cryostat_port': mercury_host["port"] if mercury_host["port"] is not None else '',
+        })
+
+    # Assign the variables with the initial values
+    cryostat_host = mercury_host["host"] if mercury_host["host"] is not None else ''
+    cryostat_port = mercury_host["port"] if mercury_host["port"] is not None else ''
+
+    return render(request, 'home/mercury.html', {
+        'form': form,
+        'cryostat_host': cryostat_host,
+        'cryostat_port': cryostat_port,
+    })
 
 @login_required(login_url="/login/")
 def index(request):
