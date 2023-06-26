@@ -9,7 +9,7 @@ from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
 from django.template import loader
 from django.urls import reverse
 from django.shortcuts import render, redirect
-from .construct_object import construct_object
+from .construct_object import construct_object, construct_connect_caylar,construct_connect_itc,construct_connect_rfsoc,construct_connect_toptica
 
 from .forms import LaserForm, RFSoCConfigForm, CaylarForm, MercuryForm
 from staticfiles.XMLGenerator import xml_config_to_dict, dict_to_xml_file
@@ -23,6 +23,7 @@ def laser_page_view(request):
     if request.method == 'POST':
         form = LaserForm(request.POST)
         if form.is_valid():
+
             toptica_host["host"] = form.cleaned_data['laser_host']
             toptica_host["port"] = form.cleaned_data['laser_port']
             toptica_host["wavelength_act"] = form.cleaned_data['wavelength_act']
@@ -31,7 +32,8 @@ def laser_page_view(request):
             toptica_host["scan_freq"] = form.cleaned_data['scan_freq']
             toptica_host["scan_offset"] = form.cleaned_data['scan_offset']
             dict_to_xml_file(toptica_host, "staticfiles/toptica.xml")
-
+            Update_Laser = construct_connect_toptica()
+            Update_Laser.update_all_xml("staticfiles/toptica.xml")
             # Add success message to the Django messages framework
             messages.success(request, 'Changes saved successfully!')
 

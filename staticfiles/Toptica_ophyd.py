@@ -488,7 +488,11 @@ class LaserToptica(Device):
         from .XMLGenerator import xml_config_to_dict
         try:
             self.config = xml_config_to_dict(xml)
-            print(self.config)
+            self.update_ctl_wavelength_act(self.config["wavelength_act"])
+            self.update_scan_end(self.config["scan_end"])
+            self.update_scan_start(self.config["scan_start"])
+            self.update_scan_offset(self.config["scan_offset"])
+            print("Laser Updated")
         except:
             print("XML not Found")
     def limit_wavelength(self):
