@@ -166,7 +166,7 @@ class LaserController(OphydObject): #On off laser similar to controller
         try:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
-            self.dlc = DLCpro(NetworkConnection(self.host))
+            self.dlc = DLCpro(NetworkConnection(self.host, timeout=10))
             self.dlc.open()
             loop.stop()
 

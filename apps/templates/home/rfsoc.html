@@ -244,25 +244,79 @@
             <div class="pl-lg-4">
               <div class="row">
                 <div class="col-md-6">
-                  <div class="form-group">
-                    <label class="form-control-label" for="input-aom-length">Length</label>
-                    <input type="number" id="input-aom-length" class="form-control" name="aom_length" placeholder="Length" value="{{ form.aom_length.value }}" />
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label class="form-control-label" for="input-aom-pins">Pins</label>
-                    <input type="text" id="input-aom-pins" class="form-control" name="aom_pins" placeholder="Pins" value="{{ form.aom_pins.value }}" />
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="form-control-label">Pins</label>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="selected_pins[]" id="input-pin-0" value="0" data-time-input="input-aom-time-0" data-length-input="input-aom-length-0" {% if 0 in form.aom_pins.value %}checked{% endif %} />
+                        <label class="form-check-label" for="input-pin-0">0</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="selected_pins[]" id="input-pin-1" value="1" data-time-input="input-aom-time-1" data-length-input="input-aom-length-1" {% if 1 in form.aom_pins.value %}checked{% endif %} />
+                        <label class="form-check-label" for="input-pin-1">1</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="selected_pins[]" id="input-pin-2" value="2" data-time-input="input-aom-time-2" data-length-input="input-aom-length-2" {% if 2 in form.aom_pins.value %}checked{% endif %} />
+                        <label class="form-check-label" for="input-pin-2">2</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="selected_pins[]" id="input-pin-3" value="3" data-time-input="input-aom-time-3" data-length-input="input-aom-length-3" {% if 3 in form.aom_pins.value %}checked{% endif %} />
+                        <label class="form-check-label" for="input-pin-3">3</label>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-control-label" for="input-aom-time">Time</label>
-                    <input type="text" id="input-aom-time" class="form-control" name="aom_time" placeholder="Time" value="{{ form.aom_time.value }}" />
+                    <label class="form-control-label" for="input-aom-time-0">Time for Pin 0</label>
+                    <input type="text" id="input-aom-time-0" class="form-control time-input" name="aom_time_0" placeholder="Time for Pin 0" value="{{ form.aom_time_0.value }}" />
                   </div>
                 </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-aom-time-1">Time for Pin 1</label>
+                    <input type="text" id="input-aom-time-1" class="form-control time-input" name="aom_time_1" placeholder="Time for Pin 1" value="{{ form.aom_time_1.value }}" />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-aom-time-2">Time for Pin 2</label>
+                    <input type="text" id="input-aom-time-2" class="form-control time-input" name="aom_time_2" placeholder="Time for Pin 2" value="{{ form.aom_time_2.value }}" />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-aom-time-3">Time for Pin 3</label>
+                    <input type="text" id="input-aom-time-3" class="form-control time-input" name="aom_time_3" placeholder="Time for Pin 3" value="{{ form.aom_time_3.value }}" />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-aom-length-0">Length for Pin 0</label>
+                    <input type="text" id="input-aom-length-0" class="form-control length-input" name="aom_length_0" placeholder="Length for Pin 0" value="{{ form.aom_length_0.value }}" />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-aom-length-1">Length for Pin 1</label>
+                    <input type="text" id="input-aom-length-1" class="form-control length-input" name="aom_length_1" placeholder="Length for Pin 1" value="{{ form.aom_length_1.value }}" />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-aom-length-2">Length for Pin 2</label>
+                    <input type="text" id="input-aom-length-2" class="form-control length-input" name="aom_length_2" placeholder="Length for Pin 2" value="{{ form.aom_length_2.value }}" />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-aom-length-3">Length for Pin 3</label>
+                    <input type="text" id="input-aom-length-3" class="form-control length-input" name="aom_length_3" placeholder="Length for Pin 3" value="{{ form.aom_length_3.value }}" />
+                  </div>
+                </div>
+
                 <!-- Add more fields for AOM configuration if needed -->
               </div>
             </div>
@@ -288,4 +342,41 @@
     </div>
   </div>
 </div>
-{% endblock content %}
+{% endblock content %} {% block javascripts %}
+<script>
+  // Get all the checkbox inputs, time inputs, and length inputs
+  const checkboxes = document.querySelectorAll('input[type="checkbox"][name="selected_pins[]"]');
+  const timeInputs = document.querySelectorAll(".time-input");
+  const lengthInputs = document.querySelectorAll(".length-input");
+
+  // Add event listeners to the checkboxes
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", function () {
+      const timeInputId = this.getAttribute("data-time-input");
+      const timeInput = document.getElementById(timeInputId);
+      const timeInputLabel = document.querySelector(`label[for="${timeInputId}"]`);
+
+      const lengthInputId = this.getAttribute("data-length-input");
+      const lengthInput = document.getElementById(lengthInputId);
+      const lengthInputLabel = document.querySelector(`label[for="${lengthInputId}"]`);
+
+      // Show or hide the time and length inputs and their labels based on the checkbox's checked state
+      if (this.checked) {
+        timeInput.style.display = "block";
+        timeInputLabel.style.display = "block";
+        lengthInput.style.display = "block";
+        lengthInputLabel.style.display = "block";
+      } else {
+        timeInput.style.display = "none";
+        timeInputLabel.style.display = "none";
+        lengthInput.style.display = "none";
+        lengthInputLabel.style.display = "none";
+      }
+    });
+
+    // Trigger the change event to show or hide the time and length inputs and their labels initially based on the checkbox's checked state
+    checkbox.dispatchEvent(new Event("change"));
+  });
+</script>
+
+{% endblock javascripts %}

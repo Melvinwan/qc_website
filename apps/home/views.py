@@ -39,7 +39,6 @@ def laser_page_view(request):
     if request.method == 'POST':
 
         form = LaserForm(request.POST)
-        print(form.is_valid())
         if form.is_valid():
 
             toptica_host["host"] = form.cleaned_data['laser_host']
@@ -163,6 +162,7 @@ def rfsoc_page_view(request):
     # Load the data from the rfsoc XML file
     xilinx_host = xml_config_to_dict("staticfiles/xilinx_host.xml")
     rfsoc_config = xml_config_to_dict("staticfiles/xilinx.xml")
+
     if request.method == 'POST':
         form = RFSoCConfigForm(request.POST)
         if form.is_valid():
@@ -199,14 +199,32 @@ def rfsoc_page_view(request):
             rfsoc_config["EOM"]["freqB"]["res_phase"] = form.cleaned_data['freqB_res_phase']
             rfsoc_config["EOM"]["freqB"]["pulse_gain"] = form.cleaned_data['freqB_pulse_gain']
             rfsoc_config["EOM"]["freqB"]["pulse_freq"] = form.cleaned_data['freqB_pulse_freq']
-
+            pins = [int(pin) for pin in request.POST.getlist('selected_pins[]')]
+            rfsoc_config["AOM"]["pins"] = pins
             # Update AOM configuration
-            rfsoc_config["AOM"]["length"] = form.cleaned_data['aom_length']
-            rfsoc_config["AOM"]["pins"] = form.cleaned_data['aom_pins']
-            rfsoc_config["AOM"]["time"] = form.cleaned_data['aom_time']
+            lengths = []
+            for i in range(4):
+                length_value = form.cleaned_data.get('aom_length_' + str(i))
+                if length_value!='[]' and i in pins:
+                    length_list = [int(length_str.strip()) for length_str in length_value.split(',') if length_str.strip()]
+                    lengths.append(length_list)
+                else:
+                    lengths.append([])
+            rfsoc_config["AOM"]["length"] = lengths
+
+            times = []
+            for j in range(4):
+                time_value = form.cleaned_data.get('aom_time_' + str(i))
+                if time_value!='[]'and j in pins:
+                    time_list = [int(time_str.strip()) for time_str in time_value.split(',') if time_str.strip()]
+                    times.append(time_list)
+                else:
+                    times.append([])
+            rfsoc_config["AOM"]["time"] = times
+
 
             # Update the rfsoc.xml file
-            dict_to_xml_file(rfsoc_config, "staticfiles/rfsoc.xml")
+            dict_to_xml_file(rfsoc_config, "staticfiles/xilinx.xml")
 
             # Add success message to the Django messages framework
             messages.success(request, 'Changes saved successfully!')
@@ -216,7 +234,6 @@ def rfsoc_page_view(request):
 
     else:
         # Initialize the form with the current rfsoc information
-
         form = RFSoCConfigForm(initial={
             'rfsoc_host': xilinx_host["host"],
             'rfsoc_port': xilinx_host["port"],
@@ -241,9 +258,15 @@ def rfsoc_page_view(request):
             'freqB_res_phase': rfsoc_config["EOM"]["freqB"]["res_phase"],
             'freqB_pulse_gain': rfsoc_config["EOM"]["freqB"]["pulse_gain"],
             'freqB_pulse_freq': rfsoc_config["EOM"]["freqB"]["pulse_freq"],
-            'aom_length': rfsoc_config["AOM"]["length"],
             'aom_pins': rfsoc_config["AOM"]["pins"],
-            'aom_time': rfsoc_config["AOM"]["time"],
+            'aom_time_0': ', '.join(str(val) for val in rfsoc_config["AOM"]["time"][0]),
+            'aom_time_1': ', '.join(str(val) for val in rfsoc_config["AOM"]["time"][1]),
+            'aom_time_2': ', '.join(str(val) for val in rfsoc_config["AOM"]["time"][2]),
+            'aom_time_3': ', '.join(str(val) for val in rfsoc_config["AOM"]["time"][3]),
+            'aom_length_0': ', '.join(str(val) for val in rfsoc_config["AOM"]["length"][0]),
+            'aom_length_1': ', '.join(str(val) for val in rfsoc_config["AOM"]["length"][1]),
+            'aom_length_2': ', '.join(str(val) for val in rfsoc_config["AOM"]["length"][2]),
+            'aom_length_3': ', '.join(str(val) for val in rfsoc_config["AOM"]["length"][3]),
         })
 
     return render(request, 'home/rfsoc.html', {

@@ -500,3 +500,19 @@
 2023-06-27 14:31:00,474 - DEBUG - recv scan frequency
 2023-06-27 14:31:00,487 - DEBUG - recv scan offset
 2023-06-27 14:31:24,171 - INFO - The connection has already been established.
+2023-06-27 14:44:11,001 - INFO - The connection has already been established.
+2023-06-27 14:45:09,148 - INFO - The connection has already been established.
+2023-06-27 14:45:56,417 - INFO - The connection has already been established.
+2023-06-27 14:46:29,530 - INFO - The connection has already been established.
+2023-06-27 14:46:43,686 - INFO - The connection has already been established.
+2023-06-27 14:46:51,782 - INFO - The connection has already been established.
+2023-06-27 14:47:25,908 - INFO - The connection has already been established.
+2023-06-27 14:51:08,479 - INFO - The connection has already been established.
+2023-06-27 14:52:18,111 - INFO - The connection has already been established.
+2023-06-27 14:53:05,398 - INFO - The connection has already been established.
+2023-06-27 14:53:39,185 - INFO - The connection has already been established.
+2023-06-27 14:53:52,647 - INFO - The connection has already been established.
+2023-06-27 14:54:45,456 - INFO - The connection has already been established.
+2023-06-27 14:54:51,392 - INFO - The connection has already been established.
+2023-06-27 16:28:21,589 - INFO - The connection has already been established.
+2023-06-27 16:28:31,914 - INFO - The connection has already been established.
