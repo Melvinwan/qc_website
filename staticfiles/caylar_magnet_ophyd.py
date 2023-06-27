@@ -335,6 +335,16 @@ class CaylarMagnet(Device):
     def try_connect(self):
         return self.controller.on()
 
+    def update_all_xml(self, xml):
+        from .XMLGenerator import xml_config_to_dict
+        try:
+            self.config = xml_config_to_dict(xml)
+            self.current_setter(self.config["current"])
+            self.field_setter(self.config["field"])
+            print("Laser Updated")
+        except:
+            print("XML not Found")
+
     def _update_connection_state(self, **kwargs):
         for walk in self.walk_signals():
             walk.item._metadata["connected"] = self.controller.connected

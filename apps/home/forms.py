@@ -4,11 +4,11 @@ from django import forms
 class LaserForm(forms.Form):
     laser_host = forms.CharField(label='IP Address', max_length=100)
     laser_port = forms.IntegerField(label='Port', required=False)
-    wavelength_act = forms.IntegerField(label='Wavelength')
-    scan_end = forms.IntegerField(label='Scan End')
-    scan_start = forms.IntegerField(label='Scan Start')
-    scan_freq = forms.IntegerField(label='Scan Frequency')
-    scan_offset = forms.IntegerField(label='Scan Offset')
+    wavelength_act = forms.FloatField(label='Wavelength')
+    scan_end = forms.FloatField(label='Scan End')
+    scan_start = forms.FloatField(label='Scan Start')
+    scan_freq = forms.FloatField(label='Scan Frequency')
+    scan_offset = forms.FloatField(label='Scan Offset')
 
 
 # forms.py

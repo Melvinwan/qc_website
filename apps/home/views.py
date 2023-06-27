@@ -9,7 +9,7 @@ from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
 from django.template import loader
 from django.urls import reverse
 from django.shortcuts import render, redirect
-from .construct_object import construct_object, construct_connect_caylar,construct_connect_itc,construct_connect_rfsoc,construct_connect_toptica
+from .construct_object import construct_object, construct_caylar,construct_itc,construct_rfsoc,construct_toptica
 
 from .forms import LaserForm, RFSoCConfigForm, CaylarForm, MercuryForm
 from staticfiles.XMLGenerator import xml_config_to_dict, dict_to_xml_file
@@ -20,7 +20,7 @@ from datetime import datetime
 def laser_page_view(request):
     # Load the data from the laser XML file
 
-    Update_Laser = construct_connect_toptica()
+    Update_Laser = construct_toptica()
     connected = Update_Laser.try_connect()
     toptica_host = xml_config_to_dict("staticfiles/toptica.xml")
     if connected:
@@ -39,7 +39,9 @@ def laser_page_view(request):
     if request.method == 'POST':
 
         form = LaserForm(request.POST)
+        print(form.is_valid())
         if form.is_valid():
+
             toptica_host["host"] = form.cleaned_data['laser_host']
             toptica_host["port"] = form.cleaned_data['laser_port']
             toptica_host["wavelength_act"] = form.cleaned_data['wavelength_act']
@@ -57,9 +59,14 @@ def laser_page_view(request):
 
             # Redirect to the laser page to reload the page with the updated values
             return redirect('laser_page')
+        else:
+            messages.warning(request, 'Cannot be updated!')
+            return redirect('laser_page')
+
 
     else:
         # Initialize the form with the current laser information
+
         form = LaserForm(initial={
             'laser_host': toptica_host["host"] if toptica_host["host"] is not None else '',
             'laser_port': toptica_host["port"] if toptica_host["port"] is not None else '',
@@ -94,7 +101,18 @@ def laser_page_view(request):
 # views.py
 def caylar_page_view(request):
     # Load the data from the magnet XML file
+    Update_caylar = construct_caylar()
+    connected = Update_caylar.try_connect()
     caylar_host = xml_config_to_dict("staticfiles/caylar.xml")
+    if connected:
+        caylar_host["current"] = Update_caylar.current()
+        caylar_host["field"] =  Update_caylar.field()
+        caylar_host["time_update"] =  datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        dict_to_xml_file(caylar_host, "staticfiles/caylar.xml")
+        caylar_host = xml_config_to_dict("staticfiles/caylar.xml")
+    else:
+        info = "Parameter has not updated since "+caylar_host["time_update"]+" because not connected with the device!"
+        messages.info(request, info)
 
     if request.method == 'POST':
         form = CaylarForm(request.POST)
@@ -105,8 +123,12 @@ def caylar_page_view(request):
             caylar_host["field"] = form.cleaned_data['caylar_field']
             dict_to_xml_file(caylar_host, "staticfiles/caylar.xml")
 
-            # Add success message to the Django messages framework
-            messages.success(request, 'Changes saved successfully!')
+            if connected:
+                Update_caylar.update_all_xml("staticfiles/caylar.xml")
+                messages.success(request, 'Changes saved successfully in Caylar!')
+            else:
+                # Add success message to the Django messages framework
+                messages.success(request, 'Changes saved successfully in XML!')
 
             # Redirect to the magnet page to reload the page with the updated values
             return redirect('caylar_page')
