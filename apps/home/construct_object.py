@@ -18,7 +18,7 @@ def construct_object():
 def construct_connect_toptica():
     toptica_host = xml_config_to_dict("staticfiles/toptica.xml")
     LTDLC = LaserToptica(prefix="...",name="LTDLC",config_host=toptica_host)
-    LTDLC.try_connect()
+    # LTDLC.try_connect()
     return LTDLC
 
 def construct_connect_rfsoc():

@@ -263,3 +263,16 @@
 2023-06-26 17:16:10,060 - INFO - Main Scan frequency is set to 70
 2023-06-26 17:16:10,061 - DEBUG - set scan frequency
 2023-06-26 17:16:10,081 - DEBUG - recv scan frequency
+2023-06-26 17:17:37,934 - INFO - The connection has already been established.
+2023-06-26 17:17:37,935 - INFO - Main ctl wavelength is set to 1550
+2023-06-26 17:17:37,936 - DEBUG - set wavelength act
+2023-06-26 17:17:37,948 - DEBUG - recv wavelength act
+2023-06-26 17:17:37,956 - INFO - Main Scan end is set to 75
+2023-06-26 17:17:37,956 - DEBUG - set scan end
+2023-06-26 17:17:37,965 - DEBUG - recv scan end
+2023-06-26 17:17:37,975 - INFO - Main Scan start is set to 50
+2023-06-26 17:17:37,975 - DEBUG - set scan start
+2023-06-26 17:17:37,985 - DEBUG - recv scan start
+2023-06-26 17:17:37,993 - INFO - Main Scan frequency is set to 70
+2023-06-26 17:17:37,993 - DEBUG - set scan frequency
+2023-06-26 17:17:38,002 - DEBUG - recv scan frequency

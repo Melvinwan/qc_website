@@ -15,15 +15,31 @@ from .forms import LaserForm, RFSoCConfigForm, CaylarForm, MercuryForm
 from staticfiles.XMLGenerator import xml_config_to_dict, dict_to_xml_file
 
 from django.contrib import messages
+from datetime import datetime
 
 def laser_page_view(request):
     # Load the data from the laser XML file
+
+    Update_Laser = construct_connect_toptica()
+    connected = Update_Laser.try_connect()
     toptica_host = xml_config_to_dict("staticfiles/toptica.xml")
+    if connected:
+        toptica_host["wavelength_act"] = Update_Laser.report_ctl_wavelength_act()
+        toptica_host["scan_end"] =  Update_Laser.report_scan_end()
+        toptica_host["scan_start"] =  Update_Laser.report_scan_start()
+        toptica_host["scan_freq"] =  Update_Laser.report_scan_frequency()
+        toptica_host["scan_offset"] =  Update_Laser.report_scan_offset()
+        toptica_host["time_update"] =  datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        dict_to_xml_file(toptica_host, "staticfiles/toptica.xml")
+        toptica_host = xml_config_to_dict("staticfiles/toptica.xml")
+    else:
+        info = "Parameter has not updated since "+toptica_host["time_update"]+" because not connected with the device!"
+        messages.info(request, info)
 
     if request.method == 'POST':
+
         form = LaserForm(request.POST)
         if form.is_valid():
-
             toptica_host["host"] = form.cleaned_data['laser_host']
             toptica_host["port"] = form.cleaned_data['laser_port']
             toptica_host["wavelength_act"] = form.cleaned_data['wavelength_act']
@@ -32,10 +48,12 @@ def laser_page_view(request):
             toptica_host["scan_freq"] = form.cleaned_data['scan_freq']
             toptica_host["scan_offset"] = form.cleaned_data['scan_offset']
             dict_to_xml_file(toptica_host, "staticfiles/toptica.xml")
-            Update_Laser = construct_connect_toptica()
-            Update_Laser.update_all_xml("staticfiles/toptica.xml")
-            # Add success message to the Django messages framework
-            messages.success(request, 'Changes saved successfully!')
+            if connected:
+                Update_Laser.update_all_xml("staticfiles/toptica.xml")
+                messages.success(request, 'Changes saved successfully in Toptica!')
+            else:
+                # Add success message to the Django messages framework
+                messages.success(request, 'Changes saved successfully in XML!')
 
             # Redirect to the laser page to reload the page with the updated values
             return redirect('laser_page')
