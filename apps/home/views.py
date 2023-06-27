@@ -132,7 +132,9 @@ def caylar_page_view(request):
 
             # Redirect to the magnet page to reload the page with the updated values
             return redirect('caylar_page')
-
+        else:
+            messages.warning(request, 'Cannot be updated!')
+            return redirect('caylar_page')
     else:
         # Initialize the form with the current magnet information
         form = CaylarForm(initial={
@@ -251,8 +253,18 @@ def rfsoc_page_view(request):
 
 def mercury_page_view(request):
     # Load the data from the cryostat XML file
+    Update_mercury = construct_itc()
+    connected = Update_mercury.try_connect()
     mercury_host = xml_config_to_dict("staticfiles/mercuryITC.xml")
-
+    if connected:
+        mercury_host["current"] = Update_mercury.current()
+        mercury_host["field"] =  Update_mercury.field()
+        mercury_host["time_update"] =  datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        dict_to_xml_file(mercury_host, "staticfiles/mercuryITC.xml")
+        mercury_host = xml_config_to_dict("staticfiles/mercuryITC.xml")
+    else:
+        info = "Parameter has not updated since "+mercury_host["time_update"]+" because not connected with the device!"
+        messages.info(request, info)
     if isinstance(mercury_host, str):
         mercury_host = {}
 
@@ -265,12 +277,18 @@ def mercury_page_view(request):
             mercury_host["ITC_temperature"] = form.cleaned_data['mercury_itc_temperature']
             dict_to_xml_file(mercury_host, "staticfiles/mercuryITC.xml")
 
-            # Add success message to the Django messages framework
-            messages.success(request, 'Changes saved successfully!')
+            if connected:
+                Update_mercury.update_all_xml("staticfiles/mercuryITC.xml")
+                messages.success(request, 'Changes saved successfully in MercuryITC!')
+            else:
+                # Add success message to the Django messages framework
+                messages.success(request, 'Changes saved successfully in XML!')
 
             # Redirect to the cryostat page to reload the page with the updated values
             return redirect('mercury_page')
-
+        else:
+            messages.warning(request, 'Cannot be updated!')
+            return redirect('mercury_page')
     else:
         # Initialize the form with the current cryostat information
         form = MercuryForm(initial={

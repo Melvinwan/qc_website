@@ -341,7 +341,7 @@ class CaylarMagnet(Device):
             self.config = xml_config_to_dict(xml)
             self.current_setter(self.config["current"])
             self.field_setter(self.config["field"])
-            print("Laser Updated")
+            print("Caylar Updated")
         except:
             print("XML not Found")
 

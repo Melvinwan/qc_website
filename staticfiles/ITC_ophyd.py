@@ -359,6 +359,15 @@ class MercuryITCDevice(Device):
         self.tolerance = kwargs.pop("tolerance", 0.5)
     def try_connect(self):
         return self.itccontroller.connect()
+    def update_all_xml(self, xml):
+        from .XMLGenerator import xml_config_to_dict
+        try:
+            self.config = xml_config_to_dict(xml)
+            self.update_heater_power(self.config["heater_power"])
+            self.update_temperature(self.config["ITC_temperature"])
+            print("ITC Updated")
+        except:
+            print("XML not Found")
     def update_heater_power(self,val):
         self.itccontroller.heater_power_setter(val)
     def update_temperature(self,val):
