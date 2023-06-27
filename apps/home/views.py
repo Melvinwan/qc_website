@@ -182,9 +182,15 @@ def rfsoc_page_view(request):
             rfsoc_config["reps"] = form.cleaned_data['reps']
 
             # Update EOM configuration
-            rfsoc_config["EOM"]["out_ch"] = form.cleaned_data['eom_outch']
-            rfsoc_config["EOM"]["freq_seq"] = form.cleaned_data['eom_freqseq']
-            rfsoc_config["EOM"]["time_seq"] = form.cleaned_data['eom_timeseq']
+            out_ch = [int(ch) for ch in request.POST.getlist('eom_outch[]')]
+            rfsoc_config["EOM"]["out_ch"] = out_ch
+            freqseq_value = form.cleaned_data['eom_freqseq']
+            freqseq_list = ["freq" + val.strip() for val in freqseq_value.split(",")]
+            # freqseq_list = [freqseq_str.strip() for freqseq_str in freqseq_value.split(',') if freqseq_str.strip()]
+            rfsoc_config["EOM"]["freq_seq"] = freqseq_list
+            timeseq_value = form.cleaned_data['eom_timeseq']
+            timeseq_list = [int(timeseq_str.strip()) for timeseq_str in timeseq_value.split(',') if timeseq_str.strip()]
+            rfsoc_config["EOM"]["time_seq"] = timeseq_list
             rfsoc_config["EOM"]["length"] = form.cleaned_data['eom_length']
             rfsoc_config["EOM"]["pulse_freq"] = form.cleaned_data['eom_pulsefreq']
             rfsoc_config["EOM"]["zone"] = form.cleaned_data['eom_zone']
@@ -246,8 +252,8 @@ def rfsoc_page_view(request):
             'pulse_freq': rfsoc_config["pulse_freq"],
             'reps': rfsoc_config["reps"],
             'eom_outch': rfsoc_config["EOM"]["out_ch"],
-            'eom_freqseq': rfsoc_config["EOM"]["freq_seq"],
-            'eom_timeseq': rfsoc_config["EOM"]["time_seq"],
+            'eom_freqseq': ', '.join(val.replace("freq", "")  for val in rfsoc_config["EOM"]["freq_seq"]),
+            'eom_timeseq': ', '.join(str(val) for val in rfsoc_config["EOM"]["time_seq"]),
             'eom_length': rfsoc_config["EOM"]["length"],
             'eom_pulsefreq': rfsoc_config["EOM"]["pulse_freq"],
             'eom_zone': rfsoc_config["EOM"]["zone"],
