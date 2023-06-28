@@ -160,9 +160,18 @@ def caylar_page_view(request):
 
 def rfsoc_page_view(request):
     # Load the data from the rfsoc XML file
-    xilinx_host = xml_config_to_dict("staticfiles/xilinx_host.xml")
-    rfsoc_config = xml_config_to_dict("staticfiles/xilinx.xml")
+    Update_rfsoc = construct_rfsoc()
+    connected = Update_rfsoc.try_connect()
 
+    xilinx_host = xml_config_to_dict("staticfiles/xilinx_host.xml")
+    #IF FILE IS NOT FOUND MAYBE CAN BUILD ONE
+    rfsoc_config = xml_config_to_dict("staticfiles/xilinx.xml")
+    if connected:
+        Update_rfsoc.get_config()
+        rfsoc_config = xml_config_to_dict("staticfiles/xilinx.xml")
+    else:
+        info = "Parameter has not updated since "+rfsoc_config["time_update"]+" because not connected with the device!"
+        messages.info(request, info)
     if request.method == 'POST':
         form = RFSoCConfigForm(request.POST)
         if form.is_valid():
@@ -170,7 +179,7 @@ def rfsoc_page_view(request):
             xilinx_host["host"] = form.cleaned_data['rfsoc_host']
             xilinx_host["username"] = form.cleaned_data['rfsoc_username']
             xilinx_host["password"] = form.cleaned_data['rfsoc_password']
-            xilinx_host["port"] = form.cleaned_data['rfsoc_port']
+            xilinx_host["port"] = form.cleaned_data['rfsoc_port'] if form.cleaned_data['rfsoc_port'] is not None else ''
             dict_to_xml_file(xilinx_host, "staticfiles/xilinx_host.xml")
 
             # Update General configuration
@@ -232,6 +241,12 @@ def rfsoc_page_view(request):
             # Update the rfsoc.xml file
             dict_to_xml_file(rfsoc_config, "staticfiles/xilinx.xml")
 
+            if connected:
+                Update_rfsoc.build_config(rfsoc_config)
+                messages.success(request, 'Changes saved successfully in RFSoC!')
+            else:
+                # Add success message to the Django messages framework
+                messages.success(request, 'Changes saved successfully in XML!')
             # Add success message to the Django messages framework
             messages.success(request, 'Changes saved successfully!')
 
