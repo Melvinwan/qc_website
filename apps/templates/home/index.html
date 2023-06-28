@@ -124,10 +124,23 @@
         <div class="card-header bg-transparent">
           <h3 class="mb-0">Experiments</h3>
         </div>
+        <div class="card-body">
+          <form>
+            <div class="form-group">
+              <label for="num-experiments">How many experiments?</label>
+              <input type="number" class="form-control" id="num-experiments" name="num_experiments" required />
+            </div>
+
+            <div id="experiment-parameters">
+              <!-- Experiment parameter fields will be dynamically added here -->
+            </div>
+
+            <button type="submit" class="btn btn-primary">Start Experiment</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-
   {% include "includes/footer.html" %}
 </div>
 
@@ -136,6 +149,68 @@
 <!-- Specific JS goes HERE -->
 {% block javascripts %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const numExperimentsInput = document.getElementById("num-experiments");
+    const experimentParametersContainer = document.getElementById("experiment-parameters");
+
+    numExperimentsInput.addEventListener("change", function () {
+      const numExperiments = parseInt(numExperimentsInput.value);
+
+      // Clear any existing experiment parameter fields
+      experimentParametersContainer.innerHTML = "";
+
+      // Generate experiment parameter fields based on the number of experiments
+      for (let i = 0; i < numExperiments; i++) {
+        const experimentFields = `
+          <div class="container-fluid">
+            <hr class="my-4" />
+            <h6 class="heading-small text-muted mb-4">Configuration - Experiment ${i + 1}</h6>
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-wavelength-${i}">Wavelength</label>
+                    <input type="number" step="any" id="input-wavelength-${i}" class="form-control" name="wavelength_act" placeholder="Wavelength" value="{{ wavelength_act }}" />
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-scan-end-${i}">Scan End</label>
+                    <input type="number" step="any" id="input-scan-end-${i}" class="form-control" name="scan_end" placeholder="Scan End" value="{{ scan_end }}" />
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-scan-start-${i}">Scan Start</label>
+                    <input type="number" step="any" id="input-scan-start-${i}" class="form-control" name="scan_start" placeholder="Scan Start" value="{{ scan_start }}" />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-scan-freq-${i}">Scan Frequency</label>
+                    <input type="number" step="any" id="input-scan-freq-${i}" class="form-control" name="scan_freq" placeholder="Scan Frequency" value="{{ scan_freq }}" />
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-scan-offset-${i}">Scan Offset</label>
+                    <input type="number" step="any" id="input-scan-offset-${i}" class="form-control" name="scan_offset" placeholder="Scan Offset" value="{{ scan_offset }}" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr class="my-4" />
+        `;
+
+        experimentParametersContainer.innerHTML += experimentFields;
+      }
+    });
+  });
+</script>
 <script>
   function updateStatus() {
     $.ajax({
@@ -159,7 +234,7 @@
     setTimeout(function () {
       updateStatus(); // Update status initially
       setInterval(updateStatus, 30000); // Update status every 10 seconds
-    }, 10000); // Delay the start of the script by 10 seconds
+    }, 60000); // Delay the start of the script by 10 seconds
   });
 </script>
 
