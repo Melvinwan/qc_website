@@ -226,15 +226,16 @@
       error: function (xhr, errmsg, err) {
         console.log(xhr.status + ": " + xhr.responseText);
       },
+      complete: function () {
+        // Call updateStatus again after the previous update is finished
+        setTimeout(updateStatus, 10000); // Update status every 10 seconds
+      },
     });
   }
 
   // Start the script once the HTML has finished loading
   $(window).on("load", function () {
-    setTimeout(function () {
-      updateStatus(); // Update status initially
-      setInterval(updateStatus, 90000); // Update status every 90 seconds
-    }, 60000); // Delay the start of the script by 60 seconds
+    setTimeout(updateStatus, 10000); // Delay the start of the script by 10 seconds
   });
 </script>
 
