@@ -169,6 +169,8 @@ def rfsoc_page_view(request):
     if connected:
         Update_rfsoc.get_config()
         rfsoc_config = xml_config_to_dict("staticfiles/xilinx.xml")
+        xilinx_host["time_update"] =  datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        dict_to_xml_file(xilinx_host, "staticfiles/xilinx_host.xml")
     else:
         info = "Parameter has not updated since "+xilinx_host["time_update"]+" because not connected with the device!"
         messages.info(request, info)
