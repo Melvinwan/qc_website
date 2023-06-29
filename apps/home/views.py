@@ -360,31 +360,10 @@ def mercury_page_view(request):
 
 @login_required(login_url="/login/")
 def index(request):
-    context = {'segment': 'index'}
-    RFSoC, Laser, Caylar, mercuryITC = construct_object()
-    html_template = loader.get_template('home/index.html')
-    if RFSoC.try_connect():
-        rfsoc_status = "ON"
-    else:
-        rfsoc_status = "OFF"
+    RFSoC, Laser, Caylar, MercuryITC = construct_object()
 
-    if Laser.try_connect():
-        laser_status = "ON"
-    else:
-        laser_status = "OFF"
+    return render(request, 'home/index.html')
 
-    if mercuryITC.try_connect():
-        mercury_status = "ON"
-    else:
-        mercury_status = "OFF"
-
-    if Caylar.try_connect():
-        caylar_status = "ON"
-    else:
-        caylar_status = "OFF"
-
-    return render(request, 'home/index.html', {'rfsoc_status':rfsoc_status, 'laser_status':laser_status,'caylar_status':caylar_status,'mercury_status':mercury_status})
-    # return HttpResponse(html_template.render(context, request, {'rfsoc_status':"ON"}))
 def status(request):
     RFSoC, Laser, Caylar, mercuryITC = construct_object()
 

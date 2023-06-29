@@ -15,7 +15,7 @@ class RFSoC_controller:
             self.username = config_host["username"]
             self.password = config_host["password"]
         self.RFSoC = SSH(self.host,self.username,self.password)
-        self.try_connect()
+        # self.try_connect()
 
     def try_connect(self):
         try:
