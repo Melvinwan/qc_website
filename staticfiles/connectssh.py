@@ -1,7 +1,9 @@
-from ssh import SSH
+from Toptica_ophyd import LaserToptica
 from XMLGenerator import xml_config_to_dict
-rfsoc_host = xml_config_to_dict("staticfiles/xilinx_host.xml")
-print(rfsoc_host)
-RFSoC = SSH(rfsoc_host["host"],rfsoc_host["username"],rfsoc_host["password"])
-RFSoC.connect()
-RFSoC.disconnect()
+toptica_host = xml_config_to_dict("staticfiles/toptica.xml")
+LTDLC = LaserToptica(prefix="...",name="LTDLC",config_host=toptica_host)
+
+import time
+while True:
+    print(LTDLC.try_connect())
+    time.sleep(1)

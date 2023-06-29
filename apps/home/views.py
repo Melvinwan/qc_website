@@ -170,7 +170,7 @@ def rfsoc_page_view(request):
         Update_rfsoc.get_config()
         rfsoc_config = xml_config_to_dict("staticfiles/xilinx.xml")
     else:
-        info = "Parameter has not updated since "+rfsoc_config["time_update"]+" because not connected with the device!"
+        info = "Parameter has not updated since "+xilinx_host["time_update"]+" because not connected with the device!"
         messages.info(request, info)
     if request.method == 'POST':
         form = RFSoCConfigForm(request.POST)
@@ -180,6 +180,7 @@ def rfsoc_page_view(request):
             xilinx_host["username"] = form.cleaned_data['rfsoc_username']
             xilinx_host["password"] = form.cleaned_data['rfsoc_password']
             xilinx_host["port"] = form.cleaned_data['rfsoc_port'] if form.cleaned_data['rfsoc_port'] is not None else ''
+            xilinx_host["time_update"] =  datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             dict_to_xml_file(xilinx_host, "staticfiles/xilinx_host.xml")
 
             # Update General configuration
