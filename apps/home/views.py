@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.shortcuts import render, redirect
 from .construct_object import construct_object, construct_caylar,construct_itc,construct_rfsoc,construct_toptica
 from django.forms.formsets import formset_factory
-from .forms import LaserForm, RFSoCConfigForm, CaylarForm, MercuryForm, ExperimentForm, BaseExperimentForm, ParameterForm
+from .forms import LaserForm, RFSoCConfigForm, CaylarForm, MercuryForm, ExperimentForm, BaseExperimentForm, ParameterForm, ExperimentFormNew
 from staticfiles.XMLGenerator import xml_config_to_dict, dict_to_xml_file
 
 from django.contrib import messages
@@ -395,26 +395,122 @@ def start_experiments(request):
 
 @login_required(login_url="/login/")
 def index(request):
-    ExperimentFormSet = formset_factory(ParameterForm, formset=BaseExperimentForm)
     if request.method == 'POST':
+        form = ExperimentFormNew(request.POST)
+        print(form)
+        if form.is_valid():
+            experiment_name = form.cleaned_data['experiment_name']
+            description = form.cleaned_data['description']
+            devices = form.cleaned_data.get('devices', [])
+            print(form)
+            # Process the devices data
+            device_data = []
+            for device in devices:
+                device_name = form.cleaned_data.get(f'form-{device}-device')
+                device_parameters = get_device_parameters(device, form.cleaned_data)
+                device_data.append({'device_name': device_name, 'device_parameters': device_parameters})
 
-        experiment_formset = ExperimentFormSet(request.POST, prefix='experiment')
-        experiment_form = ExperimentForm(request.POST)
-        print(experiment_formset.is_valid())
-        # print(experiment_form.cleaned_data.get('experiment_name'))
-        if experiment_form.is_valid() and experiment_formset.is_valid():
-            print(experiment_form.cleaned_data.get('experiment_name'))
-            for exp_form in experiment_formset:
-                print(exp_form.cleaned_data.get('device'))
+            # Perform further processing or save the data to the database
+            # ...
+
     else:
-        experiment_formset = ExperimentFormSet()
-        experiment_form = ExperimentForm()
-    context = {
-        'experiment_formset':experiment_formset,
-        'experiment_form': experiment_form
-    }
-    return render(request, 'home/index.html', context)
-    # return render(request, 'home/index.html', {'form': form})
+        form = ExperimentForm()
+
+    return render(request, 'home/index.html', {'form': form})
+
+def get_device_parameters(device_index, cleaned_data):
+    device_type = cleaned_data.get(f'form-{device_index}-device')
+    parameters = {}
+
+    if device_type == 'laser':
+        parameters['wavelength'] = cleaned_data.get(f'form-{device_index}-wavelength')
+        parameters['frequency'] = cleaned_data.get(f'form-{device_index}-frequency')
+    elif device_type == 'rf_soc':
+        eom_aom = cleaned_data.get(f'form-{device_index}-eom_aom')
+        parameters['eom_aom'] = eom_aom
+
+        if eom_aom == 'eom':
+            parameters['eom_frequency'] = cleaned_data.get(f'form-{device_index}-eom_frequency')
+            parameters['eom_time_start'] = cleaned_data.get(f'form-{device_index}-eom_time_start')
+            parameters['eom_length'] = cleaned_data.get(f'form-{device_index}-eom_length')
+        elif eom_aom == 'aom':
+            parameters['aom_pins'] = cleaned_data.get(f'form-{device_index}-aom_pins')
+            parameters['aom_start_time'] = cleaned_data.get(f'form-{device_index}-aom_start_time')
+            parameters['aom_length'] = cleaned_data.get(f'form-{device_index}-aom_length')
+    elif device_type == 'frequency_setting':
+        parameters['frequency_name'] = cleaned_data.get(f'form-{device_index}-frequency_name')
+        parameters['frequency'] = cleaned_data.get(f'form-{device_index}-frequency')
+        parameters['amplitude'] = cleaned_data.get(f'form-{device_index}-amplitude')
+        parameters['phase'] = cleaned_data.get(f'form-{device_index}-phase')
+
+    return parameters
+# @login_required(login_url="/login/")
+# def index(request):
+#     ExperimentFormSet = formset_factory(ParameterForm, formset=BaseExperimentForm)
+
+#     if request.method == 'POST':
+#         experiment_formset = ExperimentFormSet(request.POST, prefix='experiment')
+#         experiment_form = ExperimentForm(request.POST)
+#         print(experiment_form.is_valid())
+#         print(experiment_formset.is_valid())
+#         print(experiment_formset)
+#         if experiment_form.is_valid() and experiment_formset.is_valid():
+#             # Collect data from the experiment form
+#             experiment_name = experiment_form.cleaned_data['experiment_name']
+#             description = experiment_form.cleaned_data['description']
+
+#             # Create a list to store the form data from each form in the formset
+#             form_data_list = []
+
+#             # Iterate over each form in the formset and collect the data
+#             for form in experiment_formset:
+#                 device = form.cleaned_data['device']
+#                 laser_parameter = form.cleaned_data['laser_parameter']
+#                 laser_frequency = form.cleaned_data['laser_frequency']
+#                 laser_amplitude = form.cleaned_data['laser_amplitude']
+#                 eom_aom = form.cleaned_data['eom_aom']
+#                 eom_frequency = form.cleaned_data['eom_frequency']
+#                 eom_time_start = form.cleaned_data['eom_time_start']
+#                 eom_length = form.cleaned_data['eom_length']
+#                 aom_pins = form.cleaned_data['aom_pins']
+#                 aom_start_time = form.cleaned_data['aom_start_time']
+#                 aom_length = form.cleaned_data['aom_length']
+#                 frequency_name = form.cleaned_data['frequency_name']
+#                 frequency_frequency = form.cleaned_data['frequency_frequency']
+#                 frequency_phase = form.cleaned_data['frequency_phase']
+#                 frequency_amplitude = form.cleaned_data['frequency_amplitude']
+#                 print(device)
+#                 # Create a dictionary to store the form data
+#                 form_data = {
+#                     'device': device,
+#                     'laser_parameter': laser_parameter,
+#                     'laser_frequency': laser_frequency,
+#                     'laser_amplitude': laser_amplitude,
+#                     'eom_aom': eom_aom,
+#                     'eom_frequency': eom_frequency,
+#                     'eom_time_start': eom_time_start,
+#                     'eom_length': eom_length,
+#                     'aom_pins': aom_pins,
+#                     'aom_start_time': aom_start_time,
+#                     'aom_length': aom_length,
+#                     'frequency_name': frequency_name,
+#                     'frequency_frequency': frequency_frequency,
+#                     'frequency_phase': frequency_phase,
+#                     'frequency_amplitude': frequency_amplitude
+#                 }
+
+#                 form_data_list.append(form_data)
+
+#     else:
+#         experiment_formset = ExperimentFormSet()
+#         experiment_form = ExperimentForm()
+
+#     context = {
+#         'experiment_formset': experiment_formset,
+#         'experiment_form': experiment_form
+#     }
+#     return render(request, 'home/index.html', context)
+
 
 def status(request):
     RFSoC, Laser, Caylar, mercuryITC = construct_object()

@@ -2,6 +2,14 @@
 from django import forms
 from django.forms.formsets import BaseFormSet
 
+from django import forms
+
+class ExperimentFormNew(forms.Form):
+    experiment_name = forms.CharField(label='Experiment Name')
+    description = forms.CharField(label='Experiment Description')
+    devices = forms.MultipleChoiceField(label='devices')
+
+
 DEVICE_CHOICES = (
     ('laser', 'Laser'),
     ('eom', 'EOM'),
