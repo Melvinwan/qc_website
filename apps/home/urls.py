@@ -8,5 +8,6 @@ urlpatterns = [
     path('rfsoc/', views.rfsoc_page_view, name='rfsoc_page'),
     path('mercury/', views.mercury_page_view, name='mercury_page'),
     path('caylar/', views.caylar_page_view, name='caylar_page'),
+    path('start-experiments/', views.start_experiments, name='start_experiments'),
     re_path(r'^.*\.*', views.pages, name='pages'),
 ]

@@ -1,5 +1,153 @@
 # forms.py
 from django import forms
+from django.forms.formsets import BaseFormSet
+
+DEVICE_CHOICES = (
+    ('laser', 'Laser'),
+    ('eom', 'EOM'),
+    ('aom', 'AOM'),
+    ('frequency', 'Frequency'),
+)
+
+LASER_PARAMETER_CHOICES = (
+    ('frequency', 'Frequency'),
+    ('amplitude', 'Amplitude'),
+)
+
+FREQUENCY_CHOICES = (
+    ('A', 'A'),
+    ('B', 'B'),
+)
+
+class ParameterForm(forms.Form):
+    device = forms.ChoiceField(choices=DEVICE_CHOICES, label='Device')
+    laser_parameter = forms.ChoiceField(choices=LASER_PARAMETER_CHOICES, label='Laser Parameter', required=False)
+    laser_frequency = forms.FloatField(label='Frequency', required=False)
+    laser_amplitude = forms.FloatField(label='Amplitude', required=False)
+    eom_frequency = forms.ChoiceField(choices=FREQUENCY_CHOICES, label='Frequency', required=False)
+    eom_time_start = forms.FloatField(label='Time Start', required=False)
+    eom_length = forms.FloatField(label='Length', required=False)
+    aom_pins = forms.MultipleChoiceField(choices=[(str(i), str(i)) for i in range(4)], widget=forms.CheckboxSelectMultiple, label='Pins', required=False)
+    aom_start_time = forms.FloatField(label='Start Time', required=False)
+    aom_length = forms.FloatField(label='Length', required=False)
+    frequency_name = forms.ChoiceField(choices=FREQUENCY_CHOICES, label='Name', required=False)
+    frequency_frequency = forms.FloatField(label='Frequency', required=False)
+    frequency_phase = forms.FloatField(label='Phase', required=False)
+    frequency_amplitude = forms.FloatField(label='Amplitude', required=False)
+    def __init__(self, *args, **kwargs):
+        prefix = kwargs.pop('prefix', None)
+        super(ParameterForm, self).__init__(*args, **kwargs)
+        self.prefix = prefix
+class ExperimentForm(forms.Form):
+    experiment_name = forms.CharField(label='Experiment Name')
+    description = forms.CharField(widget=forms.Textarea, label='Description', required=False)
+
+class BaseExperimentForm(BaseFormSet):
+    def has_duplicate_keys(self,dictionary):
+        return len(dictionary) != len(set(dictionary.keys()))
+    def clean(self):
+        if any(self.errors):
+            return
+        # device = laser_parameter = laser_frequency = laser_amplitude = eom_frequency = eom_time_start = eom_length = aom_pins = aom_start_time = aom_length = frequency_name = frequency_frequency = frequency_phase = frequency_amplitude = []
+        device = {'laser':{},
+                  'eom':{'frequency':[],'start_time':[],'length':[]},
+                  'aom':{'start_time':[],'pins':[],'length':[]},
+                  'frequency_name':{'A':{},'B':{}}}
+        for form in self.forms:
+            if form.cleaned_data:
+                device = form.cleaned_data['device']
+                laser_parameter = form.cleaned_data['laser_parameter']
+                laser_frequency = form.cleaned_data['laser_frequency']
+                laser_amplitude = form.cleaned_data['laser_amplitude']
+                eom_frequency = form.cleaned_data['eom_frequency']
+                eom_time_start = form.cleaned_data['eom_time_start']
+                eom_length = form.cleaned_data['eom_length']
+                aom_pins = form.cleaned_data['aom_pins']
+                aom_start_time = form.cleaned_data['aom_start_time']
+                aom_length = form.cleaned_data['aom_length']
+                frequency_name = form.cleaned_data['frequency_name']
+                frequency_frequency = form.cleaned_data['frequency_frequency']
+                frequency_phase = form.cleaned_data['frequency_phase']
+                frequency_amplitude = form.cleaned_data['frequency_amplitude']
+
+                if device:
+                    if device == 'laser' or device == 'Laser':
+                        if laser_parameter and laser_frequency:
+                            device['laser'][laser_parameter] = laser_frequency
+                            if self.has_duplicate_keys(device['laser']):
+                                duplicates = True
+                        else:
+                            raise forms.ValidationError(
+                                'All Laser frequency input should be chosen.',
+                                code='incomplete_laser_frequency_form'
+                            )
+                        if laser_parameter and laser_amplitude:
+                            device['laser'][laser_parameter] = laser_amplitude
+                            if self.has_duplicate_keys(device['laser']):
+                                duplicates = True
+                        else:
+                            raise forms.ValidationError(
+                                'All Laser amplitude input should be chosen.',
+                                code='incomplete_laser_amplitude_form'
+                            )
+                        if duplicates:
+                            raise forms.ValidationError(
+                                'Laser Input Should be unique',
+                                code='duplicate_laser'
+                            )
+                    elif device == "eom" or device == "EOM":
+                        if eom_frequency and eom_time_start and eom_length:
+                            if eom_time_start in device['eom']['start_time']:
+                                duplicates = True
+                            device['eom']['start_time'].append(eom_time_start)
+                            device['eom']['frequency'].append(eom_frequency)
+                            device['eom']['length'].append(eom_length)
+                        else:
+                            raise forms.ValidationError(
+                                'All eom input should be chosen.',
+                                code='incomplete_eom_form'
+                            )
+                        if duplicates:
+                            raise forms.ValidationError(
+                                'Laser Input Should be unique',
+                                code='duplicate_eom'
+                            )
+                    elif device == "aom" or device == "AOM":
+                        if aom_pins and aom_start_time and aom_length:
+                            if aom_start_time in device['aom']['start_time']:
+                                duplicates = True
+                            device['aom']['start_time'].append(aom_start_time)
+                            device['aom']['pins'].append(aom_pins)
+                            device['aom']['length'].append(aom_length)
+                        else:
+                            raise forms.ValidationError(
+                                'All eom input should be chosen.',
+                                code='incomplete_eom_form'
+                            )
+                        if duplicates:
+                            raise forms.ValidationError(
+                                'Laser Input Should be unique',
+                                code='duplicate_aom'
+                            )
+                    elif device == "frequency" or device == "Frequency":
+                        if frequency_name and frequency_frequency and frequency_amplitude and frequency_phase:
+                            if frequency_name == "A" and len(device['frequency_name']["A"])==0:
+                                duplicates = True
+                            device['frequency_name']["A"] = {"frequency":frequency_frequency,"amplitude":frequency_amplitude,"phase":frequency_phase}
+                            if frequency_name == "B" and len(device['frequency_name']["B"])==0:
+                                duplicates = True
+                            device['frequency_name']["B"] = {"frequency":frequency_frequency,"amplitude":frequency_amplitude,"phase":frequency_phase}
+                        else:
+                            raise forms.ValidationError(
+                                'All Frequency input should be chosen.',
+                                code='incomplete_freq_form'
+                            )
+                        if duplicates:
+                            raise forms.ValidationError(
+                                'Frequency Input Should be unique',
+                                code='duplicate_freq'
+                            )
+
 
 class LaserForm(forms.Form):
     laser_host = forms.CharField(label='IP Address', max_length=100)

@@ -5,13 +5,14 @@ Copyright (c) 2019 - present AppSeed.us
 
 from django import template
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
 from django.template import loader
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from .construct_object import construct_object, construct_caylar,construct_itc,construct_rfsoc,construct_toptica
-
-from .forms import LaserForm, RFSoCConfigForm, CaylarForm, MercuryForm
+from django.forms.formsets import formset_factory
+from .forms import LaserForm, RFSoCConfigForm, CaylarForm, MercuryForm, ExperimentForm, BaseExperimentForm, ParameterForm
 from staticfiles.XMLGenerator import xml_config_to_dict, dict_to_xml_file
 
 from django.contrib import messages
@@ -24,6 +25,7 @@ def laser_page_view(request):
     connected = Update_Laser.try_connect()
     toptica_host = xml_config_to_dict("staticfiles/toptica.xml")
     if connected:
+        Update_Laser.update_all_xml("staticfiles/toptica.xml")
         toptica_host["wavelength_act"] = Update_Laser.report_ctl_wavelength_act()
         toptica_host["scan_end"] =  Update_Laser.report_scan_end()
         toptica_host["scan_start"] =  Update_Laser.report_scan_start()
@@ -104,6 +106,7 @@ def caylar_page_view(request):
     connected = Update_caylar.try_connect()
     caylar_host = xml_config_to_dict("staticfiles/caylar.xml")
     if connected:
+        Update_caylar.update_all_xml("staticfiles/caylar.xml")
         caylar_host["current"] = Update_caylar.current()
         caylar_host["field"] =  Update_caylar.field()
         caylar_host["time_update"] =  datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -167,6 +170,7 @@ def rfsoc_page_view(request):
     #IF FILE IS NOT FOUND MAYBE CAN BUILD ONE
     rfsoc_config = xml_config_to_dict("staticfiles/xilinx.xml")
     if connected:
+        Update_rfsoc.build_config(rfsoc_config)
         Update_rfsoc.get_config()
         rfsoc_config = xml_config_to_dict("staticfiles/xilinx.xml")
         xilinx_host["time_update"] =  datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -304,6 +308,7 @@ def mercury_page_view(request):
     connected = Update_mercury.try_connect()
     mercury_host = xml_config_to_dict("staticfiles/mercuryITC.xml")
     if connected:
+        Update_mercury.update_all_xml("staticfiles/mercuryITC.xml")
         mercury_host["current"] = Update_mercury.current()
         mercury_host["field"] =  Update_mercury.field()
         mercury_host["time_update"] =  datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -357,12 +362,59 @@ def mercury_page_view(request):
         'mercury_itc_temperature': mercury_host.get("ITC_temperature", ""),
     })
 
+@require_POST
+def start_experiments(request):
+    # Get the experiment count
+    experiment_count = int(request.POST.get("experimentCount", 0))
+    print(experiment_count)
+    # Process the experiment data
+    for i in range(experiment_count):
+        print(i)
+        parameter_select = request.POST.get(f"parameter_select_{i}", "")
+        print(parameter_select)
+        # Process other form fields based on the selected parameter
+        if parameter_select == "laser":
+            laser_select = request.POST.get(f"laser_select_{i}", "")
+            laser_input = request.POST.get(f"laser_input_{i}", "")
+            # Process laser_select and laser_input values accordingly
+            print(laser_select)
+            print(laser_input)
+        elif parameter_select == "rfsoc":
+            rfsoc_select = request.POST.get(f"rfsoc_select_{i}", "")
+            # Process rfsoc_select value accordingly
+        elif parameter_select == "setting_eom_frequency":
+            eom_ab_select = request.POST.get(f"eom_ab_select_{i}", "")
+            phase_input = request.POST.get(f"phase_input_{i}", "")
+            gain_input = request.POST.get(f"gain_input_{i}", "")
+            frequency_input = request.POST.get(f"frequency_input_{i}", "")
+            # Process eom_ab_select, phase_input, gain_input, and frequency_input values accordingly
+
+    # Return a response indicating success
+    return HttpResponse("Experiments started successfully.")
+
 
 @login_required(login_url="/login/")
 def index(request):
-    RFSoC, Laser, Caylar, MercuryITC = construct_object()
+    ExperimentFormSet = formset_factory(ParameterForm, formset=BaseExperimentForm)
+    if request.method == 'POST':
 
-    return render(request, 'home/index.html')
+        experiment_formset = ExperimentFormSet(request.POST, prefix='experiment')
+        experiment_form = ExperimentForm(request.POST)
+        print(experiment_formset.is_valid())
+        # print(experiment_form.cleaned_data.get('experiment_name'))
+        if experiment_form.is_valid() and experiment_formset.is_valid():
+            print(experiment_form.cleaned_data.get('experiment_name'))
+            for exp_form in experiment_formset:
+                print(exp_form.cleaned_data.get('device'))
+    else:
+        experiment_formset = ExperimentFormSet()
+        experiment_form = ExperimentForm()
+    context = {
+        'experiment_formset':experiment_formset,
+        'experiment_form': experiment_form
+    }
+    return render(request, 'home/index.html', context)
+    # return render(request, 'home/index.html', {'form': form})
 
 def status(request):
     RFSoC, Laser, Caylar, mercuryITC = construct_object()
