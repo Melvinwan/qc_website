@@ -32,20 +32,33 @@ class RFSoC_controller:
     def build_config(self, config=None):
         if not self.get_config():
             if config==None:
-                self.freqA = {
+                self.freqA0 = {
                 "res_phase": 90 , # The phase of the signal
                 "pulse_gain": 2000, # [DAC units]
                 "pulse_freq": {"freq": 1000, "gen_ch":0, "ro_ch":0}, # [MHz]
                 }
-                self.freqB = {
+                self.freqB0 = {
                 "res_phase": 90 , # The phase of the signal
                 "pulse_gain": 2000, # [DAC units]
                 "pulse_freq": {"freq": 1000, "gen_ch":0, "ro_ch":0}, # [MHz]
                 }
-                A = "freqA"
-                B = "freqB"
+                A0 = "freqA0"
+                B0 = "freqB0"
+                self.freqA1 = {
+                "res_phase": 90 , # The phase of the signal
+                "pulse_gain": 2000, # [DAC units]
+                "pulse_freq": {"freq": 1000, "gen_ch":0, "ro_ch":0}, # [MHz]
+                }
+                self.freqB1 = {
+                "res_phase": 90 , # The phase of the signal
+                "pulse_gain": 2000, # [DAC units]
+                "pulse_freq": {"freq": 1000, "gen_ch":0, "ro_ch":0}, # [MHz]
+                }
+                A1 = "freqA1"
+                B1 = "freqB1"
                 self.configEOM={"out_ch":[0,1],
-                        "freq_seq": [A,B,A,B],
+                        "freq_seq0": [A0,B0,A0,B0],
+                        "freq_seq1": [A1,B1,A1,B1],
                         "time_seq":[50, 190,370,700],
                         "length":100, # [Clock ticks]
                         "pulse_freq":{"freq":1000, "gen_ch":0, "ro_ch":0}, #readout freq
@@ -70,25 +83,42 @@ class RFSoC_controller:
                 }
             else:
                 print("Config Receive")
-                self.freqA = {
-                "res_phase": config["EOM"]["freqA"]["res_phase"] , # The phase of the signal
-                "pulse_gain": config["EOM"]["freqA"]["pulse_gain"], # [DAC units]
-                "pulse_freq": {"freq": config["EOM"]["freqA"]["pulse_freq"], "gen_ch":0, "ro_ch":0}, # [MHz]
+                self.freqA0 = {
+                "res_phase": config["EOM"]["freqA0"]["res_phase"] , # The phase of the signal
+                "pulse_gain": config["EOM"]["freqA0"]["pulse_gain"], # [DAC units]
+                "pulse_freq": {"freq": config["EOM"]["freqA0"]["pulse_freq"], "gen_ch":0, "ro_ch":0}, # [MHz]
                 }
-                self.freqB = {
-                "res_phase": config["EOM"]["freqB"]["res_phase"] , # The phase of the signal
-                "pulse_gain": config["EOM"]["freqB"]["pulse_gain"], # [DAC units]
-                "pulse_freq": {"freq": config["EOM"]["freqB"]["pulse_freq"], "gen_ch":0, "ro_ch":0}, # [MHz]
+                self.freqB0 = {
+                "res_phase": config["EOM"]["freqB0"]["res_phase"] , # The phase of the signal
+                "pulse_gain": config["EOM"]["freqB0"]["pulse_gain"], # [DAC units]
+                "pulse_freq": {"freq": config["EOM"]["freqB0"]["pulse_freq"], "gen_ch":0, "ro_ch":0}, # [MHz]
                 }
-                A = "freqA"
-                B = "freqB"
+                A0 = "freqA0"
+                B0 = "freqB0"
+                self.freqA1 = {
+                "res_phase": config["EOM"]["freqA1"]["res_phase"] , # The phase of the signal
+                "pulse_gain": config["EOM"]["freqA1"]["pulse_gain"], # [DAC units]
+                "pulse_freq": {"freq": config["EOM"]["freqA1"]["pulse_freq"], "gen_ch":1, "ro_ch":1}, # [MHz]
+                }
+                self.freqB1 = {
+                "res_phase": config["EOM"]["freqB1"]["res_phase"] , # The phase of the signal
+                "pulse_gain": config["EOM"]["freqB1"]["pulse_gain"], # [DAC units]
+                "pulse_freq": {"freq": config["EOM"]["freqB1"]["pulse_freq"], "gen_ch":1, "ro_ch":1}, # [MHz]
+                }
+                A1 = "freqA1"
+                B1 = "freqB1"
                 self.configEOM={"out_ch":config["EOM"]["out_ch"],
-                        "freq_seq": config["EOM"]["freq_seq"],
-                        "time_seq":config["EOM"]["time_seq"],
-                        "length":config["EOM"]["length"], # [Clock ticks]
+                        "freq_seq0": config["EOM"]["freq_seq0"],
+                        "freq_seq1": config["EOM"]["freq_seq1"],
+                        "time_seq0":config["EOM"]["time_seq0"],
+                        "time_seq1":config["EOM"]["time_seq1"],
+                        "length0":config["EOM"]["length0"], # [Clock ticks]
+                        "length1":config["EOM"]["length1"], # [Clock ticks]
                         "pulse_freq":{"freq":config["EOM"]["pulse_freq"], "gen_ch":0, "ro_ch":0}, #readout freq
-                        "zone": config["EOM"]["zone"],
-                        "mode": config["EOM"]["mode"],
+                        "zone0": config["EOM"]["zone0"],
+                        "mode0": config["EOM"]["mode0"],
+                        "zone1": config["EOM"]["zone1"],
+                        "mode1": config["EOM"]["mode1"],
                 }
 
                 #TTL
@@ -114,23 +144,38 @@ from qick.parser import load_program
 soc = QickSoc()
 
 soccfg = soc
-freqA = {"res_phase": '''+str(self.freqA["res_phase"])+''' , # The phase of the signal
-        "pulse_gain": '''+str(self.freqA["pulse_gain"])+''', # [DAC units]
-        "pulse_freq": soccfg.adcfreq('''+str(self.freqA["pulse_freq"]["freq"])+''', gen_ch='''+str(self.freqA["pulse_freq"]["gen_ch"])+''', ro_ch='''+str(self.freqA["pulse_freq"]["ro_ch"])+'''), # [MHz]
+freqA0 = {"res_phase": '''+str(self.freqA0["res_phase"])+''' , # The phase of the signal
+        "pulse_gain": '''+str(self.freqA0["pulse_gain"])+''', # [DAC units]
+        "pulse_freq": soccfg.adcfreq('''+str(self.freqA0["pulse_freq"]["freq"])+''', gen_ch='''+str(self.freqA0["pulse_freq"]["gen_ch"])+''', ro_ch='''+str(self.freqA0["pulse_freq"]["ro_ch"])+'''), # [MHz]
         }
-freqB = {"res_phase": '''+str(self.freqB["res_phase"])+''' , # The phase of the signal
-        "pulse_gain": '''+str(self.freqB["pulse_gain"])+''', # [DAC units]
-        "pulse_freq": soccfg.adcfreq('''+str(self.freqB["pulse_freq"]["freq"])+''', gen_ch='''+str(self.freqB["pulse_freq"]["gen_ch"])+''', ro_ch='''+str(self.freqB["pulse_freq"]["ro_ch"])+'''), # [MHz]
+freqB0 = {"res_phase": '''+str(self.freqB0["res_phase"])+''' , # The phase of the signal
+        "pulse_gain": '''+str(self.freqB0["pulse_gain"])+''', # [DAC units]
+        "pulse_freq": soccfg.adcfreq('''+str(self.freqB0["pulse_freq"]["freq"])+''', gen_ch='''+str(self.freqB0["pulse_freq"]["gen_ch"])+''', ro_ch='''+str(self.freqB0["pulse_freq"]["ro_ch"])+'''), # [MHz]
+        }
+freqA1 = {"res_phase": '''+str(self.freqA1["res_phase"])+''' , # The phase of the signal
+        "pulse_gain": '''+str(self.freqA1["pulse_gain"])+''', # [DAC units]
+        "pulse_freq": soccfg.adcfreq('''+str(self.freqA1["pulse_freq"]["freq"])+''', gen_ch='''+str(self.freqA1["pulse_freq"]["gen_ch"])+''', ro_ch='''+str(self.freqA1["pulse_freq"]["ro_ch"])+'''), # [MHz]
+        }
+freqB1 = {"res_phase": '''+str(self.freqB1["res_phase"])+''' , # The phase of the signal
+        "pulse_gain": '''+str(self.freqB1["pulse_gain"])+''', # [DAC units]
+        "pulse_freq": soccfg.adcfreq('''+str(self.freqB1["pulse_freq"]["freq"])+''', gen_ch='''+str(self.freqB1["pulse_freq"]["gen_ch"])+''', ro_ch='''+str(self.freqB1["pulse_freq"]["ro_ch"])+'''), # [MHz]
         }
 configEOM={"out_ch":'''+str(self.configEOM["out_ch"])+''',
-        "freqA": freqA,
-        "freqB": freqB,
-        "freq_seq": '''+str(self.configEOM["freq_seq"])+''',
-        "time_seq":'''+str(self.configEOM["time_seq"])+''',
-        "length":'''+str(self.configEOM["length"])+''', # [Clock ticks]
+        "freqA0": freqA0,
+        "freqB0": freqB0,
+        "freqA1": freqA1,
+        "freqB1": freqB1,
+        "freq_seq0": '''+str(self.configEOM["freq_seq0"])+''',
+        "freq_seq1": '''+str(self.configEOM["freq_seq1"])+''',
+        "time_seq0":'''+str(self.configEOM["time_seq0"])+''',
+        "time_seq1":'''+str(self.configEOM["time_seq1"])+''',
+        "length0":'''+str(self.configEOM["length0"])+''', # [Clock ticks]
+        "length1":'''+str(self.configEOM["length1"])+''', # [Clock ticks]
         "pulse_freq":soccfg.adcfreq('''+str(self.configEOM["pulse_freq"]["freq"])+''', gen_ch='''+str(self.configEOM["pulse_freq"]["gen_ch"])+''', ro_ch='''+str(self.configEOM["pulse_freq"]["ro_ch"])+'''), # [MHz]
-        "zone": '''+str(self.configEOM["zone"])+''',
-        "mode": "'''+str(self.configEOM["mode"])+'''",
+        "zone0": '''+str(self.configEOM["zone0"])+''',
+        "mode0": "'''+str(self.configEOM["mode0"])+'''",
+        "zone1": '''+str(self.configEOM["zone1"])+''',
+        "mode1": "'''+str(self.configEOM["mode1"])+'''",
 }
 
 #TTL

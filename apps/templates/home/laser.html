@@ -17,12 +17,15 @@
           {% elif message.tags == 'success' %}
           <div class="alert alert-success" role="alert">{{ message }}</div>
           {% endif %} {% endfor %} {% endif %}
+
           <form method="post" action="{% url 'laser_page' %}">
             {% csrf_token %}
             <div class="col-12">
               <div class="row">
-                <div class="col-6">
-                  <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                <div class="row ml-1">
+                  <button type="submit" class="btn btn-sm btn-primary" name="updateall">Update All</button>
+                  <button type="submit" class="btn btn-sm btn-primary" name="updateip">Update IP</button>
+                  <button type="submit" class="btn btn-sm btn-primary" name="updateconfig">Update Config</button>
                 </div>
                 <div class="col-6 text-right">
                   <a href="{% url 'home' %}" class="btn btn-sm btn-secondary">Back</a>
@@ -38,7 +41,7 @@
                 <div class="col-md-12">
                   <div class="form-group">
                     <label class="form-control-label" for="input-host">IP Address</label>
-                    <input id="input-host" class="form-control" name="laser_host" placeholder="Laser IP Address" type="text" value="{{ laser_host }}" />
+                    <input id="input-host" class="form-control" name="laser_host" placeholder="Laser IP Address" type="text" value="{{ form.laser_host.value }}" />
                   </div>
                 </div>
               </div>
@@ -46,7 +49,7 @@
                 <div class="col-lg-4">
                   <div class="form-group">
                     <label class="form-control-label" for="input-port">Port</label>
-                    <input type="number" id="input-port" class="form-control" name="laser_port" placeholder="Port" value="{{ laser_port }}" />
+                    <input type="number" id="input-port" class="form-control" name="laser_port" placeholder="Port" value="{{ form.laser_port.value }}" />
                   </div>
                 </div>
               </div>
@@ -60,19 +63,19 @@
                   <div class="col-md-4">
                     <div class="form-group">
                       <label class="form-control-label" for="input-wavelength">Wavelength</label>
-                      <input type="number" step="any" id="input-wavelength" class="form-control" name="wavelength_act" placeholder="Wavelength" value="{{ wavelength_act }}" />
+                      <input type="number" step="any" id="input-wavelength" class="form-control" name="wavelength_act" placeholder="Wavelength" value="{{ form.wavelength_act.value }}" />
                     </div>
                   </div>
                   <div class="col-md-4">
                     <div class="form-group">
                       <label class="form-control-label" for="input-scan-end">Scan End</label>
-                      <input type="number" step="any" id="input-scan-end" class="form-control" name="scan_end" placeholder="Scan End" value="{{ scan_end }}" />
+                      <input type="number" step="any" id="input-scan-end" class="form-control" name="scan_end" placeholder="Scan End" value="{{ form.scan_end.value }}" />
                     </div>
                   </div>
                   <div class="col-md-4">
                     <div class="form-group">
                       <label class="form-control-label" for="input-scan-start">Scan Start</label>
-                      <input type="number" step="any" id="input-scan-start" class="form-control" name="scan_start" placeholder="Scan Start" value="{{ scan_start }}" />
+                      <input type="number" step="any" id="input-scan-start" class="form-control" name="scan_start" placeholder="Scan Start" value="{{ form.scan_start.value }}" />
                     </div>
                   </div>
                 </div>
@@ -80,13 +83,13 @@
                   <div class="col-md-4">
                     <div class="form-group">
                       <label class="form-control-label" for="input-scan-freq">Scan Frequency</label>
-                      <input type="number" step="any" id="input-scan-freq" class="form-control" name="scan_freq" placeholder="Scan Frequency" value="{{ scan_freq }}" />
+                      <input type="number" step="any" id="input-scan-freq" class="form-control" name="scan_freq" placeholder="Scan Frequency" value="{{ form.scan_freq.value }}" />
                     </div>
                   </div>
                   <div class="col-md-4">
                     <div class="form-group">
                       <label class="form-control-label" for="input-scan-offset">Scan Offset</label>
-                      <input type="number" step="any" id="input-scan-offset" class="form-control" name="scan_offset" placeholder="Scan Offset" value="{{ scan_offset }}" />
+                      <input type="number" step="any" id="input-scan-offset" class="form-control" name="scan_offset" placeholder="Scan Offset" value="{{ form.scan_offset.value }}" />
                     </div>
                   </div>
                 </div>
@@ -95,8 +98,11 @@
             <hr class="my-4" />
             <div class="col-12">
               <div class="row">
-                <div class="col-6">
-                  <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                <div class="row ml-1">
+                  <button type="submit" class="btn btn-sm btn-primary" name="updateall">Update All</button>
+                  <button type="submit" class="btn btn-sm btn-primary" name="updateip">Update IP</button>
+
+                  <button type="submit" class="btn btn-sm btn-primary" name="updateconfig">Update Config</button>
                 </div>
                 <div class="col-6 text-right">
                   <a href="{% url 'home' %}" class="btn btn-sm btn-secondary">Back</a>
@@ -104,6 +110,50 @@
               </div>
             </div>
           </form>
+          {% if connected %}
+          <div class="container-fluid">
+            <hr class="my-4" />
+            <h6 class="heading-small text-muted mb-4">Actual Value</h6>
+            <div class="pl-lg-4">
+              <!-- New fields -->
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-wavelength">Wavelength</label>
+                    <input type="number" step="any" id="input-wavelength" class="form-control" name="wavelength_act" placeholder="Wavelength" value="{{ wavelength_act }}" disabled />
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-scan-end">Scan End</label>
+                    <input type="number" step="any" id="input-scan-end" class="form-control" name="scan_end" placeholder="Scan End" value="{{ scan_end }}" disabled />
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-scan-start">Scan Start</label>
+                    <input type="number" step="any" id="input-scan-start" class="form-control" name="scan_start" placeholder="Scan Start" value="{{ scan_start }}" disabled />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-scan-freq">Scan Frequency</label>
+                    <input type="number" step="any" id="input-scan-freq" class="form-control" name="scan_freq" placeholder="Scan Frequency" value="{{ scan_freq }}" disabled />
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-scan-offset">Scan Offset</label>
+                    <input type="number" step="any" id="input-scan-offset" class="form-control" name="scan_offset" placeholder="Scan Offset" value="{{ scan_offset }}" disabled />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          <hr class="my-4" />
         </div>
       </div>
     </div>
