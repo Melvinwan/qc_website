@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.shortcuts import render, redirect
 from .construct_object import construct_object, construct_caylar,construct_itc,construct_rfsoc,construct_toptica
 from django.forms.formsets import formset_factory
-from .forms import LaserForm, RFSoCConfigForm, CaylarForm, MercuryForm, ExperimentForm, LaserFormConfig, LaserFormIP, ExperimentFormNew
+from .forms import LaserForm, RFSoCConfigForm, CaylarForm, MercuryForm, ExperimentForm, LaserFormConfig, LaserFormIP, ExperimentFormNew, RFSoCFrequencySequenceForm0,RFSoCFrequencySequenceForm1
 from staticfiles.XMLGenerator import xml_config_to_dict, dict_to_xml_file
 
 from django.contrib import messages
@@ -200,7 +200,8 @@ def caylar_page_view(request):
 def rfsoc_page_view(request):
     # Load the data from the rfsoc XML file
     Update_rfsoc = construct_rfsoc()
-    connected = Update_rfsoc.try_connect()
+    connected = False
+    # connected = Update_rfsoc.try_connect()
 
     xilinx_host = xml_config_to_dict("staticfiles/xilinx_host.xml")
     #IF FILE IS NOT FOUND MAYBE CAN BUILD ONE
@@ -214,9 +215,18 @@ def rfsoc_page_view(request):
     else:
         info = "Parameter has not updated since "+xilinx_host["time_update"]+" because not connected with the device!"
         messages.info(request, info)
+    form = RFSoCConfigForm(request.POST or None)
+    FormsetChannel0 = formset_factory(RFSoCFrequencySequenceForm0)
+    FormsetChannel1 = formset_factory(RFSoCFrequencySequenceForm1)
+    Formset0 = FormsetChannel0(request.POST or None)
+    Formset1 = FormsetChannel1(request.POST or None)
     if request.method == 'POST':
-        form = RFSoCConfigForm(request.POST)
-        if form.is_valid():
+        print(request.POST)
+        if all([form.is_valid(),Formset0.is_valid(),Formset1.is_valid()]):
+            for form0 in Formset0:
+                print(form0)
+            for form1 in Formset1:
+                print(form1)
             # Update RFSoC host and port
             xilinx_host["host"] = form.cleaned_data['rfsoc_host']
             xilinx_host["username"] = form.cleaned_data['rfsoc_username']
@@ -330,12 +340,12 @@ def rfsoc_page_view(request):
             'reps': rfsoc_config["reps"],
             'eom_outch': rfsoc_config["EOM"]["out_ch"],
 
-            'eom_freqseq0': ', '.join(val.replace("freq", "").rstrip('0')  for val in rfsoc_config["EOM"]["freq_seq0"]),
-            'eom_freqseq1': ', '.join(val.replace("freq", "").rstrip('0')  for val in rfsoc_config["EOM"]["freq_seq1"]),
-            'eom_timeseq0': ', '.join(str(val) for val in rfsoc_config["EOM"]["time_seq0"]),
-            'eom_length0': rfsoc_config["EOM"]["length0"],
-            'eom_timeseq1': ', '.join(str(val) for val in rfsoc_config["EOM"]["time_seq1"]),
-            'eom_length1': rfsoc_config["EOM"]["length1"],
+            # 'eom_freqseq0': ', '.join(val.replace("freq", "").rstrip('0')  for val in rfsoc_config["EOM"]["freq_seq0"]),
+            # 'eom_freqseq1': ', '.join(val.replace("freq", "").rstrip('0')  for val in rfsoc_config["EOM"]["freq_seq1"]),
+            # 'eom_timeseq0': ', '.join(str(val) for val in rfsoc_config["EOM"]["time_seq0"]),
+            # 'eom_length0': rfsoc_config["EOM"]["length0"],
+            # 'eom_timeseq1': ', '.join(str(val) for val in rfsoc_config["EOM"]["time_seq1"]),
+            # 'eom_length1': rfsoc_config["EOM"]["length1"],
             'eom_pulsefreq': rfsoc_config["EOM"]["pulse_freq"],
             'eom_zone0': rfsoc_config["EOM"]["zone0"],
             'eom_mode0': rfsoc_config["EOM"]["mode0"],
@@ -363,10 +373,12 @@ def rfsoc_page_view(request):
             'aom_length_2': ', '.join(str(val) for val in rfsoc_config["AOM"]["length"][2]),
             'aom_length_3': ', '.join(str(val) for val in rfsoc_config["AOM"]["length"][3]),
         })
-
-    return render(request, 'home/rfsoc.html', {
-        'form': form,
-    })
+    context = {
+        "form": form,
+        "formset0": Formset0,
+        "formset1": Formset1
+    }
+    return render(request, 'home/rfsoc.html', context)
 
 
 def mercury_page_view(request):

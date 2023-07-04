@@ -1518,3 +1518,405 @@
 2023-07-03 16:27:35,943 - INFO - The connection has already been established.
 2023-07-03 16:27:37,948 - INFO - The connection is already closed.
 2023-07-03 16:27:38,029 - INFO - The connection has already been established.
+2023-07-03 16:32:52,383 - INFO - The connection has already been established.
+2023-07-03 16:32:52,386 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:32:52,386 - DEBUG - set wavelength act
+2023-07-03 16:32:52,399 - DEBUG - recv wavelength act
+2023-07-03 16:32:52,411 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:32:52,411 - DEBUG - set scan end
+2023-07-03 16:32:52,423 - DEBUG - recv scan end
+2023-07-03 16:32:52,434 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:32:52,434 - DEBUG - set scan start
+2023-07-03 16:32:52,482 - DEBUG - recv scan start
+2023-07-03 16:32:52,492 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:32:52,492 - DEBUG - set scan frequency
+2023-07-03 16:32:52,501 - DEBUG - recv scan frequency
+2023-07-03 16:32:52,515 - DEBUG - recv wavelength act
+2023-07-03 16:32:52,523 - DEBUG - recv scan end
+2023-07-03 16:32:52,531 - DEBUG - recv scan start
+2023-07-03 16:32:52,541 - DEBUG - recv scan frequency
+2023-07-03 16:32:52,549 - DEBUG - recv scan offset
+2023-07-03 16:32:52,575 - INFO - The connection is already closed.
+2023-07-03 16:32:54,201 - INFO - The connection has already been established.
+2023-07-03 16:32:54,201 - INFO - The connection is already closed.
+2023-07-03 16:32:54,660 - INFO - The connection has already been established.
+2023-07-03 16:32:54,662 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:32:54,662 - DEBUG - set wavelength act
+2023-07-03 16:32:54,674 - DEBUG - recv wavelength act
+2023-07-03 16:32:54,683 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:32:54,685 - DEBUG - set scan end
+2023-07-03 16:32:54,706 - DEBUG - recv scan end
+2023-07-03 16:32:54,720 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:32:54,720 - DEBUG - set scan start
+2023-07-03 16:32:54,736 - DEBUG - recv scan start
+2023-07-03 16:32:54,780 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:32:54,780 - DEBUG - set scan frequency
+2023-07-03 16:32:54,795 - DEBUG - recv scan frequency
+2023-07-03 16:32:54,808 - DEBUG - recv wavelength act
+2023-07-03 16:32:54,823 - DEBUG - recv scan end
+2023-07-03 16:32:54,832 - DEBUG - recv scan start
+2023-07-03 16:32:54,844 - DEBUG - recv scan frequency
+2023-07-03 16:32:54,852 - DEBUG - recv scan offset
+2023-07-03 16:32:54,874 - INFO - The connection is already closed.
+2023-07-03 16:32:56,079 - INFO - The connection has already been established.
+2023-07-03 16:32:56,079 - INFO - The connection is already closed.
+2023-07-03 16:33:04,079 - INFO - The connection has already been established.
+2023-07-03 16:33:04,080 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:33:04,081 - DEBUG - set wavelength act
+2023-07-03 16:33:04,091 - DEBUG - recv wavelength act
+2023-07-03 16:33:04,101 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:33:04,101 - DEBUG - set scan end
+2023-07-03 16:33:04,111 - DEBUG - recv scan end
+2023-07-03 16:33:04,124 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:33:04,124 - DEBUG - set scan start
+2023-07-03 16:33:04,134 - DEBUG - recv scan start
+2023-07-03 16:33:04,141 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:33:04,142 - DEBUG - set scan frequency
+2023-07-03 16:33:04,154 - DEBUG - recv scan frequency
+2023-07-03 16:33:04,162 - DEBUG - recv wavelength act
+2023-07-03 16:33:04,208 - DEBUG - recv scan end
+2023-07-03 16:33:04,216 - DEBUG - recv scan start
+2023-07-03 16:33:04,226 - DEBUG - recv scan frequency
+2023-07-03 16:33:04,234 - DEBUG - recv scan offset
+2023-07-03 16:33:04,253 - INFO - The connection is already closed.
+2023-07-03 16:33:12,911 - INFO - The connection has already been established.
+2023-07-03 16:33:12,911 - INFO - The connection is already closed.
+2023-07-03 16:33:13,458 - INFO - The connection has already been established.
+2023-07-03 16:33:13,460 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:33:13,460 - DEBUG - set wavelength act
+2023-07-03 16:33:13,485 - DEBUG - recv wavelength act
+2023-07-03 16:33:13,508 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:33:13,509 - DEBUG - set scan end
+2023-07-03 16:33:13,526 - DEBUG - recv scan end
+2023-07-03 16:33:13,644 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:33:13,645 - DEBUG - set scan start
+2023-07-03 16:33:13,672 - DEBUG - recv scan start
+2023-07-03 16:33:13,686 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:33:13,686 - DEBUG - set scan frequency
+2023-07-03 16:33:13,694 - DEBUG - recv scan frequency
+2023-07-03 16:33:13,702 - DEBUG - recv wavelength act
+2023-07-03 16:33:13,712 - DEBUG - recv scan end
+2023-07-03 16:33:13,719 - DEBUG - recv scan start
+2023-07-03 16:33:13,726 - DEBUG - recv scan frequency
+2023-07-03 16:33:13,849 - DEBUG - recv scan offset
+2023-07-03 16:33:13,868 - INFO - The connection is already closed.
+2023-07-03 16:33:15,012 - INFO - The connection has already been established.
+2023-07-03 16:33:15,012 - INFO - The connection is already closed.
+2023-07-03 16:33:15,948 - INFO - The connection has already been established.
+2023-07-03 16:33:15,949 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:33:15,949 - DEBUG - set wavelength act
+2023-07-03 16:33:15,966 - DEBUG - recv wavelength act
+2023-07-03 16:33:15,974 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:33:15,974 - DEBUG - set scan end
+2023-07-03 16:33:15,992 - DEBUG - recv scan end
+2023-07-03 16:33:16,000 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:33:16,000 - DEBUG - set scan start
+2023-07-03 16:33:16,012 - DEBUG - recv scan start
+2023-07-03 16:33:16,020 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:33:16,020 - DEBUG - set scan frequency
+2023-07-03 16:33:16,031 - DEBUG - recv scan frequency
+2023-07-03 16:33:16,046 - DEBUG - recv wavelength act
+2023-07-03 16:33:16,062 - DEBUG - recv scan end
+2023-07-03 16:33:16,071 - DEBUG - recv scan start
+2023-07-03 16:33:16,081 - DEBUG - recv scan frequency
+2023-07-03 16:33:16,093 - DEBUG - recv scan offset
+2023-07-03 16:33:16,152 - INFO - The connection is already closed.
+2023-07-03 16:33:17,474 - INFO - The connection has already been established.
+2023-07-03 16:33:17,474 - INFO - The connection is already closed.
+2023-07-03 16:33:18,511 - INFO - The connection has already been established.
+2023-07-03 16:33:18,512 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:33:18,512 - DEBUG - set wavelength act
+2023-07-03 16:33:18,529 - DEBUG - recv wavelength act
+2023-07-03 16:33:18,542 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:33:18,542 - DEBUG - set scan end
+2023-07-03 16:33:18,561 - DEBUG - recv scan end
+2023-07-03 16:33:18,568 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:33:18,569 - DEBUG - set scan start
+2023-07-03 16:33:18,578 - DEBUG - recv scan start
+2023-07-03 16:33:18,586 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:33:18,586 - DEBUG - set scan frequency
+2023-07-03 16:33:18,596 - DEBUG - recv scan frequency
+2023-07-03 16:33:18,603 - DEBUG - recv wavelength act
+2023-07-03 16:33:18,622 - DEBUG - recv scan end
+2023-07-03 16:33:18,660 - DEBUG - recv scan start
+2023-07-03 16:33:18,672 - DEBUG - recv scan frequency
+2023-07-03 16:33:18,680 - DEBUG - recv scan offset
+2023-07-03 16:33:18,700 - INFO - The connection is already closed.
+2023-07-03 16:33:20,025 - INFO - The connection has already been established.
+2023-07-03 16:33:20,025 - INFO - The connection is already closed.
+2023-07-03 16:33:21,052 - INFO - The connection has already been established.
+2023-07-03 16:33:21,053 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:33:21,053 - DEBUG - set wavelength act
+2023-07-03 16:33:21,066 - DEBUG - recv wavelength act
+2023-07-03 16:33:21,076 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:33:21,076 - DEBUG - set scan end
+2023-07-03 16:33:21,088 - DEBUG - recv scan end
+2023-07-03 16:33:21,105 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:33:21,105 - DEBUG - set scan start
+2023-07-03 16:33:21,122 - DEBUG - recv scan start
+2023-07-03 16:33:21,170 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:33:21,170 - DEBUG - set scan frequency
+2023-07-03 16:33:21,178 - DEBUG - recv scan frequency
+2023-07-03 16:33:21,191 - DEBUG - recv wavelength act
+2023-07-03 16:33:21,200 - DEBUG - recv scan end
+2023-07-03 16:33:21,211 - DEBUG - recv scan start
+2023-07-03 16:33:21,218 - DEBUG - recv scan frequency
+2023-07-03 16:33:21,224 - DEBUG - recv scan offset
+2023-07-03 16:33:21,246 - INFO - The connection is already closed.
+2023-07-03 16:33:22,520 - INFO - The connection has already been established.
+2023-07-03 16:33:22,520 - INFO - The connection is already closed.
+2023-07-03 16:33:23,561 - INFO - The connection has already been established.
+2023-07-03 16:33:23,562 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:33:23,562 - DEBUG - set wavelength act
+2023-07-03 16:33:23,576 - DEBUG - recv wavelength act
+2023-07-03 16:33:23,586 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:33:23,586 - DEBUG - set scan end
+2023-07-03 16:33:23,596 - DEBUG - recv scan end
+2023-07-03 16:33:23,611 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:33:23,611 - DEBUG - set scan start
+2023-07-03 16:33:23,621 - DEBUG - recv scan start
+2023-07-03 16:33:23,634 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:33:23,634 - DEBUG - set scan frequency
+2023-07-03 16:33:23,689 - DEBUG - recv scan frequency
+2023-07-03 16:33:23,707 - DEBUG - recv wavelength act
+2023-07-03 16:33:23,723 - DEBUG - recv scan end
+2023-07-03 16:33:23,733 - DEBUG - recv scan start
+2023-07-03 16:33:23,747 - DEBUG - recv scan frequency
+2023-07-03 16:33:23,755 - DEBUG - recv scan offset
+2023-07-03 16:33:23,776 - INFO - The connection is already closed.
+2023-07-03 16:33:24,949 - INFO - The connection has already been established.
+2023-07-03 16:33:24,949 - INFO - The connection is already closed.
+2023-07-03 16:33:25,694 - INFO - The connection has already been established.
+2023-07-03 16:33:25,696 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:33:25,696 - DEBUG - set wavelength act
+2023-07-03 16:33:25,705 - DEBUG - recv wavelength act
+2023-07-03 16:33:25,719 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:33:25,719 - DEBUG - set scan end
+2023-07-03 16:33:25,785 - DEBUG - recv scan end
+2023-07-03 16:33:25,796 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:33:25,796 - DEBUG - set scan start
+2023-07-03 16:33:25,807 - DEBUG - recv scan start
+2023-07-03 16:33:25,821 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:33:25,821 - DEBUG - set scan frequency
+2023-07-03 16:33:25,835 - DEBUG - recv scan frequency
+2023-07-03 16:33:25,850 - DEBUG - recv wavelength act
+2023-07-03 16:33:25,858 - DEBUG - recv scan end
+2023-07-03 16:33:25,867 - DEBUG - recv scan start
+2023-07-03 16:33:25,875 - DEBUG - recv scan frequency
+2023-07-03 16:33:25,882 - DEBUG - recv scan offset
+2023-07-03 16:33:25,909 - INFO - The connection is already closed.
+2023-07-03 16:33:27,106 - INFO - The connection has already been established.
+2023-07-03 16:33:27,106 - INFO - The connection is already closed.
+2023-07-03 16:33:27,904 - INFO - The connection has already been established.
+2023-07-03 16:33:27,906 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:33:27,906 - DEBUG - set wavelength act
+2023-07-03 16:33:27,919 - DEBUG - recv wavelength act
+2023-07-03 16:33:27,927 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:33:27,928 - DEBUG - set scan end
+2023-07-03 16:33:27,938 - DEBUG - recv scan end
+2023-07-03 16:33:27,957 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:33:27,958 - DEBUG - set scan start
+2023-07-03 16:33:27,974 - DEBUG - recv scan start
+2023-07-03 16:33:27,985 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:33:27,985 - DEBUG - set scan frequency
+2023-07-03 16:33:27,999 - DEBUG - recv scan frequency
+2023-07-03 16:33:28,008 - DEBUG - recv wavelength act
+2023-07-03 16:33:28,015 - DEBUG - recv scan end
+2023-07-03 16:33:28,033 - DEBUG - recv scan start
+2023-07-03 16:33:28,076 - DEBUG - recv scan frequency
+2023-07-03 16:33:28,089 - DEBUG - recv scan offset
+2023-07-03 16:33:28,108 - INFO - The connection is already closed.
+2023-07-03 16:33:29,705 - INFO - The connection has already been established.
+2023-07-03 16:33:29,706 - INFO - The connection is already closed.
+2023-07-03 16:41:53,705 - INFO - The connection has already been established.
+2023-07-03 16:41:53,706 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:41:53,706 - DEBUG - set wavelength act
+2023-07-03 16:41:53,717 - DEBUG - recv wavelength act
+2023-07-03 16:41:53,735 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:41:53,738 - DEBUG - set scan end
+2023-07-03 16:41:53,758 - DEBUG - recv scan end
+2023-07-03 16:41:53,768 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:41:53,768 - DEBUG - set scan start
+2023-07-03 16:41:53,787 - DEBUG - recv scan start
+2023-07-03 16:41:53,822 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:41:53,822 - DEBUG - set scan frequency
+2023-07-03 16:41:53,878 - DEBUG - recv scan frequency
+2023-07-03 16:41:53,923 - DEBUG - recv wavelength act
+2023-07-03 16:41:53,950 - DEBUG - recv scan end
+2023-07-03 16:41:53,975 - DEBUG - recv scan start
+2023-07-03 16:41:54,017 - DEBUG - recv scan frequency
+2023-07-03 16:41:54,071 - DEBUG - recv scan offset
+2023-07-03 16:41:54,098 - INFO - The connection is already closed.
+2023-07-03 16:43:28,765 - INFO - The connection has already been established.
+2023-07-03 16:43:28,766 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:43:28,766 - DEBUG - set wavelength act
+2023-07-03 16:43:28,779 - DEBUG - recv wavelength act
+2023-07-03 16:43:28,788 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:43:28,788 - DEBUG - set scan end
+2023-07-03 16:43:28,815 - DEBUG - recv scan end
+2023-07-03 16:43:28,824 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:43:28,824 - DEBUG - set scan start
+2023-07-03 16:43:28,833 - DEBUG - recv scan start
+2023-07-03 16:43:28,842 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:43:28,842 - DEBUG - set scan frequency
+2023-07-03 16:43:28,857 - DEBUG - recv scan frequency
+2023-07-03 16:43:28,867 - DEBUG - recv wavelength act
+2023-07-03 16:43:28,917 - DEBUG - recv scan end
+2023-07-03 16:43:28,936 - DEBUG - recv scan start
+2023-07-03 16:43:28,943 - DEBUG - recv scan frequency
+2023-07-03 16:43:28,952 - DEBUG - recv scan offset
+2023-07-03 16:43:28,972 - INFO - The connection is already closed.
+2023-07-03 16:44:53,055 - INFO - The connection has already been established.
+2023-07-03 16:44:53,057 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:44:53,057 - DEBUG - set wavelength act
+2023-07-03 16:44:53,107 - DEBUG - recv wavelength act
+2023-07-03 16:44:53,128 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:44:53,128 - DEBUG - set scan end
+2023-07-03 16:44:53,153 - DEBUG - recv scan end
+2023-07-03 16:44:53,161 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:44:53,161 - DEBUG - set scan start
+2023-07-03 16:44:53,169 - DEBUG - recv scan start
+2023-07-03 16:44:53,179 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:44:53,179 - DEBUG - set scan frequency
+2023-07-03 16:44:53,202 - DEBUG - recv scan frequency
+2023-07-03 16:44:53,209 - DEBUG - recv wavelength act
+2023-07-03 16:44:53,217 - DEBUG - recv scan end
+2023-07-03 16:44:53,227 - DEBUG - recv scan start
+2023-07-03 16:44:53,236 - DEBUG - recv scan frequency
+2023-07-03 16:44:53,245 - DEBUG - recv scan offset
+2023-07-03 16:44:53,265 - INFO - The connection is already closed.
+2023-07-03 16:45:21,727 - INFO - The connection has already been established.
+2023-07-03 16:45:21,727 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:45:21,727 - DEBUG - set wavelength act
+2023-07-03 16:45:21,739 - DEBUG - recv wavelength act
+2023-07-03 16:45:21,754 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:45:21,755 - DEBUG - set scan end
+2023-07-03 16:45:21,801 - DEBUG - recv scan end
+2023-07-03 16:45:21,810 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:45:21,811 - DEBUG - set scan start
+2023-07-03 16:45:21,822 - DEBUG - recv scan start
+2023-07-03 16:45:21,830 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:45:21,830 - DEBUG - set scan frequency
+2023-07-03 16:45:21,858 - DEBUG - recv scan frequency
+2023-07-03 16:45:21,875 - DEBUG - recv wavelength act
+2023-07-03 16:45:21,887 - DEBUG - recv scan end
+2023-07-03 16:45:21,900 - DEBUG - recv scan start
+2023-07-03 16:45:21,911 - DEBUG - recv scan frequency
+2023-07-03 16:45:21,927 - DEBUG - recv scan offset
+2023-07-03 16:45:21,944 - INFO - The connection is already closed.
+2023-07-03 16:46:43,321 - INFO - The connection has already been established.
+2023-07-03 16:46:43,322 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:46:43,322 - DEBUG - set wavelength act
+2023-07-03 16:46:43,334 - DEBUG - recv wavelength act
+2023-07-03 16:46:43,342 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:46:43,342 - DEBUG - set scan end
+2023-07-03 16:46:43,355 - DEBUG - recv scan end
+2023-07-03 16:46:43,368 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:46:43,368 - DEBUG - set scan start
+2023-07-03 16:46:43,378 - DEBUG - recv scan start
+2023-07-03 16:46:43,388 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:46:43,388 - DEBUG - set scan frequency
+2023-07-03 16:46:43,397 - DEBUG - recv scan frequency
+2023-07-03 16:46:43,405 - DEBUG - recv wavelength act
+2023-07-03 16:46:43,417 - DEBUG - recv scan end
+2023-07-03 16:46:43,466 - DEBUG - recv scan start
+2023-07-03 16:46:43,483 - DEBUG - recv scan frequency
+2023-07-03 16:46:43,494 - DEBUG - recv scan offset
+2023-07-03 16:46:43,514 - INFO - The connection is already closed.
+2023-07-03 16:47:30,031 - INFO - The connection has already been established.
+2023-07-03 16:47:30,032 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:47:30,032 - DEBUG - set wavelength act
+2023-07-03 16:47:30,044 - DEBUG - recv wavelength act
+2023-07-03 16:47:30,057 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:47:30,057 - DEBUG - set scan end
+2023-07-03 16:47:30,067 - DEBUG - recv scan end
+2023-07-03 16:47:30,080 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:47:30,080 - DEBUG - set scan start
+2023-07-03 16:47:30,090 - DEBUG - recv scan start
+2023-07-03 16:47:30,097 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:47:30,098 - DEBUG - set scan frequency
+2023-07-03 16:47:30,105 - DEBUG - recv scan frequency
+2023-07-03 16:47:30,116 - DEBUG - recv wavelength act
+2023-07-03 16:47:30,138 - DEBUG - recv scan end
+2023-07-03 16:47:30,174 - DEBUG - recv scan start
+2023-07-03 16:47:30,182 - DEBUG - recv scan frequency
+2023-07-03 16:47:30,194 - DEBUG - recv scan offset
+2023-07-03 16:47:30,211 - INFO - The connection is already closed.
+2023-07-03 16:48:00,471 - INFO - The connection has already been established.
+2023-07-03 16:48:00,473 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:48:00,473 - DEBUG - set wavelength act
+2023-07-03 16:48:00,483 - DEBUG - recv wavelength act
+2023-07-03 16:48:00,496 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:48:00,496 - DEBUG - set scan end
+2023-07-03 16:48:00,538 - DEBUG - recv scan end
+2023-07-03 16:48:00,547 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:48:00,547 - DEBUG - set scan start
+2023-07-03 16:48:00,571 - DEBUG - recv scan start
+2023-07-03 16:48:00,588 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:48:00,588 - DEBUG - set scan frequency
+2023-07-03 16:48:00,595 - DEBUG - recv scan frequency
+2023-07-03 16:48:00,602 - DEBUG - recv wavelength act
+2023-07-03 16:48:00,612 - DEBUG - recv scan end
+2023-07-03 16:48:00,619 - DEBUG - recv scan start
+2023-07-03 16:48:00,627 - DEBUG - recv scan frequency
+2023-07-03 16:48:00,636 - DEBUG - recv scan offset
+2023-07-03 16:48:00,653 - INFO - The connection is already closed.
+2023-07-03 16:48:10,274 - INFO - The connection has already been established.
+2023-07-03 16:48:10,275 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:48:10,275 - DEBUG - set wavelength act
+2023-07-03 16:48:10,287 - DEBUG - recv wavelength act
+2023-07-03 16:48:10,307 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:48:10,307 - DEBUG - set scan end
+2023-07-03 16:48:10,323 - DEBUG - recv scan end
+2023-07-03 16:48:10,337 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:48:10,337 - DEBUG - set scan start
+2023-07-03 16:48:10,376 - DEBUG - recv scan start
+2023-07-03 16:48:10,389 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:48:10,389 - DEBUG - set scan frequency
+2023-07-03 16:48:10,400 - DEBUG - recv scan frequency
+2023-07-03 16:48:10,411 - DEBUG - recv wavelength act
+2023-07-03 16:48:10,431 - DEBUG - recv scan end
+2023-07-03 16:48:10,438 - DEBUG - recv scan start
+2023-07-03 16:48:10,447 - DEBUG - recv scan frequency
+2023-07-03 16:48:10,456 - DEBUG - recv scan offset
+2023-07-03 16:48:10,478 - INFO - The connection is already closed.
+2023-07-03 16:49:33,737 - INFO - The connection has already been established.
+2023-07-03 16:49:33,739 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:49:33,739 - DEBUG - set wavelength act
+2023-07-03 16:49:33,753 - DEBUG - recv wavelength act
+2023-07-03 16:49:33,766 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:49:33,766 - DEBUG - set scan end
+2023-07-03 16:49:33,787 - DEBUG - recv scan end
+2023-07-03 16:49:33,795 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:49:33,795 - DEBUG - set scan start
+2023-07-03 16:49:33,805 - DEBUG - recv scan start
+2023-07-03 16:49:33,814 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:49:33,814 - DEBUG - set scan frequency
+2023-07-03 16:49:33,825 - DEBUG - recv scan frequency
+2023-07-03 16:49:33,847 - DEBUG - recv wavelength act
+2023-07-03 16:49:33,855 - DEBUG - recv scan end
+2023-07-03 16:49:33,861 - DEBUG - recv scan start
+2023-07-03 16:49:33,872 - DEBUG - recv scan frequency
+2023-07-03 16:49:33,883 - DEBUG - recv scan offset
+2023-07-03 16:49:33,941 - INFO - The connection is already closed.
+2023-07-03 16:49:37,846 - INFO - The connection has already been established.
+2023-07-03 16:49:37,847 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-03 16:49:37,848 - DEBUG - set wavelength act
+2023-07-03 16:49:37,863 - DEBUG - recv wavelength act
+2023-07-03 16:49:37,913 - INFO - Main Scan end is set to 19.25
+2023-07-03 16:49:37,913 - DEBUG - set scan end
+2023-07-03 16:49:37,932 - DEBUG - recv scan end
+2023-07-03 16:49:37,944 - INFO - Main Scan start is set to 18.95
+2023-07-03 16:49:37,944 - DEBUG - set scan start
+2023-07-03 16:49:37,955 - DEBUG - recv scan start
+2023-07-03 16:49:37,963 - INFO - Main Scan frequency is set to 19.1
+2023-07-03 16:49:37,963 - DEBUG - set scan frequency
+2023-07-03 16:49:37,975 - DEBUG - recv scan frequency
+2023-07-03 16:49:37,987 - DEBUG - recv wavelength act
+2023-07-03 16:49:37,998 - DEBUG - recv scan end
+2023-07-03 16:49:38,007 - DEBUG - recv scan start
+2023-07-03 16:49:38,020 - DEBUG - recv scan frequency
+2023-07-03 16:49:38,028 - DEBUG - recv scan offset
+2023-07-03 16:49:38,048 - INFO - The connection is already closed.
+2023-07-04 13:32:39,503 - INFO - The connection has already been established.
+2023-07-04 13:32:39,507 - INFO - The connection is already closed.
