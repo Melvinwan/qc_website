@@ -182,7 +182,7 @@
                     <td>{{ form0.time0 }}</td>
                     <td>{{ form0.length0 }}</td>
                     <td>
-                      <button type="button" class="btn btn-sm btn-danger delete-btn">Delete</button>
+                      <button type="button" class="btn btn-sm btn-danger delete-btn0">Delete</button>
                     </td>
                   </tr>
                   {% endfor %}
@@ -194,7 +194,7 @@
                     <td>{{ form0.time0 }}</td>
                     <td>{{ form0.length0 }}</td>
                     <td>
-                      <button type="button" class="btn btn-sm btn-danger delete-btn">Delete</button>
+                      <button type="button" class="btn btn-sm btn-danger delete-btn0">Delete</button>
                     </td>
                   </tr>
                   {% endfor %}
@@ -273,7 +273,42 @@
             <!-- Add more configuration fields as necessary -->
             {% if formset1 %}
             <h6 class="heading-small text-muted mb-4">Sequence</h6>
-            {{formset1.as_p}} {% endif %}
+            {{formset1.management_form}}
+            <table id="form1-list">
+              <thead>
+                <tr>
+                  <th>Frequency Name</th>
+                  <th>Time Start</th>
+                  <th>Length</th>
+                </tr>
+              </thead>
+              <tbody id="empty-form1" class="hidden">
+                {% for form1 in formset1 %}
+                <tr class="channel1-form">
+                  <td>{{ form1.frequency1 }}</td>
+                  <td>{{ form1.time1 }}</td>
+                  <td>{{ form1.length1 }}</td>
+                  <td>
+                    <button type="button" class="btn btn-sm btn-danger delete-btn1">Delete</button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+              <tbody id="form-1">
+                {% for form1 in formset1 %}
+                <tr class="channel1-form">
+                  <td>{{ form1.frequency1 }}</td>
+                  <td>{{ form1.time1 }}</td>
+                  <td>{{ form1.length1 }}</td>
+                  <td>
+                    <button type="button" class="btn btn-sm btn-danger delete-btn1">Delete</button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <button id="add-more1" type="button" class="btn btn-sm btn-primary">Add More</button>
+            {% endif %}
             <hr class="my-4" />
 
             <!-- Configuration - Frequency A -->
@@ -458,35 +493,55 @@
 {% endblock content %} {% block javascripts %}
 <script>
   const addMoreBtn0 = document.getElementById("add-more0");
+  const addMoreBtn1 = document.getElementById("add-more1");
   const totalNewForms = document.getElementById("id_form-TOTAL_FORMS");
   const currentChannel0Forms = document.getElementsByClassName("channel0-form");
+  const currentChannel1Forms = document.getElementsByClassName("channel1-form");
   const form0List = document.getElementById("form0-list");
-  addMoreBtn0.addEventListener("click", add_new_form);
+  const form1List = document.getElementById("form1-list");
+  addMoreBtn0.addEventListener("click", add_new_form0);
+  addMoreBtn1.addEventListener("click", add_new_form1);
   // Event delegation to handle the delete button click for the specific table
   form0List.addEventListener("click", function (event) {
-    if (event.target && event.target.classList.contains("delete-btn")) {
+    if (event.target && event.target.classList.contains("delete-btn0")) {
       event.preventDefault();
-      delete_form(event.target);
+      delete_form0(event.target);
     }
   });
-  function delete_form(deleteButton) {
+  form1List.addEventListener("click", function (event) {
+    if (event.target && event.target.classList.contains("delete-btn1")) {
+      event.preventDefault();
+      delete_form1(event.target);
+    }
+  });
+  function delete_form0(deleteButton, ch) {
     const formRow = deleteButton.closest("tbody");
     const formTableBody = formRow.parentNode;
-    let currentForm0Count = Math.floor(currentChannel0Forms.length / 2); // + 1;
-    // console.log(currentForm0Count);
+    let currentForm0Count = Math.floor(currentChannel0Forms.length / 2);
+    console.log(currentForm0Count);
     if (currentForm0Count === 1) {
       return;
     }
     formTableBody.removeChild(formRow);
   }
-  function add_new_form(args) {
+  function delete_form1(deleteButton, ch) {
+    const formRow = deleteButton.closest("tbody");
+    const formTableBody = formRow.parentNode;
+    let currentForm1Count = Math.floor(currentChannel1Forms.length / 2);
+    console.log(currentForm1Count);
+    if (currentForm1Count === 1) {
+      return;
+    }
+    formTableBody.removeChild(formRow);
+  }
+  function add_new_form0(args) {
     if (event) {
       event.preventDefault();
     }
     const currentForm0Count = Math.floor(currentChannel0Forms.length / 2); // + 1;
     // console.log(currentForm0Count);
     const formCopyTarget0 = document.getElementById("form0-list");
-    const copyEmptyFormEl0 = document.getElementsByTagName("tbody")[0].cloneNode(true);
+    const copyEmptyFormEl0 = document.getElementById("empty-form0").cloneNode(true);
     copyEmptyFormEl0.setAttribute("class", "channel0-form");
     copyEmptyFormEl0.setAttribute("id", `form-${currentForm0Count}`);
     const regex = new RegExp("__prefix__", "g");
@@ -494,6 +549,22 @@
     totalNewForms.setAttribute("value", currentForm0Count - 2);
     // Add new form
     formCopyTarget0.append(copyEmptyFormEl0);
+  }
+  function add_new_form1(args) {
+    if (event) {
+      event.preventDefault();
+    }
+    const currentForm1Count = Math.floor(currentChannel1Forms.length / 2); // + 1;
+    // console.log(currentForm1Count);
+    const formCopyTarget1 = document.getElementById("form1-list");
+    const copyEmptyFormEl1 = document.getElementById("empty-form1").cloneNode(true);
+    copyEmptyFormEl1.setAttribute("class", "channel1-form");
+    copyEmptyFormEl1.setAttribute("id", `form-${currentForm1Count}`);
+    const regex = new RegExp("__prefix__", "g");
+    copyEmptyFormEl1.innerHTML = copyEmptyFormEl1.innerHTML.replace(regex, currentForm1Count);
+    totalNewForms.setAttribute("value", currentForm1Count - 2);
+    // Add new form
+    formCopyTarget1.append(copyEmptyFormEl1);
   }
 </script>
 <script>
