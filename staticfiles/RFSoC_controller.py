@@ -59,11 +59,17 @@ class RFSoC_controller:
                 self.configEOM={"out_ch":[0,1],
                         "freq_seq0": [A0,B0,A0,B0],
                         "freq_seq1": [A1,B1,A1,B1],
-                        "time_seq":[50, 190,370,700],
-                        "length":100, # [Clock ticks]
+                        "time_seq0":[50, 190,370,700],
+                        "time_seq1":[50, 190,370,700],
+                        "length0":100, # [Clock ticks]
+                        "length1":100, # [Clock ticks]
+                        "lengthseq0":[100,100,100,100], # [Clock ticks]
+                        "lengthseq1":[100,100,100,100], # [Clock ticks]
                         "pulse_freq":{"freq":1000, "gen_ch":0, "ro_ch":0}, #readout freq
-                        "zone": 1,
-                        "mode": "periodic",
+                        "zone0": 1,
+                        "mode0": "periodic",
+                        "zone1": 1,
+                        "mode1": "periodic",
                 }
 
                 #TTL
@@ -114,6 +120,8 @@ class RFSoC_controller:
                         "time_seq1":config["EOM"]["time_seq1"],
                         "length0":config["EOM"]["length0"], # [Clock ticks]
                         "length1":config["EOM"]["length1"], # [Clock ticks]
+                        "lengthseq0":config["EOM"]["lengthseq0"], # [Clock ticks]
+                        "lengthseq1":config["EOM"]["lengthseq1"], # [Clock ticks]
                         "pulse_freq":{"freq":config["EOM"]["pulse_freq"], "gen_ch":0, "ro_ch":0}, #readout freq
                         "zone0": config["EOM"]["zone0"],
                         "mode0": config["EOM"]["mode0"],
@@ -171,6 +179,8 @@ configEOM={"out_ch":'''+str(self.configEOM["out_ch"])+''',
         "time_seq1":'''+str(self.configEOM["time_seq1"])+''',
         "length0":'''+str(self.configEOM["length0"])+''', # [Clock ticks]
         "length1":'''+str(self.configEOM["length1"])+''', # [Clock ticks]
+        "lengthseq0":'''+str(self.configEOM["lengthseq0"])+''', # [Clock ticks]
+        "lengthseq1":'''+str(self.configEOM["lengthseq1"])+''', # [Clock ticks]
         "pulse_freq":soccfg.adcfreq('''+str(self.configEOM["pulse_freq"]["freq"])+''', gen_ch='''+str(self.configEOM["pulse_freq"]["gen_ch"])+''', ro_ch='''+str(self.configEOM["pulse_freq"]["ro_ch"])+'''), # [MHz]
         "zone0": '''+str(self.configEOM["zone0"])+''',
         "mode0": "'''+str(self.configEOM["mode0"])+'''",
