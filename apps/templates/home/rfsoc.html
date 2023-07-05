@@ -7,13 +7,8 @@
 </style>
 <div class="container-fluid">
   <div class="row">
-    <div class="col-xl-8 order-xl-1">
+    <div class="col">
       <div class="card">
-        <div class="card-header">
-          <div class="row align-items-center">
-            <div class="col-8"></div>
-          </div>
-        </div>
         <div class="card-body">
           {% if messages %} {% for message in messages %} {% if message.tags == 'info' %}
           <div class="alert alert-info" role="alert">{{ message }}</div>
@@ -159,49 +154,74 @@
               </div>
               <div class="col-md-6">
                 <div class="form-group">
-                  <label class="form-control-label" for="input-eom-pulsefreq0">Pulse Freq</label>
-                  <input type="number" step="any" id="input-eom-pulsefreq0" class="form-control" name="eom_pulsefreq0" placeholder="Pulse Freq 0" value="{{ form.eom_pulsefreq0.value }}" />
+                  <label class="form-control-label" for="input-eom-length0">Pulse Length</label>
+                  <input type="number" step="any" id="input-eom-length0" class="form-control" name="eom_length0" placeholder="Pulse Length 0" value="{{ form.eom_length0.value }}" />
                 </div>
               </div>
               <!-- Add more fields for EOM configuration if needed -->
-              {% if formset0 %}
-              <h6 class="heading-small text-muted mb-4">Sequence</h6>
-              {{formset0.management_form}}
-              <table id="form0-list">
-                <thead>
-                  <tr>
-                    <th>Frequency Name</th>
-                    <th>Time Start</th>
-                    <th>Length</th>
-                  </tr>
-                </thead>
-                <tbody id="empty-form0" class="hidden">
-                  {% for form0 in formset0 %}
-                  <tr class="channel0-form">
-                    <td>{{ form0.frequency0 }}</td>
-                    <td>{{ form0.time0 }}</td>
-                    <td>{{ form0.length0 }}</td>
-                    <td>
-                      <button type="button" class="btn btn-sm btn-danger delete-btn0">Delete</button>
-                    </td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-                <tbody id="form-0">
-                  {% for form0 in formset0 %}
-                  <tr class="channel0-form">
-                    <td>{{ form0.frequency0 }}</td>
-                    <td>{{ form0.time0 }}</td>
-                    <td>{{ form0.length0 }}</td>
-                    <td>
-                      <button type="button" class="btn btn-sm btn-danger delete-btn0">Delete</button>
-                    </td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-              <button id="add-more0" type="button" class="btn btn-sm btn-primary">Add More</button>
-              {% endif %}
+              <div class="col">
+                <div class="form-group">
+                  {% if formset0 %}
+                  <h6 class="heading-small text-muted mb-4">Sequence</h6>
+                  {{formset0.management_form}}
+                  <table id="form0-list">
+                    <thead>
+                      <tr>
+                        <th>Frequency Name</th>
+                        <th>Time Start</th>
+                        <th>Length</th>
+                      </tr>
+                    </thead>
+                    <tbody id="empty-form0" class="hidden">
+                      <tr>
+                        <td>
+                          <select name="frequency0">
+                            <option>--Select--</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                          </select>
+                        </td>
+
+                        <td>
+                          <input type="number" step="any" name="time0" />
+                        </td>
+                        <td>
+                          <input type="number" step="any" name="length0" />
+                        </td>
+                        <td>
+                          <button type="button" class="btn btn-sm btn-danger delete-btn0">Delete</button>
+                        </td>
+                      </tr>
+                    </tbody>
+                    {% for form0 in formset0 %}
+                    <tbody id="form-{{ forloop.counter|add:'-1' }}">
+                      <tr class="channel0-form">
+                        <td>
+                          <select name="form-{{ forloop.counter|add:'-1' }}-frequency0" required>
+                            {% if form0.frequency0.value == 'A'%}
+                            <option>--Select--</option>
+                            <option value="A" selected>A</option>
+                            <option value="B">B</option>
+                            {% else %}
+                            <option>--Select--</option>
+                            <option value="A">A</option>
+                            <option value="B" selected>B</option>
+                            {% endif %}
+                          </select>
+                        </td>
+                        <td>{{ form0.time0 }}</td>
+                        <td>{{ form0.length0 }}</td>
+                        <td>
+                          <button type="button" class="btn btn-sm btn-danger delete-btn0">Delete</button>
+                        </td>
+                      </tr>
+                    </tbody>
+                    {% endfor %}
+                  </table>
+                  <button id="add-more0" type="button" class="btn btn-sm btn-primary">Add More</button>
+                  {% endif %}
+                </div>
+              </div>
             </div>
             <hr class="my-4" />
             <h6 class="heading-small text-muted mb-4">Configuration - Frequency A - Channel 0</h6>
@@ -263,56 +283,6 @@
 
             <hr class="my-4" />
             <h6 class="heading-small text-muted mb-4">Configuration - EOM - Channel 1</h6>
-
-            <div class="col-md-6">
-              <div class="form-group">
-                <label class="form-control-label" for="input-eom-pulsefreq1">Pulse Freq</label>
-                <input type="number" step="any" id="input-eom-pulsefreq1" class="form-control" name="eom_pulsefreq" placeholder="Pulse Freq 1" value="{{ form.eom_pulsefreq.value }}" />
-              </div>
-            </div>
-            <!-- Add more configuration fields as necessary -->
-            {% if formset1 %}
-            <h6 class="heading-small text-muted mb-4">Sequence</h6>
-            {{formset1.management_form}}
-            <table id="form1-list">
-              <thead>
-                <tr>
-                  <th>Frequency Name</th>
-                  <th>Time Start</th>
-                  <th>Length</th>
-                </tr>
-              </thead>
-              <tbody id="empty-form1" class="hidden">
-                {% for form1 in formset1 %}
-                <tr class="channel1-form">
-                  <td>{{ form1.frequency1 }}</td>
-                  <td>{{ form1.time1 }}</td>
-                  <td>{{ form1.length1 }}</td>
-                  <td>
-                    <button type="button" class="btn btn-sm btn-danger delete-btn1">Delete</button>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-              <tbody id="form-1">
-                {% for form1 in formset1 %}
-                <tr class="channel1-form">
-                  <td>{{ form1.frequency1 }}</td>
-                  <td>{{ form1.time1 }}</td>
-                  <td>{{ form1.length1 }}</td>
-                  <td>
-                    <button type="button" class="btn btn-sm btn-danger delete-btn1">Delete</button>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-            <button id="add-more1" type="button" class="btn btn-sm btn-primary">Add More</button>
-            {% endif %}
-            <hr class="my-4" />
-
-            <!-- Configuration - Frequency A -->
-            <h6 class="heading-small text-muted mb-4">Configuration - EOM - Channel 1</h6>
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
@@ -328,6 +298,74 @@
               </div>
               <!-- Add more fields for EOM configuration if needed -->
             </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-control-label" for="input-eom-length1">Pulse Length</label>
+                <input type="number" step="any" id="input-eom-length1" class="form-control" name="eom_length1" placeholder="Pulse Length 1" value="{{ form.eom_length1.value }}" />
+              </div>
+            </div>
+            <!-- Add more configuration fields as necessary -->
+            {% if formset1 %}
+            <h6 class="heading-small text-muted mb-4">Sequence</h6>
+            {{formset1.management_form}}
+            <table id="form1-list">
+              <thead>
+                <tr>
+                  <th>Frequency Name</th>
+                  <th>Time Start</th>
+                  <th>Length</th>
+                </tr>
+              </thead>
+              <tbody id="empty-form1" class="hidden">
+                <tr>
+                  <td>
+                    <select name="frequency1">
+                      <option>--Select--</option>
+                      <option value="A">A</option>
+                      <option value="B">B</option>
+                    </select>
+                  </td>
+
+                  <td>
+                    <input type="number" step="any" name="time1" />
+                  </td>
+                  <td>
+                    <input type="number" step="any" name="length1" />
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn-sm btn-danger delete-btn1">Delete</button>
+                  </td>
+                </tr>
+              </tbody>
+              {% for form1 in formset1 %}
+              <tbody id="form-{{ forloop.counter|add:'-1' }}">
+                <tr class="channel1-form">
+                  <td>
+                    <select name="form-{{ forloop.counter|add:'-1' }}-frequency1" required>
+                      {% if form1.frequency1.value == 'A'%}
+                      <option>--Select--</option>
+                      <option value="A" selected>A</option>
+                      <option value="B">B</option>
+                      {% else %}
+                      <option>--Select--</option>
+                      <option value="A">A</option>
+                      <option value="B" selected>B</option>
+                      {% endif %}
+                    </select>
+                  </td>
+                  <td>{{ form1.time1 }}</td>
+                  <td>{{ form1.length1 }}</td>
+                  <td>
+                    <button type="button" class="btn btn-sm btn-danger delete-btn1">Delete</button>
+                  </td>
+                </tr>
+              </tbody>
+              {% endfor %}
+            </table>
+            <button id="add-more1" type="button" class="btn btn-sm btn-primary">Add More</button>
+            {% endif %}
+            <hr class="my-4" />
+
             <h6 class="heading-small text-muted mb-4">Configuration - Frequency A - Channel 1</h6>
             <div class="pl-lg-4">
               <div class="row">
@@ -495,8 +533,8 @@
   const addMoreBtn0 = document.getElementById("add-more0");
   const addMoreBtn1 = document.getElementById("add-more1");
   const totalNewForms = document.getElementById("id_form-TOTAL_FORMS");
-  const currentChannel0Forms = document.getElementsByClassName("channel0-form");
-  const currentChannel1Forms = document.getElementsByClassName("channel1-form");
+  let currentChannel0Forms = document.getElementsByClassName("channel0-form");
+  let currentChannel1Forms = document.getElementsByClassName("channel1-form");
   const form0List = document.getElementById("form0-list");
   const form1List = document.getElementById("form1-list");
   addMoreBtn0.addEventListener("click", add_new_form0);
@@ -517,7 +555,7 @@
   function delete_form0(deleteButton, ch) {
     const formRow = deleteButton.closest("tbody");
     const formTableBody = formRow.parentNode;
-    let currentForm0Count = Math.floor(currentChannel0Forms.length / 2);
+    let currentForm0Count = currentChannel0Forms.length;
     console.log(currentForm0Count);
     if (currentForm0Count === 1) {
       return;
@@ -527,7 +565,7 @@
   function delete_form1(deleteButton, ch) {
     const formRow = deleteButton.closest("tbody");
     const formTableBody = formRow.parentNode;
-    let currentForm1Count = Math.floor(currentChannel1Forms.length / 2);
+    let currentForm1Count = currentChannel1Forms.length;
     console.log(currentForm1Count);
     if (currentForm1Count === 1) {
       return;
@@ -538,15 +576,24 @@
     if (event) {
       event.preventDefault();
     }
-    const currentForm0Count = Math.floor(currentChannel0Forms.length / 2); // + 1;
-    // console.log(currentForm0Count);
+    const currentForm0Count = currentChannel0Forms.length;
+    // console.log(currentChannel0Forms.length);
     const formCopyTarget0 = document.getElementById("form0-list");
     const copyEmptyFormEl0 = document.getElementById("empty-form0").cloneNode(true);
     copyEmptyFormEl0.setAttribute("class", "channel0-form");
     copyEmptyFormEl0.setAttribute("id", `form-${currentForm0Count}`);
     const regex = new RegExp("__prefix__", "g");
     copyEmptyFormEl0.innerHTML = copyEmptyFormEl0.innerHTML.replace(regex, currentForm0Count);
-    totalNewForms.setAttribute("value", currentForm0Count - 2);
+    const tr = copyEmptyFormEl0.firstElementChild;
+    const trParentElement = tr.parentElement;
+    trParentElement.children[0].children[0].children[0].setAttribute("id", `form-${currentForm0Count}-frequency0`);
+    trParentElement.children[0].children[0].children[0].setAttribute("name", `form-${currentForm0Count}-frequency0`);
+    trParentElement.children[0].children[1].children[0].setAttribute("id", `form-${currentForm0Count}-time0`);
+    trParentElement.children[0].children[1].children[0].setAttribute("name", `form-${currentForm0Count}-time0`);
+    trParentElement.children[0].children[2].children[0].setAttribute("id", `form-${currentForm0Count}-length0`);
+    trParentElement.children[0].children[2].children[0].setAttribute("name", `form-${currentForm0Count}-length0`);
+    // tdElement.setAttribute("id", `form-${currentForm0Count}-frequency0`);
+    totalNewForms.setAttribute("value", currentForm0Count);
     // Add new form
     formCopyTarget0.append(copyEmptyFormEl0);
   }
@@ -554,15 +601,24 @@
     if (event) {
       event.preventDefault();
     }
-    const currentForm1Count = Math.floor(currentChannel1Forms.length / 2); // + 1;
-    // console.log(currentForm1Count);
+    const currentForm1Count = currentChannel1Forms.length;
+    // console.log(currentChannel1Forms.length);
     const formCopyTarget1 = document.getElementById("form1-list");
     const copyEmptyFormEl1 = document.getElementById("empty-form1").cloneNode(true);
     copyEmptyFormEl1.setAttribute("class", "channel1-form");
     copyEmptyFormEl1.setAttribute("id", `form-${currentForm1Count}`);
     const regex = new RegExp("__prefix__", "g");
     copyEmptyFormEl1.innerHTML = copyEmptyFormEl1.innerHTML.replace(regex, currentForm1Count);
-    totalNewForms.setAttribute("value", currentForm1Count - 2);
+    const tr = copyEmptyFormEl1.firstElementChild;
+    const trParentElement = tr.parentElement;
+    trParentElement.children[0].children[0].children[0].setAttribute("id", `form-${currentForm1Count}-frequency1`);
+    trParentElement.children[0].children[0].children[0].setAttribute("name", `form-${currentForm1Count}-frequency1`);
+    trParentElement.children[0].children[1].children[0].setAttribute("id", `form-${currentForm1Count}-time1`);
+    trParentElement.children[0].children[1].children[0].setAttribute("name", `form-${currentForm1Count}-time1`);
+    trParentElement.children[0].children[2].children[0].setAttribute("id", `form-${currentForm1Count}-length1`);
+    trParentElement.children[0].children[2].children[0].setAttribute("name", `form-${currentForm1Count}-length1`);
+    // tdElement.setAttribute("id", `form-${currentForm1Count}-frequency0`);
+    totalNewForms.setAttribute("value", currentForm1Count);
     // Add new form
     formCopyTarget1.append(copyEmptyFormEl1);
   }

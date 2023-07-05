@@ -95,6 +95,7 @@ class ParameterForm(forms.Form):
 class ExperimentForm(forms.Form):
     experiment_name = forms.CharField(label='Experiment Name')
     description = forms.CharField(widget=forms.Textarea, label='Description', required=False)
+    file_name = forms.CharField(label='Experiment Name')
 
 class BaseExperimentForm(BaseFormSet):
     def has_duplicate_keys(self,dictionary):
@@ -252,9 +253,9 @@ class RFSoCConfigForm(forms.Form):
     # eom_freqseq0 = forms.CharField(label='EOM Frequency Sequence Channel 0', required=False)
     # eom_freqseq1 = forms.CharField(label='EOM Frequency Sequence Channel 1', required=False)
     # eom_timeseq0 = forms.CharField(label='EOM Time Sequence 0', required=False)
-    # eom_length0 = forms.FloatField(label='EOM Length 0', required=False)
+    eom_length0 = forms.FloatField(label='EOM Length 0', required=False)
     # eom_timeseq1 = forms.CharField(label='EOM Time Sequence 1', required=False)
-    # eom_length1 = forms.FloatField(label='EOM Length 1', required=False)
+    eom_length1 = forms.FloatField(label='EOM Length 1', required=False)
     # eom_pulsefreq = forms.FloatField(label='EOM Pulse Frequency', required=False)
     eom_zone0 = forms.FloatField(label='EOM Zone 0', required=False)
     eom_mode0 = forms.CharField(label='EOM Mode 0', required=False)
@@ -283,10 +284,10 @@ class RFSoCConfigForm(forms.Form):
     aom_time_3 = forms.CharField(label='AOM Time', required=False)
 
 class RFSoCFrequencySequenceForm0(forms.Form):
-    frequency0 = forms.CharField(label='EOM Frequency Sequence Channel 0', required=False)
+    frequency0 = forms.ChoiceField(choices=[('A', 'A'), ('B', 'B')], required=False)
     time0 = forms.FloatField(label='EOM Length 0', required=False)
     length0 = forms.FloatField(label='EOM Length 0', required=False)
 class RFSoCFrequencySequenceForm1(forms.Form):
-    frequency1 = forms.CharField(label='EOM Frequency Sequence Channel 1', required=False)
+    frequency1 = forms.ChoiceField(choices=[('A', 'A'), ('B', 'B')], required=False)
     time1 = forms.FloatField(label='EOM Length 1', required=False)
     length1 = forms.FloatField(label='EOM Length 1', required=False)

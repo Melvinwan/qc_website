@@ -215,18 +215,52 @@ def rfsoc_page_view(request):
     else:
         info = "Parameter has not updated since "+xilinx_host["time_update"]+" because not connected with the device!"
         messages.info(request, info)
-    form = RFSoCConfigForm(request.POST or None)
-    FormsetChannel0 = formset_factory(RFSoCFrequencySequenceForm0)
-    FormsetChannel1 = formset_factory(RFSoCFrequencySequenceForm1)
-    Formset0 = FormsetChannel0(request.POST or None)
-    Formset1 = FormsetChannel1(request.POST or None)
+
+    FormsetChannel0 = formset_factory(RFSoCFrequencySequenceForm0, extra=0)
+    FormsetChannel1 = formset_factory(RFSoCFrequencySequenceForm1, extra=0)
+
     if request.method == 'POST':
-        print(request.POST)
+        form = RFSoCConfigForm(request.POST)
+        Formset0 = FormsetChannel0(request.POST)
+        Formset1 = FormsetChannel1(request.POST)
         if all([form.is_valid(),Formset0.is_valid(),Formset1.is_valid()]):
+            time0 = []
+            length0 = []
+            frequency0 = []
+            print(Formset0)
+            print("----------------------------1")
             for form0 in Formset0:
-                print(form0)
+
+                if form0.cleaned_data.get('time0')!=None:
+                    time0.append(form0.cleaned_data.get('time0'))
+                if form0.cleaned_data.get('length0')!=None:
+                    length0.append(form0.cleaned_data.get('length0'))
+                if form0.cleaned_data.get('frequency0')!=None:
+                    freq0 = str(form0.cleaned_data.get('frequency0'))
+                    print(form0.cleaned_data.get('frequency0'))
+                    frequency0.append("freq"+freq0+"0")
+            print(frequency0)
+            rfsoc_config["EOM"]["time_seq0"] = time0
+            rfsoc_config["EOM"]["freq_seq0"] = length0
+            rfsoc_config["EOM"]["lengthseq0"] = frequency0
+            time1 = []
+            length1 = []
+            frequency1 = []
             for form1 in Formset1:
-                print(form1)
+
+                if form1.cleaned_data.get('time1')!=None:
+                    time1.append(form1.cleaned_data.get('time1'))
+                if form1.cleaned_data.get('length1')!=None:
+                    length1.append(form1.cleaned_data.get('length1'))
+                if form1.cleaned_data.get('frequency1')!=None:
+                    freq1 = str(form0.cleaned_data.get('frequency1'))
+                    print(form1.cleaned_data.get('frequency1'))
+                    frequency1.append("freq"+freq1+"1")
+            rfsoc_config["EOM"]["time_seq1"] = time1
+            rfsoc_config["EOM"]["freq_seq1"] = length1
+            rfsoc_config["EOM"]["lengthseq1"] = frequency1
+            print(frequency1)
+            print("----------------------------2")
             # Update RFSoC host and port
             xilinx_host["host"] = form.cleaned_data['rfsoc_host']
             xilinx_host["username"] = form.cleaned_data['rfsoc_username']
@@ -246,23 +280,8 @@ def rfsoc_page_view(request):
             # Update EOM configuration
             out_ch = [int(ch) for ch in request.POST.getlist('eom_outch[]')]
             rfsoc_config["EOM"]["out_ch"] = out_ch
-            freqseq0_value = form.cleaned_data['eom_freqseq0']
-            freqseq0_list = ["freq" + val.strip()+"0" for val in freqseq0_value.split(",")]
-            # freqseq_list = [freqseq_str.strip() for freqseq_str in freqseq_value.split(',') if freqseq_str.strip()]
-            rfsoc_config["EOM"]["freq_seq0"] = freqseq0_list
-            freqseq1_value = form.cleaned_data['eom_freqseq1']
-            freqseq1_list = ["freq" + val.strip()+"1" for val in freqseq1_value.split(",")]
-            # freqseq_list = [freqseq_str.strip() for freqseq_str in freqseq_value.split(',') if freqseq_str.strip()]
-            rfsoc_config["EOM"]["freq_seq1"] = freqseq1_list
-            timeseq0_value = form.cleaned_data['eom_timeseq0']
-            timeseq0_list = [int(timeseq_str.strip()) for timeseq_str in timeseq0_value.split(',') if timeseq_str.strip()]
-            rfsoc_config["EOM"]["time_seq0"] = timeseq0_list
             rfsoc_config["EOM"]["length0"] = form.cleaned_data['eom_length0']
-            timeseq1_value = form.cleaned_data['eom_timeseq1']
-            timeseq1_list = [int(timeseq_str.strip()) for timeseq_str in timeseq1_value.split(',') if timeseq_str.strip()]
-            rfsoc_config["EOM"]["time_seq1"] = timeseq1_list
             rfsoc_config["EOM"]["length1"] = form.cleaned_data['eom_length1']
-            rfsoc_config["EOM"]["pulse_freq"] = form.cleaned_data['eom_pulsefreq']
             rfsoc_config["EOM"]["zone0"] = form.cleaned_data['eom_zone0']
             rfsoc_config["EOM"]["mode0"] = form.cleaned_data['eom_mode0']
             rfsoc_config["EOM"]["zone1"] = form.cleaned_data['eom_zone1']
@@ -324,8 +343,29 @@ def rfsoc_page_view(request):
 
             # Redirect to the rfsoc page to reload the page with the updated values
             return redirect('rfsoc_page')
-
+        else:
+            messages.warning(request, 'Cannot be updated!')
+            return redirect('rfsoc_page')
     else:
+        form = RFSoCConfigForm()
+        Formset0 = FormsetChannel0()
+        Formset1 = FormsetChannel1()
+        print(rfsoc_config["EOM"]["time_seq0"])
+        print(rfsoc_config["EOM"]["freq_seq0"])
+        print(rfsoc_config["EOM"]["lengthseq0"])
+        initial_data0 = [{'time0': t, 'frequency0': f[-2], 'length0': l} for t, f, l in zip(rfsoc_config["EOM"]["time_seq0"], rfsoc_config["EOM"]["freq_seq0"], rfsoc_config["EOM"]["lengthseq0"])]
+        initial_data1 = [{'time1': t, 'frequency1': f[-2], 'length1': l} for t, f, l in zip(rfsoc_config["EOM"]["time_seq1"], rfsoc_config["EOM"]["freq_seq1"], rfsoc_config["EOM"]["lengthseq1"])]
+        if len(initial_data0)!=0:
+            Formset0 = FormsetChannel0(initial=initial_data0)
+        else:
+            FormsetChannel0 = formset_factory(RFSoCFrequencySequenceForm0)
+            Formset0 = FormsetChannel0()
+        if len(initial_data1)!=0:
+            Formset1 = FormsetChannel1(initial=initial_data1)
+        else:
+            FormsetChannel1 = formset_factory(RFSoCFrequencySequenceForm1)
+            Formset1 = FormsetChannel1()
+
         # Initialize the form with the current rfsoc information
         form = RFSoCConfigForm(initial={
             'rfsoc_host': xilinx_host["host"],
@@ -339,14 +379,8 @@ def rfsoc_page_view(request):
             'pulse_freq': rfsoc_config["pulse_freq"],
             'reps': rfsoc_config["reps"],
             'eom_outch': rfsoc_config["EOM"]["out_ch"],
-
-            # 'eom_freqseq0': ', '.join(val.replace("freq", "").rstrip('0')  for val in rfsoc_config["EOM"]["freq_seq0"]),
-            # 'eom_freqseq1': ', '.join(val.replace("freq", "").rstrip('0')  for val in rfsoc_config["EOM"]["freq_seq1"]),
-            # 'eom_timeseq0': ', '.join(str(val) for val in rfsoc_config["EOM"]["time_seq0"]),
-            # 'eom_length0': rfsoc_config["EOM"]["length0"],
-            # 'eom_timeseq1': ', '.join(str(val) for val in rfsoc_config["EOM"]["time_seq1"]),
-            # 'eom_length1': rfsoc_config["EOM"]["length1"],
-            'eom_pulsefreq': rfsoc_config["EOM"]["pulse_freq"],
+            'eom_length0': rfsoc_config["EOM"]["length0"],
+            'eom_length1': rfsoc_config["EOM"]["length1"],
             'eom_zone0': rfsoc_config["EOM"]["zone0"],
             'eom_mode0': rfsoc_config["EOM"]["mode0"],
             'eom_zone1': rfsoc_config["EOM"]["zone1"],
@@ -475,19 +509,13 @@ def start_experiments(request):
 @login_required(login_url="/login/")
 def index(request):
     if request.method == 'POST':
-        form = ExperimentFormNew(request.POST)
+        form = ExperimentForm(request.POST)
         print(form)
         if form.is_valid():
             experiment_name = form.cleaned_data['experiment_name']
             description = form.cleaned_data['description']
-            devices = form.cleaned_data.get('devices', [])
+            file_name = form.cleaned_data['file_name']
             print(form)
-            # Process the devices data
-            device_data = []
-            for device in devices:
-                device_name = form.cleaned_data.get(f'form-{device}-device')
-                device_parameters = get_device_parameters(device, form.cleaned_data)
-                device_data.append({'device_name': device_name, 'device_parameters': device_parameters})
 
             # Perform further processing or save the data to the database
             # ...
