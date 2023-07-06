@@ -2,7 +2,11 @@
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}{% endblock stylesheets %} {% block content %}
-
+<style>
+  .hidden {
+    display: none;
+  }
+</style>
 <!-- Header -->
 <div class="header bg-primary pb-6">
   <div class="container-fluid">
@@ -105,21 +109,24 @@
     </div>
   </div>
 </div>
-
+<div id="livePlot"></div>
 <!-- Page content -->
 <!-- <form id="experimentForms" method="POST" action="{% url 'home' %}"> -->
-<form id="experimentForms" method="POST">
+<form id="experimentForms" class="hidden" method="POST">
   {% csrf_token %} {{ experiment_formset.management_form }}
   <!-- Include management form here -->
+
   <div class="container-fluid mt--6">
     <div class="row">
       <div class="col">
         <div class="card shadow">
+          <div id="messageLoadingContainer"></div>
+          <div id="messageContainer"></div>
           <div class="card-header bg-transparent">
             <h3 class="mb-0">Experiments</h3>
           </div>
           <input type="hidden" id="experimentCountInput" name="experimentCount" value="{{ experiment_forms|length }}" />
-          <div class="form-group px-4">
+          <div class="form-group px-4 py-4">
             <label for="id_experiment_name">Experiment Name:</label>
             <input type="text" class="form-control" id="id_experiment_name" name="experiment_name" />
           </div>
@@ -133,7 +140,7 @@
           </div>
           <div class="row px-4">
             <div class="card-body">
-              <button type="submit" class="btn btn-primary">Start Experiment</button>
+              <button type="submit" class="btn btn-primary" id="startExperimentButton">Start Experiment</button>
             </div>
           </div>
         </div>
@@ -149,210 +156,91 @@
 <!-- Specific JS goes HERE -->
 {% block javascripts %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Include Plotly library -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script>
-  function addExperimentForm() {
-    var formCountInput = document.getElementById("experimentCountInput");
-    var formCount = parseInt(formCountInput.value);
+  $(document).ready(function () {
+    // Attach a submit event handler to the form
+    $("#experimentForms").on("submit", function (event) {
+      event.preventDefault(); // Prevent the default form submission
 
-    // Create a new form section
-    var newFormSection = document.createElement("div");
-    newFormSection.className = "card shadow";
-    newFormSection.innerHTML = `
-      <div class="card-header bg-transparent">
-        <h3 class="mb-0">Form ${formCount + 1}</h3>
-      </div>
-      <div class="form-group px-4">
-        <label for="id_device_${formCount}">Device:</label>
-        <select class="form-control" id="id_device_${formCount}" name="form-${formCount}-device" onchange="handleDeviceChange(${formCount})">
-          <option value="">-- Select Device --</option>
-          <option value="laser">Laser</option>
-          <option value="rf_soc">RFSoC</option>
-          <option value="frequency_setting">Frequency Setting</option>
-        </select>
-      </div>
-      <div id="parameterSection_${formCount}"></div> <!-- Container for dynamically added parameter section -->
-      <div class="row px-4">
-        <div class="card-body">
-          <button type="button" class="btn btn-primary" onclick="addExperimentForm()">Add</button>
-        </div>
-        <div class="card-body">
-          <button type="button" class="btn btn-primary" onclick="copyExperimentForm(${formCount})">Copy</button>
-        </div>
-        <div class="card-body">
-          <button type="button" class="btn btn-primary" onclick="deleteExperimentForm(${formCount})">Delete</button>
-        </div>
-      </div>
-    `;
+      // Serialize the form data
+      var formData = $(this).serialize();
+      $("#messageLoadingContainer").html('<div class="alert alert-info" role="alert">Loading...</div>');
+      // Make an AJAX POST request only if the form is valid
+      if (this.checkValidity()) {
+        $.ajax({
+          url: "{% url 'start_experiment' %}",
+          type: "POST",
+          data: formData,
+          success: function (response) {
+            // Handle the response if needed
+            console.log(response);
 
-    // Append the new form section to the form section container
-    var formSectionContainer = document.getElementById("formSectionContainer");
-    formSectionContainer.appendChild(newFormSection);
+            // Update the message dynamically from the response
+            var messageContainer = $("#messageContainer");
+            messageContainer.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
 
-    formCountInput.value = formCount + 1; // Update the form count
-  }
+            // Reset the form fields
+            $("#experimentForms")[0].reset();
+          },
+          error: function (xhr, status, error) {
+            // Handle any error that occurs during the request
+            console.log(error);
 
-  function handleDeviceChange(formCount) {
-    var deviceSelect = document.getElementById(`id_device_${formCount}`);
-    var selectedDevice = deviceSelect.value;
-
-    // Remove any existing parameter section for the current form
-    var parameterSection = document.getElementById(`parameterSection_${formCount}`);
-    parameterSection.innerHTML = "";
-
-    if (selectedDevice === "laser") {
-      // Create a new parameter section for the selected device (laser)
-      var newParameterSection = document.createElement("div");
-      newParameterSection.innerHTML = `
-        <div class="form-group px-4">
-          <label for="id_wavelength_${formCount}">Wavelength:</label>
-          <input type="text" class="form-control" id="id_wavelength_${formCount}" name="form-${formCount}-wavelength" />
-        </div>
-        <div class="form-group px-4">
-          <label for="id_frequency_${formCount}">Frequency:</label>
-          <input type="text" class="form-control" id="id_frequency_${formCount}" name="form-${formCount}-frequency" />
-        </div>
-      `;
-
-      // Append the new parameter section to the parameter section container
-      parameterSection.appendChild(newParameterSection);
-    } else if (selectedDevice === "rf_soc") {
-      // Create a new parameter section for the selected device (RFSoC)
-      var newParameterSection = document.createElement("div");
-      newParameterSection.innerHTML = `
-        <div class="form-group px-4">
-          <label for="id_eom_${formCount}">EOM or AOM:</label>
-          <select class="form-control" id="id_eom_${formCount}" name="form-${formCount}-eom_aom" onchange="handleEomAomChange(${formCount})">
-            <option value="">-- Select EOM or AOM --</option>
-            <option value="eom">EOM</option>
-            <option value="aom">AOM</option>
-          </select>
-        </div>
-        <div id="eomAomSection_${formCount}"></div> <!-- Container for dynamically added EOM or AOM section -->
-      `;
-
-      // Append the new parameter section to the parameter section container
-      parameterSection.appendChild(newParameterSection);
-    } else if (selectedDevice === "frequency_setting") {
-      // Create a new parameter section for the selected device (frequency setting)
-      var newParameterSection = document.createElement("div");
-      newParameterSection.innerHTML = `
-        <div class="form-group px-4">
-          <label for="id_frequency_name_${formCount}">Frequency Name:</label>
-          <select class="form-control" id="id_dfrequency_name_${formCount}" name="form-${formCount}-frequency_name">
-            <option value="">-- Select Option --</option>
-            <option value="A">A</option>
-            <option value="B">B</option>
-          </select>
-        </div>
-        <div class="form-group px-4">
-          <label for="id_frequency_${formCount}">Frequency:</label>
-          <input type="number" class="form-control" id="id_frequency_${formCount}" name="form-${formCount}-frequency" step="any" />
-        </div>
-        <div class="form-group px-4">
-          <label for="id_amplitude_${formCount}">Amplitude:</label>
-          <input type="number" class="form-control" id="id_amplitude_${formCount}" name="form-${formCount}-amplitude" step="any" />
-        </div>
-        <div class="form-group px-4">
-          <label for="id_phase_${formCount}">Phase:</label>
-          <input type="number" class="form-control" id="id_phase_${formCount}" name="form-${formCount}-phase" step="any" />
-        </div>
-      `;
-
-      // Append the new parameter section to the parameter section container
-      parameterSection.appendChild(newParameterSection);
-    }
-  }
-
-  function handleEomAomChange(formCount) {
-    var eomAomSelect = document.getElementById(`id_eom_${formCount}`);
-    var selectedEomAom = eomAomSelect.value;
-
-    // Remove any existing EOM or AOM section for the current form
-    var eomAomSection = document.getElementById(`eomAomSection_${formCount}`);
-    eomAomSection.innerHTML = "";
-
-    if (selectedEomAom === "eom") {
-      // Create a new EOM section
-      var newEomSection = document.createElement("div");
-      newEomSection.innerHTML = `
-        <div class="form-group px-4">
-          <label for="id_eom_frequency_${formCount}">EOM Frequency:</label>
-          <select class="form-control" id="id_eom_frequency_${formCount}" name="form-${formCount}-eom_frequency">
-            <option value="">-- Select EOM or AOM --</option>
-            <option value="A">A</option>
-            <option value="B">B</option>
-          </select>
-        </div>
-        <div class="form-group px-4">
-          <label for="id_eom_time_start_${formCount}">EOM Start Time:</label>
-          <input type="text" class="form-control" id="id_eom_time_start_${formCount}" name="form-${formCount}-eom_time_start" />
-        </div>
-        <div class="form-group px-4">
-          <label for="id_eom_length_${formCount}">EOM Length:</label>
-          <input type="text" class="form-control" id="id_eom_length_${formCount}" name="form-${formCount}-eom_length" />
-        </div>
-      `;
-
-      // Append the new EOM section to the EOM or AOM section container
-      eomAomSection.appendChild(newEomSection);
-    } else if (selectedEomAom === "aom") {
-      // Create a new AOM section
-      var newAomSection = document.createElement("div");
-      newAomSection.innerHTML = `
-        <div class="form-group px-4">
-          <label for="id_aom_pins_${formCount}">AOM Pins:</label>
-          <input type="text" class="form-control" id="id_aom_pins_${formCount}" name="form-${formCount}-aom_pins" />
-        </div>
-        <div class="form-group px-4">
-          <label for="id_aom_start_time_${formCount}">AOM Start Time:</label>
-          <input type="text" class="form-control" id="id_aom_start_time_${formCount}" name="form-${formCount}-aom_start_time" />
-        </div>
-        <div class="form-group px-4">
-          <label for="id_aom_length_${formCount}">AOM Length:</label>
-          <input type="text" class="form-control" id="id_aom_length_${formCount}" name="form-${formCount}-aom_length" />
-        </div>
-      `;
-
-      // Append the new AOM section to the EOM or AOM section container
-      eomAomSection.appendChild(newAomSection);
-    }
-  }
-
-  function copyExperimentForm(formCount) {
-    var formSectionToCopy = document.querySelector(`#formSectionContainer > .card:nth-child(${formCount + 1})`);
-    var clonedFormSection = formSectionToCopy.cloneNode(true);
-    var formSectionContainer = document.getElementById("formSectionContainer");
-    formSectionContainer.appendChild(clonedFormSection);
-
-    var newFormCount = parseInt(formCount) + 1;
-    updateFormSectionIndexes(newFormCount);
-  }
-
-  function deleteExperimentForm(formCount) {
-    var formSectionToRemove = document.querySelector(`#formSectionContainer > .card:nth-child(${formCount + 1})`);
-    formSectionToRemove.remove();
-
-    var formCountInput = document.getElementById("experimentCountInput");
-    var newFormCount = parseInt(formCountInput.value) - 1;
-    updateFormSectionIndexes(newFormCount);
-  }
-
-  function updateFormSectionIndexes(newFormCount) {
-    var formCountInput = document.getElementById("experimentCountInput");
-    formCountInput.value = newFormCount;
-
-    var formSections = document.querySelectorAll("#formSectionContainer > .card");
-    for (var i = 0; i < formSections.length; i++) {
-      var formSection = formSections[i];
-      var header = formSection.querySelector("h3");
-      header.innerHTML = `Form ${i + 1}`;
-      var deviceSelect = formSection.querySelector(`select[name="form-${i}-device"]`);
-      deviceSelect.setAttribute("onchange", `handleDeviceChange(${i})`);
-      var eomAomSelect = formSection.querySelector(`select[name="form-${i}-eom_aom"]`);
-      eomAomSelect.setAttribute("onchange", `handleEomAomChange(${i})`);
-    }
-  }
+            // Update the message dynamically
+            var messageContainer = $("#messageContainer");
+            messageContainer.html('<div class="alert alert-danger alert-dismissible fade show" role="alert">' + xhr.responseJSON.message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
+          },
+          complete: function () {
+            // Remove the loading indicator
+            $("#messageLoadingContainer .alert").remove();
+          },
+        });
+      }
+    });
+  });
 </script>
+<!-- <script>
+  // Initialize an empty data array
+  var data = [];
+
+  // Create an empty plot with a layout
+  var layout = {
+    title: "Live Plot",
+    xaxis: {
+      title: "X-axis",
+    },
+    yaxis: {
+      title: "Y-axis",
+    },
+  };
+
+  // Create a plotly object with the data and layout
+  var livePlot = Plotly.newPlot("livePlot", data, layout);
+
+  // Function to update the plot with new data
+  function updatePlot() {
+    $.ajax({
+      url: "{% url 'live_data_rfsoc' %}", // Replace with your Django view URL
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        // Update the data array with new data points
+        data = response.data;
+
+        // Update the plot with the new data
+        Plotly.update("livePlot", data);
+      },
+      error: function (xhr, status, error) {
+        console.log(xhr.responseText);
+      },
+    });
+  }
+
+  // Call the updatePlot function every second
+  setInterval(updatePlot, 1000);
+</script> -->
 
 <script>
   var statusCaylarElement = $("#caylar_status");
@@ -389,6 +277,9 @@
       },
       error: function (xhr, errmsg, err) {
         console.log(xhr.status + ": " + xhr.responseText);
+      },
+      complete: function () {
+        $("#experimentForms").removeClass("hidden");
       },
     });
   }

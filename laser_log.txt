@@ -1932,3 +1932,163 @@
 2023-07-04 17:04:37,712 - INFO - The connection is already closed.
 2023-07-06 13:03:27,724 - INFO - The connection has already been established.
 2023-07-06 13:03:27,724 - INFO - The connection is already closed.
+2023-07-06 14:05:04,372 - INFO - The connection has already been established.
+2023-07-06 14:05:04,376 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-06 14:05:04,376 - DEBUG - set wavelength act
+2023-07-06 14:05:04,387 - DEBUG - recv wavelength act
+2023-07-06 14:05:04,399 - INFO - Main Scan end is set to 19.25
+2023-07-06 14:05:04,400 - DEBUG - set scan end
+2023-07-06 14:05:04,437 - DEBUG - recv scan end
+2023-07-06 14:05:04,473 - INFO - Main Scan start is set to 18.95
+2023-07-06 14:05:04,473 - DEBUG - set scan start
+2023-07-06 14:05:04,484 - DEBUG - recv scan start
+2023-07-06 14:05:04,495 - INFO - Main Scan frequency is set to 19.1
+2023-07-06 14:05:04,495 - DEBUG - set scan frequency
+2023-07-06 14:05:04,510 - DEBUG - recv scan frequency
+2023-07-06 14:05:04,525 - DEBUG - recv wavelength act
+2023-07-06 14:05:04,539 - DEBUG - recv scan end
+2023-07-06 14:05:04,548 - DEBUG - recv scan start
+2023-07-06 14:05:04,559 - DEBUG - recv scan frequency
+2023-07-06 14:05:04,608 - DEBUG - recv scan offset
+2023-07-06 14:05:04,646 - INFO - The connection is already closed.
+2023-07-06 14:05:32,879 - INFO - The connection has already been established.
+2023-07-06 14:05:32,881 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-06 14:05:32,881 - DEBUG - set wavelength act
+2023-07-06 14:05:32,902 - DEBUG - recv wavelength act
+2023-07-06 14:05:32,938 - INFO - Main Scan end is set to 19.25
+2023-07-06 14:05:32,939 - DEBUG - set scan end
+2023-07-06 14:05:32,971 - DEBUG - recv scan end
+2023-07-06 14:05:32,984 - INFO - Main Scan start is set to 18.95
+2023-07-06 14:05:32,984 - DEBUG - set scan start
+2023-07-06 14:05:33,039 - DEBUG - recv scan start
+2023-07-06 14:05:33,054 - INFO - Main Scan frequency is set to 19.1
+2023-07-06 14:05:33,054 - DEBUG - set scan frequency
+2023-07-06 14:05:33,068 - DEBUG - recv scan frequency
+2023-07-06 14:05:33,081 - DEBUG - recv wavelength act
+2023-07-06 14:05:33,094 - DEBUG - recv scan end
+2023-07-06 14:05:33,141 - DEBUG - recv scan start
+2023-07-06 14:05:33,153 - DEBUG - recv scan frequency
+2023-07-06 14:05:33,162 - DEBUG - recv scan offset
+2023-07-06 14:05:33,179 - INFO - The connection is already closed.
+2023-07-06 14:05:34,360 - INFO - The connection has already been established.
+2023-07-06 14:05:34,360 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-06 14:05:34,362 - DEBUG - set wavelength act
+2023-07-06 14:05:34,402 - DEBUG - recv wavelength act
+2023-07-06 14:05:34,413 - INFO - Main Scan end is set to 19.25
+2023-07-06 14:05:34,413 - DEBUG - set scan end
+2023-07-06 14:05:34,425 - DEBUG - recv scan end
+2023-07-06 14:05:34,452 - INFO - Main Scan start is set to 18.95
+2023-07-06 14:05:34,452 - DEBUG - set scan start
+2023-07-06 14:05:34,469 - DEBUG - recv scan start
+2023-07-06 14:05:34,529 - INFO - Main Scan frequency is set to 19.1
+2023-07-06 14:05:34,530 - DEBUG - set scan frequency
+2023-07-06 14:05:34,538 - DEBUG - recv scan frequency
+2023-07-06 14:05:34,557 - DEBUG - recv wavelength act
+2023-07-06 14:05:34,600 - DEBUG - recv scan end
+2023-07-06 14:05:34,614 - DEBUG - recv scan start
+2023-07-06 14:05:34,627 - DEBUG - recv scan frequency
+2023-07-06 14:05:34,647 - DEBUG - recv scan offset
+2023-07-06 14:05:34,823 - INFO - The connection has already been established.
+2023-07-06 14:05:34,826 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-06 14:05:34,827 - DEBUG - set wavelength act
+2023-07-06 14:05:34,845 - DEBUG - recv wavelength act
+2023-07-06 14:05:34,862 - INFO - Main Scan end is set to 19.25
+2023-07-06 14:05:34,862 - DEBUG - set scan end
+2023-07-06 14:05:34,911 - DEBUG - recv scan end
+2023-07-06 14:05:34,921 - INFO - Main Scan start is set to 18.95
+2023-07-06 14:05:34,921 - DEBUG - set scan start
+2023-07-06 14:05:34,934 - DEBUG - recv scan start
+2023-07-06 14:05:34,956 - INFO - Main Scan frequency is set to 19.1
+2023-07-06 14:05:34,957 - DEBUG - set scan frequency
+2023-07-06 14:05:34,968 - DEBUG - recv scan frequency
+2023-07-06 14:05:34,983 - DEBUG - recv wavelength act
+2023-07-06 14:05:35,022 - DEBUG - recv scan end
+2023-07-06 14:05:35,032 - DEBUG - recv scan start
+2023-07-06 14:05:35,051 - DEBUG - recv scan frequency
+2023-07-06 14:05:35,061 - DEBUG - recv scan offset
+2023-07-06 14:05:35,092 - INFO - The connection is already closed.
+2023-07-06 14:06:14,684 - INFO - The connection has already been established.
+2023-07-06 14:06:14,687 - INFO - Main ctl wavelength is set to 1560.0
+2023-07-06 14:06:14,687 - DEBUG - set wavelength act
+2023-07-06 14:06:14,728 - DEBUG - recv wavelength act
+2023-07-06 14:06:14,741 - INFO - Main Scan end is set to 19.25
+2023-07-06 14:06:14,741 - DEBUG - set scan end
+2023-07-06 14:06:14,769 - DEBUG - recv scan end
+2023-07-06 14:06:14,815 - INFO - Main Scan start is set to 18.95
+2023-07-06 14:06:14,816 - DEBUG - set scan start
+2023-07-06 14:06:14,832 - DEBUG - recv scan start
+2023-07-06 14:06:14,858 - INFO - Main Scan frequency is set to 19.1
+2023-07-06 14:06:14,858 - DEBUG - set scan frequency
+2023-07-06 14:06:14,876 - DEBUG - recv scan frequency
+2023-07-06 14:06:14,895 - DEBUG - recv wavelength act
+2023-07-06 14:06:14,949 - DEBUG - recv scan end
+2023-07-06 14:06:14,959 - DEBUG - recv scan start
+2023-07-06 14:06:14,978 - DEBUG - recv scan frequency
+2023-07-06 14:06:15,012 - DEBUG - recv scan offset
+2023-07-06 14:06:15,061 - INFO - The connection is already closed.
+2023-07-06 14:08:22,313 - INFO - The connection has already been established.
+2023-07-06 14:08:22,313 - INFO - The connection is already closed.
+2023-07-06 14:10:47,629 - INFO - The connection has already been established.
+2023-07-06 14:10:47,629 - INFO - The connection is already closed.
+2023-07-06 14:12:28,848 - INFO - The connection has already been established.
+2023-07-06 14:12:28,848 - INFO - The connection is already closed.
+2023-07-06 14:16:37,546 - INFO - The connection has already been established.
+2023-07-06 14:16:37,546 - INFO - The connection is already closed.
+2023-07-06 14:19:00,915 - INFO - The connection has already been established.
+2023-07-06 14:19:00,920 - INFO - The connection is already closed.
+2023-07-06 14:19:17,293 - INFO - The connection has already been established.
+2023-07-06 14:19:17,293 - INFO - The connection is already closed.
+2023-07-06 14:19:50,471 - INFO - The connection has already been established.
+2023-07-06 14:19:50,471 - INFO - The connection is already closed.
+2023-07-06 14:27:20,924 - INFO - The connection has already been established.
+2023-07-06 14:27:20,925 - INFO - The connection is already closed.
+2023-07-06 14:30:11,210 - INFO - The connection has already been established.
+2023-07-06 14:30:11,211 - INFO - The connection is already closed.
+2023-07-06 14:59:28,296 - INFO - The connection has already been established.
+2023-07-06 14:59:29,929 - INFO - The connection has already been established.
+2023-07-06 14:59:30,440 - INFO - The connection has already been established.
+2023-07-06 14:59:38,119 - INFO - The connection has already been established.
+2023-07-06 14:59:38,120 - INFO - The connection is already closed.
+2023-07-06 14:59:53,582 - INFO - The connection has already been established.
+2023-07-06 15:00:06,767 - INFO - The connection has already been established.
+2023-07-06 15:00:06,768 - INFO - The connection is already closed.
+2023-07-06 15:04:34,977 - INFO - The connection has already been established.
+2023-07-06 15:04:42,075 - INFO - The connection has already been established.
+2023-07-06 15:04:42,079 - INFO - The connection is already closed.
+2023-07-06 15:25:26,004 - INFO - The connection has already been established.
+2023-07-06 15:25:31,294 - INFO - The connection has already been established.
+2023-07-06 15:25:35,686 - INFO - The connection has already been established.
+2023-07-06 15:25:35,687 - INFO - The connection is already closed.
+2023-07-06 15:26:00,401 - INFO - The connection has already been established.
+2023-07-06 15:26:00,911 - INFO - The connection has already been established.
+2023-07-06 15:35:58,720 - INFO - The connection has already been established.
+2023-07-06 15:36:11,686 - INFO - The connection has already been established.
+2023-07-06 15:36:11,686 - INFO - The connection is already closed.
+2023-07-06 16:54:17,206 - INFO - The connection has already been established.
+2023-07-06 16:54:17,209 - INFO - The connection is already closed.
+2023-07-06 16:54:29,404 - INFO - The connection has already been established.
+2023-07-06 16:54:29,404 - INFO - The connection is already closed.
+2023-07-06 17:15:35,324 - INFO - The connection has already been established.
+2023-07-06 17:15:35,327 - INFO - The connection is already closed.
+2023-07-06 17:15:39,585 - INFO - The connection has already been established.
+2023-07-06 17:16:09,093 - INFO - The connection has already been established.
+2023-07-06 17:16:09,093 - INFO - The connection is already closed.
+2023-07-06 17:16:51,191 - INFO - The connection has already been established.
+2023-07-06 17:16:51,191 - INFO - The connection is already closed.
+2023-07-06 17:16:55,756 - INFO - The connection has already been established.
+2023-07-06 17:16:57,648 - INFO - The connection has already been established.
+2023-07-06 17:16:58,159 - INFO - The connection has already been established.
+2023-07-06 17:16:58,641 - INFO - The connection has already been established.
+2023-07-06 17:16:59,080 - INFO - The connection has already been established.
+2023-07-06 17:24:20,717 - INFO - The connection has already been established.
+2023-07-06 17:24:20,717 - INFO - The connection is already closed.
+2023-07-06 17:24:25,399 - INFO - The connection has already been established.
+2023-07-06 17:24:27,133 - INFO - The connection has already been established.
+2023-07-06 17:24:27,725 - INFO - The connection has already been established.
+2023-07-06 17:24:28,189 - INFO - The connection has already been established.
+2023-07-06 17:24:28,673 - INFO - The connection has already been established.
+2023-07-06 17:24:56,883 - INFO - The connection has already been established.
+2023-07-06 17:24:57,551 - INFO - The connection has already been established.
+2023-07-06 17:32:33,628 - INFO - The connection has already been established.
+2023-07-06 17:33:37,648 - INFO - The connection has already been established.
+2023-07-06 17:33:37,654 - INFO - The connection is already closed.

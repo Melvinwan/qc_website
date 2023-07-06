@@ -200,8 +200,7 @@ def caylar_page_view(request):
 def rfsoc_page_view(request):
     # Load the data from the rfsoc XML file
     Update_rfsoc = construct_rfsoc()
-    connected = False
-    # connected = Update_rfsoc.try_connect()
+    connected = Update_rfsoc.try_connect()
 
     xilinx_host = xml_config_to_dict("staticfiles/xilinx_host.xml")
     #IF FILE IS NOT FOUND MAYBE CAN BUILD ONE
@@ -229,8 +228,6 @@ def rfsoc_page_view(request):
             time0 = []
             length0 = []
             frequency0 = []
-
-            print("----------------------------1")
             for form0 in Formset0:
 
                 if form0.cleaned_data.get('time0')!=None:
@@ -240,7 +237,6 @@ def rfsoc_page_view(request):
                 if form0.cleaned_data.get('frequency0')!=None:
                     freq0 = str(form0.cleaned_data.get('frequency0'))
                     frequency0.append("freq"+freq0+"0")
-            print(time0)
             rfsoc_config["EOM"]["time_seq0"] = time0
             rfsoc_config["EOM"]["freq_seq0"] = frequency0
             rfsoc_config["EOM"]["lengthseq0"] = length0
@@ -468,150 +464,99 @@ def mercury_page_view(request):
         'mercury_itc_temperature': mercury_host.get("ITC_temperature", ""),
     })
 
-@require_POST
-def start_experiments(request):
-    # Get the experiment count
-    experiment_count = int(request.POST.get("experimentCount", 0))
-    print(experiment_count)
-    # Process the experiment data
-    for i in range(experiment_count):
-        print(i)
-        parameter_select = request.POST.get(f"parameter_select_{i}", "")
-        print(parameter_select)
-        # Process other form fields based on the selected parameter
-        if parameter_select == "laser":
-            laser_select = request.POST.get(f"laser_select_{i}", "")
-            laser_input = request.POST.get(f"laser_input_{i}", "")
-            # Process laser_select and laser_input values accordingly
-            print(laser_select)
-            print(laser_input)
-        elif parameter_select == "rfsoc":
-            rfsoc_select = request.POST.get(f"rfsoc_select_{i}", "")
-            # Process rfsoc_select value accordingly
-        elif parameter_select == "setting_eom_frequency":
-            eom_ab_select = request.POST.get(f"eom_ab_select_{i}", "")
-            phase_input = request.POST.get(f"phase_input_{i}", "")
-            gain_input = request.POST.get(f"gain_input_{i}", "")
-            frequency_input = request.POST.get(f"frequency_input_{i}", "")
-            # Process eom_ab_select, phase_input, gain_input, and frequency_input values accordingly
+GRFSoC = None
+GLaser = None
+GCaylar = None
+GmercuryITC = None
+def start_experiment(request):
+    global GRFSoC
+    global GLaser
+    global GCaylar
+    global GmercuryITC
+    off_device = ["Laser", "RFSoC", "Mercury", "Caylar"]
+    RFSoC, Laser, Caylar, mercuryITC = construct_object()
+    rfsoc_status = "OFF"
+    if RFSoC.try_connect():
+        rfsoc_status = "ON"
+        off_device.remove("RFSoC")
+    laser_status = "OFF"
+    if Laser.try_connect():
+        laser_status = "ON"
+        # Laser.disconnect()
+        off_device.remove("Laser")
+    mercury_status = "OFF"
+    if mercuryITC.try_connect():
+        mercury_status = "ON"
+        off_device.remove("Mercury")
+    caylar_status = "OFF"
+    if Caylar.try_connect():
+        caylar_status = "ON"
+        off_device.remove("Caylar")
+    GRFSoC = RFSoC
+    GLaser = Laser
+    GCaylar = Caylar
+    GmercuryITC = mercuryITC
+    if off_device:
+        off_device_names = ", ".join(off_device)
+        message = f"Experiment cannot be started because {off_device_names} are offline."
+        return JsonResponse({'message': message}, status=400)
 
-    # Return a response indicating success
-    return HttpResponse("Experiments started successfully.")
+    # All devices are online, continue with starting the experiment
+    # Your logic for starting the experiment here
+
+    message = 'Experiment started successfully.'
+    return JsonResponse({'message': message})
+def stop_experiment(request):
+    GRFSoC.disconnect()
+    GLaser.disconnect()
+    GCaylar.disconnect()
+    GmercuryITC.disconnect()
+    GRFSoC = None
+    GLaser = None
+    GCaylar = None
+    GmercuryITC = None
+
+import json
+@require_POST
+def get_live_data_and_run_rfsoc(request):
+    global GRFSoC
+    global GLaser
+    global GCaylar
+    global GmercuryITC
+
+    if request.method == 'POST':
+        form = ExperimentForm(request.POST)
+        if form.is_valid():
+            return HttpResponse(json.dumps(data), content_type='application/json')
+        else:
+            # Return an error message as JSON response if the form is invalid
+            data = {'error': 'Invalid form data'}
+            return HttpResponse(json.dumps(data), content_type='application/json')
+    else:
+        # Return an error message as JSON response if the request method is not POST
+        data = {'error': 'Invalid request method'}
+        return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 @login_required(login_url="/login/")
 def index(request):
-    if request.method == 'POST':
-        form = ExperimentForm(request.POST)
-        print(form)
-        if form.is_valid():
-            experiment_name = form.cleaned_data['experiment_name']
-            description = form.cleaned_data['description']
-            file_name = form.cleaned_data['file_name']
-            print(form)
+    # if request.method == 'POST':
+    #     form = ExperimentForm(request.POST)
+    #     print(form)
+    #     if form.is_valid():
+    #         experiment_name = form.cleaned_data.get('experiment_name')
+    #         description = form.cleaned_data['description']
+    #         file_name = form.cleaned_data['file_name']
 
-            # Perform further processing or save the data to the database
-            # ...
+    #         # Perform further processing or save the data to the database
+    #         # ...
+    #     else:
+    #         messages.warning(request, 'Cannot be updated!')
+    #         return render(request, 'home/index.html', {'form': form, 'run':False})
+    # else:
+    form = ExperimentForm()
 
-    else:
-        form = ExperimentForm()
-
-    return render(request, 'home/index.html', {'form': form})
-
-def get_device_parameters(device_index, cleaned_data):
-    device_type = cleaned_data.get(f'form-{device_index}-device')
-    parameters = {}
-
-    if device_type == 'laser':
-        parameters['wavelength'] = cleaned_data.get(f'form-{device_index}-wavelength')
-        parameters['frequency'] = cleaned_data.get(f'form-{device_index}-frequency')
-    elif device_type == 'rf_soc':
-        eom_aom = cleaned_data.get(f'form-{device_index}-eom_aom')
-        parameters['eom_aom'] = eom_aom
-
-        if eom_aom == 'eom':
-            parameters['eom_frequency'] = cleaned_data.get(f'form-{device_index}-eom_frequency')
-            parameters['eom_time_start'] = cleaned_data.get(f'form-{device_index}-eom_time_start')
-            parameters['eom_length'] = cleaned_data.get(f'form-{device_index}-eom_length')
-        elif eom_aom == 'aom':
-            parameters['aom_pins'] = cleaned_data.get(f'form-{device_index}-aom_pins')
-            parameters['aom_start_time'] = cleaned_data.get(f'form-{device_index}-aom_start_time')
-            parameters['aom_length'] = cleaned_data.get(f'form-{device_index}-aom_length')
-    elif device_type == 'frequency_setting':
-        parameters['frequency_name'] = cleaned_data.get(f'form-{device_index}-frequency_name')
-        parameters['frequency'] = cleaned_data.get(f'form-{device_index}-frequency')
-        parameters['amplitude'] = cleaned_data.get(f'form-{device_index}-amplitude')
-        parameters['phase'] = cleaned_data.get(f'form-{device_index}-phase')
-
-    return parameters
-# @login_required(login_url="/login/")
-# def index(request):
-#     ExperimentFormSet = formset_factory(ParameterForm, formset=BaseExperimentForm)
-
-#     if request.method == 'POST':
-#         experiment_formset = ExperimentFormSet(request.POST, prefix='experiment')
-#         experiment_form = ExperimentForm(request.POST)
-#         print(experiment_form.is_valid())
-#         print(experiment_formset.is_valid())
-#         print(experiment_formset)
-#         if experiment_form.is_valid() and experiment_formset.is_valid():
-#             # Collect data from the experiment form
-#             experiment_name = experiment_form.cleaned_data['experiment_name']
-#             description = experiment_form.cleaned_data['description']
-
-#             # Create a list to store the form data from each form in the formset
-#             form_data_list = []
-
-#             # Iterate over each form in the formset and collect the data
-#             for form in experiment_formset:
-#                 device = form.cleaned_data['device']
-#                 laser_parameter = form.cleaned_data['laser_parameter']
-#                 laser_frequency = form.cleaned_data['laser_frequency']
-#                 laser_amplitude = form.cleaned_data['laser_amplitude']
-#                 eom_aom = form.cleaned_data['eom_aom']
-#                 eom_frequency = form.cleaned_data['eom_frequency']
-#                 eom_time_start = form.cleaned_data['eom_time_start']
-#                 eom_length = form.cleaned_data['eom_length']
-#                 aom_pins = form.cleaned_data['aom_pins']
-#                 aom_start_time = form.cleaned_data['aom_start_time']
-#                 aom_length = form.cleaned_data['aom_length']
-#                 frequency_name = form.cleaned_data['frequency_name']
-#                 frequency_frequency = form.cleaned_data['frequency_frequency']
-#                 frequency_phase = form.cleaned_data['frequency_phase']
-#                 frequency_amplitude = form.cleaned_data['frequency_amplitude']
-#                 print(device)
-#                 # Create a dictionary to store the form data
-#                 form_data = {
-#                     'device': device,
-#                     'laser_parameter': laser_parameter,
-#                     'laser_frequency': laser_frequency,
-#                     'laser_amplitude': laser_amplitude,
-#                     'eom_aom': eom_aom,
-#                     'eom_frequency': eom_frequency,
-#                     'eom_time_start': eom_time_start,
-#                     'eom_length': eom_length,
-#                     'aom_pins': aom_pins,
-#                     'aom_start_time': aom_start_time,
-#                     'aom_length': aom_length,
-#                     'frequency_name': frequency_name,
-#                     'frequency_frequency': frequency_frequency,
-#                     'frequency_phase': frequency_phase,
-#                     'frequency_amplitude': frequency_amplitude
-#                 }
-
-#                 form_data_list.append(form_data)
-
-#     else:
-#         experiment_formset = ExperimentFormSet()
-#         experiment_form = ExperimentForm()
-
-#     context = {
-#         'experiment_formset': experiment_formset,
-#         'experiment_form': experiment_form
-#     }
-#     return render(request, 'home/index.html', context)
-
-
+    return render(request, 'home/index.html', {'form': form, 'run':True})
 def status(request):
     RFSoC, Laser, Caylar, mercuryITC = construct_object()
 
