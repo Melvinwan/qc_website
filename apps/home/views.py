@@ -221,13 +221,15 @@ def rfsoc_page_view(request):
 
     if request.method == 'POST':
         form = RFSoCConfigForm(request.POST)
-        Formset0 = FormsetChannel0(request.POST)
-        Formset1 = FormsetChannel1(request.POST)
+        Formset0 = FormsetChannel0(request.POST,prefix='formset0')
+        Formset1 = FormsetChannel1(request.POST,prefix='formset1')
+        print(Formset0)
+
         if all([form.is_valid(),Formset0.is_valid(),Formset1.is_valid()]):
             time0 = []
             length0 = []
             frequency0 = []
-            print(Formset0)
+
             print("----------------------------1")
             for form0 in Formset0:
 
@@ -237,12 +239,11 @@ def rfsoc_page_view(request):
                     length0.append(form0.cleaned_data.get('length0'))
                 if form0.cleaned_data.get('frequency0')!=None:
                     freq0 = str(form0.cleaned_data.get('frequency0'))
-                    print(form0.cleaned_data.get('frequency0'))
                     frequency0.append("freq"+freq0+"0")
-            print(frequency0)
+            print(time0)
             rfsoc_config["EOM"]["time_seq0"] = time0
-            rfsoc_config["EOM"]["freq_seq0"] = length0
-            rfsoc_config["EOM"]["lengthseq0"] = frequency0
+            rfsoc_config["EOM"]["freq_seq0"] = frequency0
+            rfsoc_config["EOM"]["lengthseq0"] = length0
             time1 = []
             length1 = []
             frequency1 = []
@@ -253,14 +254,11 @@ def rfsoc_page_view(request):
                 if form1.cleaned_data.get('length1')!=None:
                     length1.append(form1.cleaned_data.get('length1'))
                 if form1.cleaned_data.get('frequency1')!=None:
-                    freq1 = str(form0.cleaned_data.get('frequency1'))
-                    print(form1.cleaned_data.get('frequency1'))
+                    freq1 = str(form1.cleaned_data.get('frequency1'))
                     frequency1.append("freq"+freq1+"1")
             rfsoc_config["EOM"]["time_seq1"] = time1
-            rfsoc_config["EOM"]["freq_seq1"] = length1
-            rfsoc_config["EOM"]["lengthseq1"] = frequency1
-            print(frequency1)
-            print("----------------------------2")
+            rfsoc_config["EOM"]["freq_seq1"] = frequency1
+            rfsoc_config["EOM"]["lengthseq1"] = length1
             # Update RFSoC host and port
             xilinx_host["host"] = form.cleaned_data['rfsoc_host']
             xilinx_host["username"] = form.cleaned_data['rfsoc_username']
@@ -348,23 +346,18 @@ def rfsoc_page_view(request):
             return redirect('rfsoc_page')
     else:
         form = RFSoCConfigForm()
-        Formset0 = FormsetChannel0()
-        Formset1 = FormsetChannel1()
-        print(rfsoc_config["EOM"]["time_seq0"])
-        print(rfsoc_config["EOM"]["freq_seq0"])
-        print(rfsoc_config["EOM"]["lengthseq0"])
         initial_data0 = [{'time0': t, 'frequency0': f[-2], 'length0': l} for t, f, l in zip(rfsoc_config["EOM"]["time_seq0"], rfsoc_config["EOM"]["freq_seq0"], rfsoc_config["EOM"]["lengthseq0"])]
         initial_data1 = [{'time1': t, 'frequency1': f[-2], 'length1': l} for t, f, l in zip(rfsoc_config["EOM"]["time_seq1"], rfsoc_config["EOM"]["freq_seq1"], rfsoc_config["EOM"]["lengthseq1"])]
         if len(initial_data0)!=0:
-            Formset0 = FormsetChannel0(initial=initial_data0)
+            Formset0 = FormsetChannel0(initial=initial_data0,prefix='formset0')
         else:
             FormsetChannel0 = formset_factory(RFSoCFrequencySequenceForm0)
-            Formset0 = FormsetChannel0()
+            Formset0 = FormsetChannel0(prefix='formset0')
         if len(initial_data1)!=0:
-            Formset1 = FormsetChannel1(initial=initial_data1)
+            Formset1 = FormsetChannel1(initial=initial_data1,prefix='formset1')
         else:
             FormsetChannel1 = formset_factory(RFSoCFrequencySequenceForm1)
-            Formset1 = FormsetChannel1()
+            Formset1 = FormsetChannel1(prefix='formset1')
 
         # Initialize the form with the current rfsoc information
         form = RFSoCConfigForm(initial={

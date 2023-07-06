@@ -175,7 +175,7 @@
                     <tbody id="empty-form0" class="hidden">
                       <tr>
                         <td>
-                          <select name="frequency0">
+                          <select name="frequency0" required>
                             <option>--Select--</option>
                             <option value="A">A</option>
                             <option value="B">B</option>
@@ -194,10 +194,10 @@
                       </tr>
                     </tbody>
                     {% for form0 in formset0 %}
-                    <tbody id="form-{{ forloop.counter|add:'-1' }}">
-                      <tr class="channel0-form">
+                    <tbody id="formset0-{{ forloop.counter|add:'-1' }}" class="channel0-form">
+                      <tr>
                         <td>
-                          <select name="form-{{ forloop.counter|add:'-1' }}-frequency0" required>
+                          <select name="formset0-{{ forloop.counter|add:'-1' }}-frequency0" required>
                             {% if form0.frequency0.value == 'A'%}
                             <option>--Select--</option>
                             <option value="A" selected>A</option>
@@ -338,10 +338,10 @@
                 </tr>
               </tbody>
               {% for form1 in formset1 %}
-              <tbody id="form-{{ forloop.counter|add:'-1' }}">
-                <tr class="channel1-form">
+              <tbody id="formset1-{{ forloop.counter|add:'-1' }}" class="channel1-form">
+                <tr>
                   <td>
-                    <select name="form-{{ forloop.counter|add:'-1' }}-frequency1" required>
+                    <select name="formset1-{{ forloop.counter|add:'-1' }}-frequency1" required>
                       {% if form1.frequency1.value == 'A'%}
                       <option>--Select--</option>
                       <option value="A" selected>A</option>
@@ -532,7 +532,8 @@
 <script>
   const addMoreBtn0 = document.getElementById("add-more0");
   const addMoreBtn1 = document.getElementById("add-more1");
-  const totalNewForms = document.getElementById("id_form-TOTAL_FORMS");
+  const totalNewForms0 = document.getElementById("id_formset0-TOTAL_FORMS");
+  const totalNewForms1 = document.getElementById("id_formset1-TOTAL_FORMS");
   let currentChannel0Forms = document.getElementsByClassName("channel0-form");
   let currentChannel1Forms = document.getElementsByClassName("channel1-form");
   const form0List = document.getElementById("form0-list");
@@ -561,6 +562,7 @@
       return;
     }
     formTableBody.removeChild(formRow);
+    totalNewForms0.setAttribute("value", currentChannel0Forms.length);
   }
   function delete_form1(deleteButton, ch) {
     const formRow = deleteButton.closest("tbody");
@@ -571,6 +573,7 @@
       return;
     }
     formTableBody.removeChild(formRow);
+    totalNewForms1.setAttribute("value", currentChannel1Forms.length);
   }
   function add_new_form0(args) {
     if (event) {
@@ -581,19 +584,19 @@
     const formCopyTarget0 = document.getElementById("form0-list");
     const copyEmptyFormEl0 = document.getElementById("empty-form0").cloneNode(true);
     copyEmptyFormEl0.setAttribute("class", "channel0-form");
-    copyEmptyFormEl0.setAttribute("id", `form-${currentForm0Count}`);
+    copyEmptyFormEl0.setAttribute("id", `formset0-${currentForm0Count}`);
     const regex = new RegExp("__prefix__", "g");
     copyEmptyFormEl0.innerHTML = copyEmptyFormEl0.innerHTML.replace(regex, currentForm0Count);
     const tr = copyEmptyFormEl0.firstElementChild;
     const trParentElement = tr.parentElement;
-    trParentElement.children[0].children[0].children[0].setAttribute("id", `form-${currentForm0Count}-frequency0`);
-    trParentElement.children[0].children[0].children[0].setAttribute("name", `form-${currentForm0Count}-frequency0`);
-    trParentElement.children[0].children[1].children[0].setAttribute("id", `form-${currentForm0Count}-time0`);
-    trParentElement.children[0].children[1].children[0].setAttribute("name", `form-${currentForm0Count}-time0`);
-    trParentElement.children[0].children[2].children[0].setAttribute("id", `form-${currentForm0Count}-length0`);
-    trParentElement.children[0].children[2].children[0].setAttribute("name", `form-${currentForm0Count}-length0`);
+    trParentElement.children[0].children[0].children[0].setAttribute("id", `id_formset0-${currentForm0Count}-frequency0`);
+    trParentElement.children[0].children[0].children[0].setAttribute("name", `formset0-${currentForm0Count}-frequency0`);
+    trParentElement.children[0].children[1].children[0].setAttribute("id", `id_formset0-${currentForm0Count}-time0`);
+    trParentElement.children[0].children[1].children[0].setAttribute("name", `formset0-${currentForm0Count}-time0`);
+    trParentElement.children[0].children[2].children[0].setAttribute("id", `id_formset0-${currentForm0Count}-length0`);
+    trParentElement.children[0].children[2].children[0].setAttribute("name", `formset0-${currentForm0Count}-length0`);
     // tdElement.setAttribute("id", `form-${currentForm0Count}-frequency0`);
-    totalNewForms.setAttribute("value", currentForm0Count);
+    totalNewForms0.setAttribute("value", currentForm0Count + 1);
     // Add new form
     formCopyTarget0.append(copyEmptyFormEl0);
   }
@@ -606,19 +609,19 @@
     const formCopyTarget1 = document.getElementById("form1-list");
     const copyEmptyFormEl1 = document.getElementById("empty-form1").cloneNode(true);
     copyEmptyFormEl1.setAttribute("class", "channel1-form");
-    copyEmptyFormEl1.setAttribute("id", `form-${currentForm1Count}`);
+    copyEmptyFormEl1.setAttribute("id", `formset1-${currentForm1Count}`);
     const regex = new RegExp("__prefix__", "g");
     copyEmptyFormEl1.innerHTML = copyEmptyFormEl1.innerHTML.replace(regex, currentForm1Count);
     const tr = copyEmptyFormEl1.firstElementChild;
     const trParentElement = tr.parentElement;
-    trParentElement.children[0].children[0].children[0].setAttribute("id", `form-${currentForm1Count}-frequency1`);
-    trParentElement.children[0].children[0].children[0].setAttribute("name", `form-${currentForm1Count}-frequency1`);
-    trParentElement.children[0].children[1].children[0].setAttribute("id", `form-${currentForm1Count}-time1`);
-    trParentElement.children[0].children[1].children[0].setAttribute("name", `form-${currentForm1Count}-time1`);
-    trParentElement.children[0].children[2].children[0].setAttribute("id", `form-${currentForm1Count}-length1`);
-    trParentElement.children[0].children[2].children[0].setAttribute("name", `form-${currentForm1Count}-length1`);
+    trParentElement.children[0].children[0].children[0].setAttribute("id", `id_formset1-${currentForm1Count}-frequency1`);
+    trParentElement.children[0].children[0].children[0].setAttribute("name", `formset1-${currentForm1Count}-frequency1`);
+    trParentElement.children[0].children[1].children[0].setAttribute("id", `id_formset1-${currentForm1Count}-time1`);
+    trParentElement.children[0].children[1].children[0].setAttribute("name", `formset1-${currentForm1Count}-time1`);
+    trParentElement.children[0].children[2].children[0].setAttribute("id", `id_formset1-${currentForm1Count}-length1`);
+    trParentElement.children[0].children[2].children[0].setAttribute("name", `formset1-${currentForm1Count}-length1`);
     // tdElement.setAttribute("id", `form-${currentForm1Count}-frequency0`);
-    totalNewForms.setAttribute("value", currentForm1Count);
+    totalNewForms1.setAttribute("value", currentForm1Count + 1);
     // Add new form
     formCopyTarget1.append(copyEmptyFormEl1);
   }

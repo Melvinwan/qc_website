@@ -284,10 +284,10 @@ class RFSoCConfigForm(forms.Form):
     aom_time_3 = forms.CharField(label='AOM Time', required=False)
 
 class RFSoCFrequencySequenceForm0(forms.Form):
-    frequency0 = forms.ChoiceField(choices=[('A', 'A'), ('B', 'B')], required=False)
-    time0 = forms.FloatField(label='EOM Length 0', required=False)
-    length0 = forms.FloatField(label='EOM Length 0', required=False)
+    frequency0 = forms.ChoiceField(choices=[('A', 'A'), ('B', 'B')], required=True)
+    time0 = forms.FloatField(label='EOM Length 0', required=True)
+    length0 = forms.FloatField(label='EOM Length 0', required=True)
 class RFSoCFrequencySequenceForm1(forms.Form):
-    frequency1 = forms.ChoiceField(choices=[('A', 'A'), ('B', 'B')], required=False)
-    time1 = forms.FloatField(label='EOM Length 1', required=False)
-    length1 = forms.FloatField(label='EOM Length 1', required=False)
+    frequency1 = forms.ChoiceField(choices=[('A', 'A'), ('B', 'B')], required=True)
+    time1 = forms.FloatField(label='EOM Length 1', required=True)
+    length1 = forms.FloatField(label='EOM Length 1', required=True)
