@@ -18,7 +18,7 @@ from staticfiles.XMLGenerator import xml_config_to_dict, dict_to_xml_file
 from django.contrib import messages
 from datetime import datetime
 import subprocess
-
+import os
 # def restart_server(request):
 #     # Stop the current runserver process
 #     subprocess.call(["pkill", "-f", "runserver"])
@@ -473,24 +473,29 @@ def start_experiment(request):
     global GLaser
     global GCaylar
     global GmercuryITC
+
     off_device = ["Laser", "RFSoC", "Mercury", "Caylar"]
+    on_device = []
     RFSoC, Laser, Caylar, mercuryITC = construct_object()
     rfsoc_status = "OFF"
     if RFSoC.try_connect():
         rfsoc_status = "ON"
+        on_device.append(RFSoC)
         off_device.remove("RFSoC")
     laser_status = "OFF"
     if Laser.try_connect():
         laser_status = "ON"
-        # Laser.disconnect()
+        on_device.append(Laser)
         off_device.remove("Laser")
     mercury_status = "OFF"
     if mercuryITC.try_connect():
         mercury_status = "ON"
+        on_device.append(mercuryITC)
         off_device.remove("Mercury")
     caylar_status = "OFF"
     if Caylar.try_connect():
         caylar_status = "ON"
+        on_device.append(Caylar)
         off_device.remove("Caylar")
     GRFSoC = RFSoC
     GLaser = Laser
@@ -499,14 +504,26 @@ def start_experiment(request):
     if off_device:
         off_device_names = ", ".join(off_device)
         message = f"Experiment cannot be started because {off_device_names} are offline."
+        for i in on_device:
+            i.disconnect()
         return JsonResponse({'message': message}, status=400)
 
     # All devices are online, continue with starting the experiment
     # Your logic for starting the experiment here
-
+    try:
+        os.makedirs(request.POST['file_name'], exist_ok = True)
+        print("Directory '%s' created successfully" % request.POST['file_name'])
+    except OSError as error:
+        print("Directory '%s' can not be created" % request.POST['file_name'])
+        message = ("Directory '%s' can not be created" % request.POST['file_name'])
+        return JsonResponse({'message': message}, status=400)
     message = 'Experiment started successfully.'
     return JsonResponse({'message': message})
 def stop_experiment(request):
+    global GRFSoC
+    global GLaser
+    global GCaylar
+    global GmercuryITC
     GRFSoC.disconnect()
     GLaser.disconnect()
     GCaylar.disconnect()
@@ -515,27 +532,22 @@ def stop_experiment(request):
     GLaser = None
     GCaylar = None
     GmercuryITC = None
-
+    message = 'Experiment stopped successfully.'
+    return JsonResponse({'message': message})
 import json
-@require_POST
 def get_live_data_and_run_rfsoc(request):
     global GRFSoC
     global GLaser
     global GCaylar
     global GmercuryITC
 
-    if request.method == 'POST':
-        form = ExperimentForm(request.POST)
-        if form.is_valid():
-            return HttpResponse(json.dumps(data), content_type='application/json')
-        else:
-            # Return an error message as JSON response if the form is invalid
-            data = {'error': 'Invalid form data'}
-            return HttpResponse(json.dumps(data), content_type='application/json')
-    else:
-        # Return an error message as JSON response if the request method is not POST
-        data = {'error': 'Invalid request method'}
-        return HttpResponse(json.dumps(data), content_type='application/json')
+    laser_scan_end = GLaser.report_scan_end()
+    laser_scan_start = GLaser.report_scan_start()
+    laser_scan_offset = GLaser.report_scan_offset()
+    laser_scan_frequency = GLaser.report_scan_frequency()
+    laser_wavelength = GLaser.report_ctl_wavelength_act()
+    data = {'laser_scan_end': laser_scan_end,'laser_scan_start': laser_scan_start,'laser_scan_offset': laser_scan_offset,'laser_scan_frequency': laser_scan_frequency,'laser_wavelength': laser_wavelength}
+    return JsonResponse(data)
 
 
 @login_required(login_url="/login/")

@@ -107,12 +107,14 @@
       </div>
       <button type="submit" class="btn btn-secondary my-4" id="update_button">Update Status</button>
     </div>
+    <div id="messageUpdateExpContainer"></div>
   </div>
 </div>
-<div id="livePlot"></div>
+<div id="livePlot" class="hidden"><button type="button" class="btn btn-danger" id="stopExperimentButton">Stop Experiment</button></div>
 <!-- Page content -->
 <!-- <form id="experimentForms" method="POST" action="{% url 'home' %}"> -->
 <form id="experimentForms" class="hidden" method="POST">
+  <!-- <form id="experimentForms" method="POST"> -->
   {% csrf_token %} {{ experiment_formset.management_form }}
   <!-- Include management form here -->
 
@@ -143,6 +145,7 @@
               <button type="submit" class="btn btn-primary" id="startExperimentButton">Start Experiment</button>
             </div>
           </div>
+          <!-- <div id="messageLoadingContainer"></div> -->
         </div>
         <div id="formSectionContainer"></div>
         <!-- Container for dynamically added form sections -->
@@ -161,11 +164,15 @@
 <script>
   $(document).ready(function () {
     // Attach a submit event handler to the form
+    // Add a click event handler to the "Stop Experiment" button
+    $("#stopExperimentButton").on("click", function () {
+      stopExperiment();
+    });
     $("#experimentForms").on("submit", function (event) {
       event.preventDefault(); // Prevent the default form submission
 
       // Serialize the form data
-      var formData = $(this).serialize();
+      let formData = $(this).serialize();
       $("#messageLoadingContainer").html('<div class="alert alert-info" role="alert">Loading...</div>');
       // Make an AJAX POST request only if the form is valid
       if (this.checkValidity()) {
@@ -175,21 +182,25 @@
           data: formData,
           success: function (response) {
             // Handle the response if needed
+            $("#messageLoadingContainer .alert").remove();
             console.log(response);
 
             // Update the message dynamically from the response
-            var messageContainer = $("#messageContainer");
+            let messageContainer = $("#messageContainer");
             messageContainer.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
 
             // Reset the form fields
             $("#experimentForms")[0].reset();
+            $("#experimentForms").addClass("hidden");
+            isUpdating = true;
+            updatePlot(1000);
           },
           error: function (xhr, status, error) {
             // Handle any error that occurs during the request
             console.log(error);
 
             // Update the message dynamically
-            var messageContainer = $("#messageContainer");
+            let messageContainer = $("#messageContainer");
             messageContainer.html('<div class="alert alert-danger alert-dismissible fade show" role="alert">' + xhr.responseJSON.message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
           },
           complete: function () {
@@ -200,56 +211,97 @@
       }
     });
   });
-</script>
-<!-- <script>
+  function getCurrentDateTime() {
+    let now = new Date();
+    let year = now.getFullYear();
+    let month = String(now.getMonth() + 1).padStart(2, "0");
+    let day = String(now.getDate()).padStart(2, "0");
+    let hours = String(now.getHours()).padStart(2, "0");
+    let minutes = String(now.getMinutes()).padStart(2, "0");
+    let seconds = String(now.getSeconds()).padStart(2, "0");
+    let currentDateTime = year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+    return currentDateTime;
+  }
+  let xDate = [];
   // Initialize an empty data array
-  var data = [];
-
+  let laser_scan_end = { x: xDate, y: [], mode: "lines+markers", name: "scan end" };
+  let laser_scan_start = { x: xDate, y: [], mode: "lines+markers", name: "scan start" };
+  let laser_scan_offset = { x: xDate, y: [], mode: "lines+markers", name: "scan offset" };
+  let laser_scan_frequency = { x: xDate, y: [], mode: "lines+markers", name: "scan frequency" };
+  let laser_scan_wavelength = { x: xDate, y: [], mode: "lines+markers", name: "scan wavelength" };
+  let data = [laser_scan_end, laser_scan_start, laser_scan_offset, laser_scan_frequency];
   // Create an empty plot with a layout
-  var layout = {
-    title: "Live Plot",
+  let layout = {
+    title: "Live Plot Laser",
     xaxis: {
       title: "X-axis",
+      type: "date",
     },
     yaxis: {
       title: "Y-axis",
     },
+    autosize: false, // Disable automatic resizing
   };
-
   // Create a plotly object with the data and layout
-  var livePlot = Plotly.newPlot("livePlot", data, layout);
-
+  let livePlot = Plotly.newPlot("livePlot", data, layout);
+  let isUpdating = false;
   // Function to update the plot with new data
-  function updatePlot() {
+  function updatePlot(interval) {
+    if (!isUpdating) return;
+    const currentDate = new Date();
+    $("#livePlot").removeClass("hidden");
     $.ajax({
       url: "{% url 'live_data_rfsoc' %}", // Replace with your Django view URL
       type: "GET",
       dataType: "json",
       success: function (response) {
         // Update the data array with new data points
-        data = response.data;
-
+        laser_scan_end["y"].push(response.laser_scan_end);
+        laser_scan_start["y"].push(response.laser_scan_start);
+        laser_scan_offset["y"].push(response.laser_scan_offset);
+        laser_scan_frequency["y"].push(response.laser_scan_frequency);
+        xDate.push(getCurrentDateTime());
+        // console.log(data);
         // Update the plot with the new data
-        Plotly.update("livePlot", data);
+        let livePlot = Plotly.newPlot("livePlot", data, layout);
       },
       error: function (xhr, status, error) {
         console.log(xhr.responseText);
       },
+      complete: function () {
+        // Call the updatePlot function again after the specified interval
+        setTimeout(function () {
+          updatePlot(interval);
+        }, interval);
+      },
     });
   }
-
-  // Call the updatePlot function every second
-  setInterval(updatePlot, 1000);
-</script> -->
+  function stopExperiment() {
+    isUpdating = false;
+    $.ajax({
+      url: "{% url 'stop_experiment' %}", // Replace with your Django view URL
+      type: "GET",
+      success: function (response) {
+        // Handle the response if needed
+        console.log(response);
+        // Stop the plot updates
+      },
+      error: function (xhr, status, error) {
+        // Handle any error that occurs during the request
+        console.log(error);
+      },
+    });
+  }
+</script>
 
 <script>
-  var statusCaylarElement = $("#caylar_status");
-  var statusLaserElement = $("#laser_status");
-  var statusRFSoCElement = $("#rfsoc_status");
-  var statusMercuryElement = $("#mercury_status");
+  let statusCaylarElement = $("#caylar_status");
+  let statusLaserElement = $("#laser_status");
+  let statusRFSoCElement = $("#rfsoc_status");
+  let statusMercuryElement = $("#mercury_status");
 
   function updateStatusColor(statusElement) {
-    var statusText = statusElement.text().trim();
+    let statusText = statusElement.text().trim();
     statusElement.removeClass("text-success text-danger").css("color", "");
 
     if (statusText === "ON") {
@@ -261,6 +313,7 @@
     }
   }
   function updateStatus() {
+    $("#messageUpdateExpContainer").html('<div class="alert alert-info" role="alert">Please Wait Until The Status Loading Finished</div>');
     $.ajax({
       url: "{% url 'status' %}", // URL mapped to the status view
       type: "GET",
@@ -280,6 +333,7 @@
       },
       complete: function () {
         $("#experimentForms").removeClass("hidden");
+        $("#messageUpdateExpContainer .alert").remove();
       },
     });
   }
