@@ -535,18 +535,63 @@ def stop_experiment(request):
     message = 'Experiment stopped successfully.'
     return JsonResponse({'message': message})
 import json
+import csv
+from datetime import datetime
+def append_to_csv(file_path, data,column_headers):
+    file_exists = os.path.isfile(file_path)
+    with open(file_path, 'a', newline='') as file:
+        writer = csv.writer(file)
+        if not file_exists:
+            writer.writerow(column_headers)
+        writer.writerow(data)
 def get_live_data_and_run_rfsoc(request):
     global GRFSoC
     global GLaser
     global GCaylar
     global GmercuryITC
-
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     laser_scan_end = GLaser.report_scan_end()
     laser_scan_start = GLaser.report_scan_start()
     laser_scan_offset = GLaser.report_scan_offset()
     laser_scan_frequency = GLaser.report_scan_frequency()
     laser_wavelength = GLaser.report_ctl_wavelength_act()
-    data = {'laser_scan_end': laser_scan_end,'laser_scan_start': laser_scan_start,'laser_scan_offset': laser_scan_offset,'laser_scan_frequency': laser_scan_frequency,'laser_wavelength': laser_wavelength}
+    caylar_current = GCaylar.current()
+    caylar_field = GCaylar.field()
+    caylar_ADCDAC_temp = GCaylar.ADCDAC_temp()
+    caylar_box_temp = GCaylar.box_temp()
+    caylar_rack_temp = GCaylar.rack_temp()
+    caylar_water_temp = GCaylar.water_temp()
+    caylar_water_flow = GCaylar.water_flow()
+    itc_heater_power = GmercuryITC.report_heater_power()
+    itc_temperature = GmercuryITC.report_temperature()
+    # Create a list with the data
+    itc_data_row = [timestamp,itc_heater_power,itc_temperature]
+    itc_column_headers = ['timestamp', 'Heater Power','temperature']
+    caylar_column_headers = ['timestamp', 'current', 'field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
+    caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
+    laser_column_headers = ['timestamp', 'scan start', 'scan end', 'scan offset', 'scan frequency', 'wavelength']
+    laser_data_row = [timestamp, laser_scan_start, laser_scan_end, laser_scan_offset, laser_scan_frequency, laser_wavelength]
+    # Append the data to the CSV file
+    laser_csv_file_path = 'laser.csv'
+    caylar_csv_file_path = 'caylar.csv'
+    itc_csv_file_path = 'itc.csv'
+    append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
+    append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
+    append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
+    data = {'laser_scan_end': laser_scan_end,
+            'laser_scan_start': laser_scan_start,
+            'laser_scan_offset': laser_scan_offset,
+            'laser_scan_frequency': laser_scan_frequency,
+            'laser_wavelength': laser_wavelength,
+            'caylar_current': caylar_current,
+            'caylar_field': caylar_field,
+            'caylar_ADCDAC_temp': caylar_ADCDAC_temp,
+            'caylar_box_temp': caylar_box_temp,
+            'caylar_rack_temp': caylar_rack_temp,
+            'caylar_water_temp': caylar_water_temp,
+            'caylar_water_flow': caylar_water_flow,
+            'itc_heater_power': itc_heater_power,
+            'itc_temperature': itc_temperature}
     return JsonResponse(data)
 
 
