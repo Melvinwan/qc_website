@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.shortcuts import render, redirect
 from .construct_object import construct_object, construct_caylar,construct_itc,construct_rfsoc,construct_toptica
 from django.forms.formsets import formset_factory
-from .forms import LaserForm, RFSoCConfigForm, CaylarForm, MercuryForm, ExperimentForm, LaserFormConfig, LaserFormIP, ExperimentFormNew, RFSoCFrequencySequenceForm0,RFSoCFrequencySequenceForm1
+from .forms import LaserForm, RFSoCConfigForm, CaylarForm, MercuryForm, ExperimentForm, LaserFormConfig, LaserFormIP, RFSoCFrequencySequenceForm0,RFSoCFrequencySequenceForm1
 from staticfiles.XMLGenerator import xml_config_to_dict, dict_to_xml_file
 
 from django.contrib import messages

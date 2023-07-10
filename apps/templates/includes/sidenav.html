@@ -18,7 +18,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link {% if 'icons' in segment %} active {% endif %}" href="/icons.html">
+            <a class="nav-link {% if 'history' in segment %} active {% endif %}" href="/history.html">
               <i class="ni ni-planet text-orange"></i>
               <span class="nav-link-text">History</span>
             </a>
@@ -49,7 +49,7 @@
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}">
+            <a class="nav-link" href="{% url 'logout' %}" onclick="return confirmLogout()">
               <i class="ni ni-user-run text-red"></i>
               <span class="nav-link-text">Logout</span>
             </a>
@@ -75,6 +75,11 @@
               <i class="ni ni-send text-dark"></i>
               <span class="nav-link-text">Contact Us</span>
             </a>
+            <script>
+              function confirmLogout() {
+                return confirm("Are you sure you want to logout?");
+              }
+            </script>
           </li>
         </ul>
       </div>
