@@ -111,6 +111,9 @@
   </div>
 </div>
 <div id="livePlot" class="hidden">
+  <button type="button" class="btn btn-danger" id="pauseExperimentButton">Pause Experiment</button>
+  <button type="button" class="btn btn-danger" id="continueExperimentButton">Continue Experiment</button>
+  <button type="button" class="btn btn-danger" id="stopExperimentButton">Stop Experiment</button>
   <div class="col-auto">
     <!-- Placeholder for laser parameters -->
     <div class="parameter-number">Scan End: <span id="laser_scan_end_number">-</span></div>
@@ -119,7 +122,6 @@
     <div class="parameter-number">Scan Frequency: <span id="laser_scan_frequency_number">-</span></div>
     <div class="parameter-number">Scan Wavelength: <span id="laser_scan_wavelength_number">-</span></div>
   </div>
-  <button type="button" class="btn btn-danger" id="stopExperimentButton">Stop Experiment</button>
 </div>
 <div id="livePlotCaylar" class="hidden">
   <div class="col-auto">
@@ -130,7 +132,6 @@
     <div class="parameter-number">Caylar Rack Temp: <span id="caylar_rack_temp_number">-</span></div>
     <div class="parameter-number">Caylar Water Temp: <span id="caylar_water_temp_number">-</span></div>
     <div class="parameter-number">Caylar Water Flow: <span id="caylar_water_flow_number">-</span></div>
-    <button type="button" class="btn btn-danger" id="stopExperimentButton">Stop Experiment</button>
   </div>
 </div>
 <div id="livePlotITC" class="hidden">
@@ -138,7 +139,6 @@
     <!-- Placeholder for ITC parameters -->
     <div class="parameter-number">ITC Heater Power: <span id="itc_heater_power_number">-</span></div>
     <div class="parameter-number">ITC Temperature: <span id="itc_temperature_number">-</span></div>
-    <button type="button" class="btn btn-danger" id="stopExperimentButton">Stop Experiment</button>
   </div>
 </div>
 <!-- Page content -->
@@ -170,6 +170,24 @@
             <label for="id_file_Name">Experiment File:</label>
             <input type="text" class="form-control" id="id_file_Name" name="file_name" />
           </div>
+          <div class="form-group">
+            <label for="id_selected_devices">Select Devices:</label>
+            <div class="col-auto">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="selected_devices[]" id="input-device-laser" value="Laser" />
+                <label class="form-check-label" for="input-device-laser">Laser</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="selected_devices[]" id="input-device-mercuryitc" value="Mercury" />
+                <label class="form-check-label" for="input-device-mercuryitc">MercuryITC</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="selected_devices[]" id="input-device-caylar" value="Caylar" />
+                <label class="form-check-label" for="input-device-caylar">Caylar Magnet</label>
+              </div>
+            </div>
+          </div>
+
           <div class="row px-4">
             <div class="card-body">
               <button type="submit" class="btn btn-primary" id="startExperimentButton">Start Experiment</button>
@@ -192,11 +210,43 @@
 <!-- Include Plotly library -->
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script>
+  function appendToList(listName, element) {
+    if (!Array.isArray(window[listName])) {
+      window[listName] = [];
+    }
+
+    window[listName].push(element);
+
+    if (window[listName].length > 100) {
+      window[listName].shift();
+    }
+  }
+
+  function validateDeviceListForm() {
+    var checkboxes = document.querySelectorAll('input[name="selected_devices[]"]');
+    var checkedCount = 0;
+    for (var i = 0; i < checkboxes.length; i++) {
+      if (checkboxes[i].checked) {
+        checkedCount++;
+      }
+    }
+    if (checkedCount === 0) {
+      alert("Please select at least one device.");
+      return false; // Prevent form submission
+    }
+    return true; // Proceed with form submission
+  }
   $(document).ready(function () {
     // Attach a submit event handler to the form
     // Add a click event handler to the "Stop Experiment" button
     $("#stopExperimentButton").on("click", function () {
       stopExperiment();
+    });
+    $("#pauseExperimentButton").on("click", function () {
+      pauseExperiment();
+    });
+    $("#continueExperimentButton").on("click", function () {
+      continueExperiment();
     });
     $("#experimentForms").on("submit", function (event) {
       event.preventDefault(); // Prevent the default form submission
@@ -205,7 +255,7 @@
       let formData = $(this).serialize();
       $("#messageLoadingContainer").html('<div class="alert alert-info" role="alert">Loading...</div>');
       // Make an AJAX POST request only if the form is valid
-      if (this.checkValidity()) {
+      if (this.checkValidity() && validateDeviceListForm()) {
         $.ajax({
           url: "{% url 'start_experiment' %}",
           type: "POST",
@@ -388,6 +438,12 @@
         console.log(error);
       },
     });
+  }
+  function pauseExperiment() {
+    isUpdating = true;
+  }
+  function continueExperiment() {
+    isUpdating = true;
   }
 </script>
 

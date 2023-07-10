@@ -473,7 +473,8 @@ def start_experiment(request):
     global GLaser
     global GCaylar
     global GmercuryITC
-
+    choosed_device = request.POST.getlist('selected_devices[]')
+    choosed_device.append("RFSoC")
     off_device = ["Laser", "RFSoC", "Mercury", "Caylar"]
     on_device = []
     RFSoC, Laser, Caylar, mercuryITC = construct_object()
@@ -501,8 +502,10 @@ def start_experiment(request):
     GLaser = Laser
     GCaylar = Caylar
     GmercuryITC = mercuryITC
-    if off_device:
-        off_device_names = ", ".join(off_device)
+
+    common_off_devices = set(off_device).intersection(choosed_device)
+    if common_off_devices:
+        off_device_names = ", ".join(common_off_devices)
         message = f"Experiment cannot be started because {off_device_names} are offline."
         for i in on_device:
             i.disconnect()
@@ -513,6 +516,11 @@ def start_experiment(request):
     try:
         os.makedirs(request.POST['file_name'], exist_ok = True)
         print("Directory '%s' created successfully" % request.POST['file_name'])
+        # Create and write the information.txt file
+        file_path = os.path.join(request.POST['file_name'], 'information.txt')
+        with open(file_path, 'w') as file:
+            file.write(f"Experiment Name: {request.POST['experiment_name']}\n")
+            file.write(f"Description: {request.POST['description']}\n")
     except OSError as error:
         print("Directory '%s' can not be created" % request.POST['file_name'])
         message = ("Directory '%s' can not be created" % request.POST['file_name'])
