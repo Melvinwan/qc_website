@@ -423,28 +423,21 @@ def start_experiment(request):
     RFSoC, Laser, Caylar, mercuryITC = construct_object()
     rfsoc_status = "OFF"
     if RFSoC.try_connect():
-        rfsoc_status = "ON"
         on_device.append(RFSoC)
         off_device.remove("RFSoC")
-    laser_status = "OFF"
-    if Laser.try_connect():
-        laser_status = "ON"
+        GRFSoC = RFSoC
+    if Laser.try_connect() and "Laser" in choosed_device:
         on_device.append(Laser)
         off_device.remove("Laser")
-    mercury_status = "OFF"
-    if mercuryITC.try_connect():
-        mercury_status = "ON"
+        GLaser = Laser
+    if mercuryITC.try_connect() and "Mercury" in choosed_device:
         on_device.append(mercuryITC)
         off_device.remove("Mercury")
-    caylar_status = "OFF"
-    if Caylar.try_connect():
-        caylar_status = "ON"
+        GmercuryITC = mercuryITC
+    if Caylar.try_connect() and "Caylar" in choosed_device:
         on_device.append(Caylar)
         off_device.remove("Caylar")
-    GRFSoC = RFSoC
-    GLaser = Laser
-    GCaylar = Caylar
-    GmercuryITC = mercuryITC
+        GCaylar = Caylar
 
     common_off_devices = set(off_device).intersection(choosed_device)
     if common_off_devices:
@@ -452,6 +445,10 @@ def start_experiment(request):
         message = f"Experiment cannot be started because {off_device_names} are offline."
         for i in on_device:
             i.disconnect()
+        GRFSoC = None
+        GLaser = None
+        GCaylar = None
+        GmercuryITC = None
         return JsonResponse({'message': message}, status=400)
 
     # All devices are online, continue with starting the experiment
@@ -501,34 +498,46 @@ def get_live_data_and_run_rfsoc(request):
     global GCaylar
     global GmercuryITC
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    laser_scan_end = GLaser.report_scan_end()
-    laser_scan_start = GLaser.report_scan_start()
-    laser_scan_offset = GLaser.report_scan_offset()
-    laser_scan_frequency = GLaser.report_scan_frequency()
-    laser_wavelength = GLaser.report_ctl_wavelength_act()
-    caylar_current = GCaylar.current()
-    caylar_field = GCaylar.field()
-    caylar_ADCDAC_temp = GCaylar.ADCDAC_temp()
-    caylar_box_temp = GCaylar.box_temp()
-    caylar_rack_temp = GCaylar.rack_temp()
-    caylar_water_temp = GCaylar.water_temp()
-    caylar_water_flow = GCaylar.water_flow()
-    itc_heater_power = GmercuryITC.report_heater_power()
-    itc_temperature = GmercuryITC.report_temperature()
-    # Create a list with the data
-    itc_data_row = [timestamp,itc_heater_power,itc_temperature]
-    itc_column_headers = ['timestamp', 'Heater Power','temperature']
-    caylar_column_headers = ['timestamp', 'current', 'field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
-    caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
-    laser_column_headers = ['timestamp', 'scan start', 'scan end', 'scan offset', 'scan frequency', 'wavelength']
-    laser_data_row = [timestamp, laser_scan_start, laser_scan_end, laser_scan_offset, laser_scan_frequency, laser_wavelength]
-    # Append the data to the CSV file
-    laser_csv_file_path = 'laser.csv'
-    caylar_csv_file_path = 'caylar.csv'
-    itc_csv_file_path = 'itc.csv'
-    append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
-    append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
-    append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
+    laser_status = "OFF"
+    rfsoc_status = "OFF"
+    mercury_status = "OFF"
+    caylar_status = "OFF"
+
+    if GLaser != None:
+        laser_status = "ON"
+        laser_scan_end = GLaser.report_scan_end()
+        laser_scan_start = GLaser.report_scan_start()
+        laser_scan_offset = GLaser.report_scan_offset()
+        laser_scan_frequency = GLaser.report_scan_frequency()
+        laser_wavelength = GLaser.report_ctl_wavelength_act()
+        laser_column_headers = ['timestamp', 'scan start', 'scan end', 'scan offset', 'scan frequency', 'wavelength']
+        laser_data_row = [timestamp, laser_scan_start, laser_scan_end, laser_scan_offset, laser_scan_frequency, laser_wavelength]
+        laser_csv_file_path = 'laser.csv'
+        append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
+    if GCaylar !=None:
+        caylar_status = "ON"
+        caylar_current = GCaylar.current()
+        caylar_field = GCaylar.field()
+        caylar_ADCDAC_temp = GCaylar.ADCDAC_temp()
+        caylar_box_temp = GCaylar.box_temp()
+        caylar_rack_temp = GCaylar.rack_temp()
+        caylar_water_temp = GCaylar.water_temp()
+        caylar_water_flow = GCaylar.water_flow()
+        caylar_column_headers = ['timestamp', 'current', 'field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
+        caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
+        caylar_csv_file_path = 'caylar.csv'
+        append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
+    if GmercuryITC!=None:
+        mercury_status = "ON"
+        itc_heater_power = GmercuryITC.report_heater_power()
+        itc_temperature = GmercuryITC.report_temperature()
+        itc_data_row = [timestamp,itc_heater_power,itc_temperature]
+        itc_column_headers = ['timestamp', 'Heater Power','temperature']
+        itc_csv_file_path = 'itc.csv'
+        append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
+
+
+
     data = {'laser_scan_end': laser_scan_end,
             'laser_scan_start': laser_scan_start,
             'laser_scan_offset': laser_scan_offset,
@@ -542,7 +551,11 @@ def get_live_data_and_run_rfsoc(request):
             'caylar_water_temp': caylar_water_temp,
             'caylar_water_flow': caylar_water_flow,
             'itc_heater_power': itc_heater_power,
-            'itc_temperature': itc_temperature}
+            'itc_temperature': itc_temperature,
+            'rfsoc_status': rfsoc_status,
+            'laser_status': laser_status,
+            'mercury_status': mercury_status,
+            'caylar_status': caylar_status,}
     return JsonResponse(data)
 
 

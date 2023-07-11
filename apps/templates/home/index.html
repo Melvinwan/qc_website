@@ -364,20 +364,7 @@
   // Function to update the plot with new data
   function updatePlot(interval) {
     if (!isUpdating) return;
-    $("#caylar_current_number").text(response.caylar_current);
-    $("#caylar_field_number").text(response.caylar_field);
-    $("#caylar_adcdac_temp_number").text(response.caylar_adcdac_temp);
-    $("#caylar_box_temp_number").text(response.caylar_box_temp);
-    $("#caylar_rack_temp_number").text(response.caylar_rack_temp);
-    $("#caylar_water_temp_number").text(response.caylar_water_temp);
-    $("#caylar_water_flow_number").text(response.caylar_water_flow);
-    $("#itc_heater_power_number").text(response.itc_heater_power);
-    $("#itc_temperature_number").text(response.itc_temperature);
-    $("#laser_scan_end_number").text(response.laser_scan_end);
-    $("#laser_scan_start_number").text(response.laser_scan_start);
-    $("#laser_scan_offset_number").text(response.laser_scan_offset);
-    $("#laser_scan_frequency_number").text(response.laser_scan_frequency);
-    $("#laser_scan_wavelength_number").text(response.laser_scan_wavelength);
+
     const currentDate = new Date();
     $("#livePlot").removeClass("hidden");
     $.ajax({
@@ -386,31 +373,49 @@
       dataType: "json",
       success: function (response) {
         // Update the data array with new data points
-        laser_scan_end["y"].push(response.laser_scan_end);
-        laser_scan_start["y"].push(response.laser_scan_start);
-        laser_scan_offset["y"].push(response.laser_scan_offset);
-        laser_scan_frequency["y"].push(response.laser_scan_frequency);
-        // Update Caylar data
-        caylar_current["y"].push(response.caylar_current);
-        caylar_field["y"].push(response.caylar_field);
-        caylar_adcdac_temp["y"].push(response.caylar_adcdac_temp);
-        caylar_box_temp["y"].push(response.caylar_box_temp);
-        caylar_rack_temp["y"].push(response.caylar_rack_temp);
-        caylar_water_temp["y"].push(response.caylar_water_temp);
-        caylar_water_flow["y"].push(response.caylar_water_flow);
-
-        // Update ITC data
-        itc_heater_power["y"].push(response.itc_heater_power);
-        itc_temperature["y"].push(response.itc_temperature);
         xDate.push(getCurrentDateTime());
         // console.log(data);
-        // Update the plot with the new data
-        let livePlot = Plotly.newPlot("livePlot", laser_data, layout);
-        // Update the Caylar plot with the new data
-        let livePlotCaylar = Plotly.newPlot("livePlotCaylar", caylar_data, layoutCaylar);
-
-        // Update the ITC plot with the new data
-        let livePlotITC = Plotly.newPlot("livePlotITC", itc_data, layoutITC);
+        if (response.caylar_status == "ON") {
+          $("#caylar_current_number").text(response.caylar_current);
+          $("#caylar_field_number").text(response.caylar_field);
+          $("#caylar_adcdac_temp_number").text(response.caylar_adcdac_temp);
+          $("#caylar_box_temp_number").text(response.caylar_box_temp);
+          $("#caylar_rack_temp_number").text(response.caylar_rack_temp);
+          $("#caylar_water_temp_number").text(response.caylar_water_temp);
+          $("#caylar_water_flow_number").text(response.caylar_water_flow);
+          // Update Caylar data
+          caylar_current["y"].push(response.caylar_current);
+          caylar_field["y"].push(response.caylar_field);
+          caylar_adcdac_temp["y"].push(response.caylar_adcdac_temp);
+          caylar_box_temp["y"].push(response.caylar_box_temp);
+          caylar_rack_temp["y"].push(response.caylar_rack_temp);
+          caylar_water_temp["y"].push(response.caylar_water_temp);
+          caylar_water_flow["y"].push(response.caylar_water_flow);
+          // Update the Caylar plot with the new data
+          let livePlotCaylar = Plotly.newPlot("livePlotCaylar", caylar_data, layoutCaylar);
+        }
+        if (response.mercury_status == "ON") {
+          $("#itc_heater_power_number").text(response.itc_heater_power);
+          $("#itc_temperature_number").text(response.itc_temperature);
+          // Update ITC data
+          itc_heater_power["y"].push(response.itc_heater_power);
+          itc_temperature["y"].push(response.itc_temperature);
+          // Update the ITC plot with the new data
+          let livePlotITC = Plotly.newPlot("livePlotITC", itc_data, layoutITC);
+        }
+        if (response.laser_status == "ON") {
+          $("#laser_scan_end_number").text(response.laser_scan_end);
+          $("#laser_scan_start_number").text(response.laser_scan_start);
+          $("#laser_scan_offset_number").text(response.laser_scan_offset);
+          $("#laser_scan_frequency_number").text(response.laser_scan_frequency);
+          $("#laser_scan_wavelength_number").text(response.laser_scan_wavelength);
+          laser_scan_end["y"].push(response.laser_scan_end);
+          laser_scan_start["y"].push(response.laser_scan_start);
+          laser_scan_offset["y"].push(response.laser_scan_offset);
+          laser_scan_frequency["y"].push(response.laser_scan_frequency);
+          // Update the plot with the new data
+          let livePlot = Plotly.newPlot("livePlot", laser_data, layout);
+        }
       },
       error: function (xhr, status, error) {
         console.log(xhr.responseText);
