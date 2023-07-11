@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.shortcuts import render, redirect
 from .construct_object import construct_object, construct_caylar,construct_itc,construct_rfsoc,construct_toptica
 from django.forms.formsets import formset_factory
-from .forms import LaserForm, RFSoCConfigForm, CaylarForm, MercuryForm, ExperimentForm, LaserFormConfig, LaserFormIP, RFSoCFrequencySequenceForm0,RFSoCFrequencySequenceForm1
+from .forms import LaserForm, RFSoCConfigForm, CaylarForm, MercuryForm, ExperimentForm, LaserFormConfig, LaserFormIP, RFSoCEOMSequenceForm, RFSoCAOMSequenceForm
 from staticfiles.XMLGenerator import xml_config_to_dict, dict_to_xml_file
 
 from django.contrib import messages
@@ -200,7 +200,8 @@ def caylar_page_view(request):
 def rfsoc_page_view(request):
     # Load the data from the rfsoc XML file
     Update_rfsoc = construct_rfsoc()
-    connected = Update_rfsoc.try_connect()
+    connected = False
+    # connected = Update_rfsoc.try_connect()
 
     xilinx_host = xml_config_to_dict("staticfiles/xilinx_host.xml")
     #IF FILE IS NOT FOUND MAYBE CAN BUILD ONE
@@ -215,46 +216,54 @@ def rfsoc_page_view(request):
         info = "Parameter has not updated since "+xilinx_host["time_update"]+" because not connected with the device!"
         messages.info(request, info)
 
-    FormsetChannel0 = formset_factory(RFSoCFrequencySequenceForm0, extra=0)
-    FormsetChannel1 = formset_factory(RFSoCFrequencySequenceForm1, extra=0)
+    FormsetChannel = formset_factory(RFSoCEOMSequenceForm, extra=0)
+    FormsetAOM = formset_factory(RFSoCAOMSequenceForm, extra=0)
 
     if request.method == 'POST':
         form = RFSoCConfigForm(request.POST)
-        Formset0 = FormsetChannel0(request.POST,prefix='formset0')
-        Formset1 = FormsetChannel1(request.POST,prefix='formset1')
-        print(Formset0)
+        Formset0 = FormsetChannel(request.POST,prefix='formset0')
+        Formset1 = FormsetAOM(request.POST,prefix='formset1')
 
         if all([form.is_valid(),Formset0.is_valid(),Formset1.is_valid()]):
+            channel0=[]
+            frequency0=[]
+            phase0=[]
+            gain0=[]
             time0 = []
             length0 = []
-            frequency0 = []
             for form0 in Formset0:
-
+                if form0.cleaned_data.get('channel0')!=None:
+                    channel0.append([int(x) for x in form0.cleaned_data.get('channel0')])
                 if form0.cleaned_data.get('time0')!=None:
                     time0.append(form0.cleaned_data.get('time0'))
                 if form0.cleaned_data.get('length0')!=None:
                     length0.append(form0.cleaned_data.get('length0'))
                 if form0.cleaned_data.get('frequency0')!=None:
-                    freq0 = str(form0.cleaned_data.get('frequency0'))
-                    frequency0.append("freq"+freq0+"0")
-            rfsoc_config["EOM"]["time_seq0"] = time0
+                    frequency0.append(form0.cleaned_data.get('frequency0'))
+                if form0.cleaned_data.get('phase0')!=None:
+                    phase0.append(form0.cleaned_data.get('phase0'))
+                if form0.cleaned_data.get('gain0')!=None:
+                    gain0.append(form0.cleaned_data.get('gain0'))
+            rfsoc_config["EOM"]["channel_seq0"] = channel0
             rfsoc_config["EOM"]["freq_seq0"] = frequency0
+            rfsoc_config["EOM"]["phase_seq0"] = phase0
+            rfsoc_config["EOM"]["gain_seq0"] = gain0
+            rfsoc_config["EOM"]["time_seq0"] = time0
             rfsoc_config["EOM"]["lengthseq0"] = length0
             time1 = []
             length1 = []
-            frequency1 = []
+            pins1 = []
             for form1 in Formset1:
 
                 if form1.cleaned_data.get('time1')!=None:
                     time1.append(form1.cleaned_data.get('time1'))
                 if form1.cleaned_data.get('length1')!=None:
                     length1.append(form1.cleaned_data.get('length1'))
-                if form1.cleaned_data.get('frequency1')!=None:
-                    freq1 = str(form1.cleaned_data.get('frequency1'))
-                    frequency1.append("freq"+freq1+"1")
-            rfsoc_config["EOM"]["time_seq1"] = time1
-            rfsoc_config["EOM"]["freq_seq1"] = frequency1
-            rfsoc_config["EOM"]["lengthseq1"] = length1
+                if form1.cleaned_data.get('aom_pins')!=None:
+                    pins1.append([int(x) for x in form1.cleaned_data.get('aom_pins')])
+            rfsoc_config["AOM"]["time_seq1"] = time1
+            rfsoc_config["AOM"]["pins_seq1"] = pins1
+            rfsoc_config["AOM"]["lengthseq1"] = length1
             # Update RFSoC host and port
             xilinx_host["host"] = form.cleaned_data['rfsoc_host']
             xilinx_host["username"] = form.cleaned_data['rfsoc_username']
@@ -272,56 +281,12 @@ def rfsoc_page_view(request):
             rfsoc_config["reps"] = form.cleaned_data['reps']
 
             # Update EOM configuration
-            out_ch = [int(ch) for ch in request.POST.getlist('eom_outch[]')]
-            rfsoc_config["EOM"]["out_ch"] = out_ch
             rfsoc_config["EOM"]["length0"] = form.cleaned_data['eom_length0']
             rfsoc_config["EOM"]["length1"] = form.cleaned_data['eom_length1']
             rfsoc_config["EOM"]["zone0"] = form.cleaned_data['eom_zone0']
             rfsoc_config["EOM"]["mode0"] = form.cleaned_data['eom_mode0']
             rfsoc_config["EOM"]["zone1"] = form.cleaned_data['eom_zone1']
             rfsoc_config["EOM"]["mode1"] = form.cleaned_data['eom_mode1']
-
-            # Update Frequency A0 configuration
-            rfsoc_config["EOM"]["freqA0"]["res_phase"] = form.cleaned_data['freqA0_res_phase']
-            rfsoc_config["EOM"]["freqA0"]["pulse_gain"] = form.cleaned_data['freqA0_pulse_gain']
-            rfsoc_config["EOM"]["freqA0"]["pulse_freq"] = form.cleaned_data['freqA0_pulse_freq']
-
-            # Update Frequency B0 configuration
-            rfsoc_config["EOM"]["freqB0"]["res_phase"] = form.cleaned_data['freqB0_res_phase']
-            rfsoc_config["EOM"]["freqB0"]["pulse_gain"] = form.cleaned_data['freqB0_pulse_gain']
-            rfsoc_config["EOM"]["freqB0"]["pulse_freq"] = form.cleaned_data['freqB0_pulse_freq']
-            # Update Frequency A1 configuration
-            rfsoc_config["EOM"]["freqA1"]["res_phase"] = form.cleaned_data['freqA1_res_phase']
-            rfsoc_config["EOM"]["freqA1"]["pulse_gain"] = form.cleaned_data['freqA1_pulse_gain']
-            rfsoc_config["EOM"]["freqA1"]["pulse_freq"] = form.cleaned_data['freqA1_pulse_freq']
-
-            # Update Frequency B1 configuration
-            rfsoc_config["EOM"]["freqB1"]["res_phase"] = form.cleaned_data['freqB1_res_phase']
-            rfsoc_config["EOM"]["freqB1"]["pulse_gain"] = form.cleaned_data['freqB1_pulse_gain']
-            rfsoc_config["EOM"]["freqB1"]["pulse_freq"] = form.cleaned_data['freqB1_pulse_freq']
-            pins = [int(pin) for pin in request.POST.getlist('selected_pins[]')]
-            rfsoc_config["AOM"]["pins"] = pins
-            # Update AOM configuration
-            lengths = []
-            for i in range(4):
-                length_value = form.cleaned_data.get('aom_length_' + str(i))
-                if length_value!='[]' and i in pins:
-                    length_list = [int(length_str.strip()) for length_str in length_value.split(',') if length_str.strip()]
-                    lengths.append(length_list)
-                else:
-                    lengths.append([])
-            rfsoc_config["AOM"]["length"] = lengths
-
-            times = []
-            for j in range(4):
-                time_value = form.cleaned_data.get('aom_time_' + str(i))
-                if time_value!='[]'and j in pins:
-                    time_list = [int(time_str.strip()) for time_str in time_value.split(',') if time_str.strip()]
-                    times.append(time_list)
-                else:
-                    times.append([])
-            rfsoc_config["AOM"]["time"] = times
-
 
             # Update the rfsoc.xml file
             dict_to_xml_file(rfsoc_config, "staticfiles/xilinx.xml")
@@ -342,18 +307,18 @@ def rfsoc_page_view(request):
             return redirect('rfsoc_page')
     else:
         form = RFSoCConfigForm()
-        initial_data0 = [{'time0': t, 'frequency0': f[-2], 'length0': l} for t, f, l in zip(rfsoc_config["EOM"]["time_seq0"], rfsoc_config["EOM"]["freq_seq0"], rfsoc_config["EOM"]["lengthseq0"])]
-        initial_data1 = [{'time1': t, 'frequency1': f[-2], 'length1': l} for t, f, l in zip(rfsoc_config["EOM"]["time_seq1"], rfsoc_config["EOM"]["freq_seq1"], rfsoc_config["EOM"]["lengthseq1"])]
+        initial_data0 = [{'time0': t, 'channel0': ''.join(map(str,c)), 'length0': l, 'frequency0':f,'phase0':p,'gain0':g} for t, c, l,f,p,g in zip(rfsoc_config["EOM"]["time_seq0"], rfsoc_config["EOM"]["channel_seq0"], rfsoc_config["EOM"]["lengthseq0"], rfsoc_config["EOM"]["freq_seq0"], rfsoc_config["EOM"]["phase_seq0"], rfsoc_config["EOM"]["gain_seq0"])]
+        initial_data1 = [{'time1': t, 'aom_pins': p, 'length1': l} for t, p, l in zip(rfsoc_config["AOM"]["time_seq1"], rfsoc_config["AOM"]["pins_seq1"], rfsoc_config["AOM"]["lengthseq1"])]
         if len(initial_data0)!=0:
-            Formset0 = FormsetChannel0(initial=initial_data0,prefix='formset0')
+            Formset0 = FormsetChannel(initial=initial_data0,prefix='formset0')
         else:
-            FormsetChannel0 = formset_factory(RFSoCFrequencySequenceForm0)
-            Formset0 = FormsetChannel0(prefix='formset0')
+            FormsetChannel = formset_factory(RFSoCEOMSequenceForm)
+            Formset0 = FormsetChannel(prefix='formset0')
         if len(initial_data1)!=0:
-            Formset1 = FormsetChannel1(initial=initial_data1,prefix='formset1')
+            Formset1 = FormsetAOM(initial=initial_data1,prefix='formset1')
         else:
-            FormsetChannel1 = formset_factory(RFSoCFrequencySequenceForm1)
-            Formset1 = FormsetChannel1(prefix='formset1')
+            FormsetAOM = formset_factory(RFSoCAOMSequenceForm)
+            Formset1 = FormsetAOM(prefix='formset1')
 
         # Initialize the form with the current rfsoc information
         form = RFSoCConfigForm(initial={
@@ -367,34 +332,12 @@ def rfsoc_page_view(request):
             'readout_length': rfsoc_config["readout_length"],
             'pulse_freq': rfsoc_config["pulse_freq"],
             'reps': rfsoc_config["reps"],
-            'eom_outch': rfsoc_config["EOM"]["out_ch"],
             'eom_length0': rfsoc_config["EOM"]["length0"],
             'eom_length1': rfsoc_config["EOM"]["length1"],
             'eom_zone0': rfsoc_config["EOM"]["zone0"],
             'eom_mode0': rfsoc_config["EOM"]["mode0"],
             'eom_zone1': rfsoc_config["EOM"]["zone1"],
             'eom_mode1': rfsoc_config["EOM"]["mode1"],
-            'freqA0_res_phase': rfsoc_config["EOM"]["freqA0"]["res_phase"],
-            'freqA0_pulse_gain': rfsoc_config["EOM"]["freqA0"]["pulse_gain"],
-            'freqA0_pulse_freq': rfsoc_config["EOM"]["freqA0"]["pulse_freq"],
-            'freqB0_res_phase': rfsoc_config["EOM"]["freqB0"]["res_phase"],
-            'freqB0_pulse_gain': rfsoc_config["EOM"]["freqB0"]["pulse_gain"],
-            'freqB0_pulse_freq': rfsoc_config["EOM"]["freqB0"]["pulse_freq"],
-            'freqA1_res_phase': rfsoc_config["EOM"]["freqA1"]["res_phase"],
-            'freqA1_pulse_gain': rfsoc_config["EOM"]["freqA1"]["pulse_gain"],
-            'freqA1_pulse_freq': rfsoc_config["EOM"]["freqA1"]["pulse_freq"],
-            'freqB1_res_phase': rfsoc_config["EOM"]["freqB1"]["res_phase"],
-            'freqB1_pulse_gain': rfsoc_config["EOM"]["freqB1"]["pulse_gain"],
-            'freqB1_pulse_freq': rfsoc_config["EOM"]["freqB1"]["pulse_freq"],
-            'aom_pins': rfsoc_config["AOM"]["pins"],
-            'aom_time_0': ', '.join(str(val) for val in rfsoc_config["AOM"]["time"][0]),
-            'aom_time_1': ', '.join(str(val) for val in rfsoc_config["AOM"]["time"][1]),
-            'aom_time_2': ', '.join(str(val) for val in rfsoc_config["AOM"]["time"][2]),
-            'aom_time_3': ', '.join(str(val) for val in rfsoc_config["AOM"]["time"][3]),
-            'aom_length_0': ', '.join(str(val) for val in rfsoc_config["AOM"]["length"][0]),
-            'aom_length_1': ', '.join(str(val) for val in rfsoc_config["AOM"]["length"][1]),
-            'aom_length_2': ', '.join(str(val) for val in rfsoc_config["AOM"]["length"][2]),
-            'aom_length_3': ', '.join(str(val) for val in rfsoc_config["AOM"]["length"][3]),
         })
     context = {
         "form": form,
