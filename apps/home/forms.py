@@ -160,11 +160,22 @@ class CaylarForm(forms.Form):
     caylar_port = forms.IntegerField(label='Port', required=False)
     caylar_current = forms.FloatField(label='Current', required=False)
     caylar_field = forms.FloatField(label='Field', required=False)
-
+class CaylarFormIP(forms.Form):
+    caylar_host = forms.CharField(label='IP Address', max_length=100)
+    caylar_port = forms.IntegerField(label='Port', required=False)
+class CaylarFormConfig(forms.Form):
+    caylar_current = forms.FloatField(label='Current', required=False)
+    caylar_field = forms.FloatField(label='Field', required=False)
 
 class MercuryForm(forms.Form):
     mercury_host = forms.CharField(label='IP Address', max_length=100)
     mercury_port = forms.IntegerField(label='Port', required=False)
+    mercury_heater_power = forms.FloatField(label='Heater Power', required=False)
+    mercury_itc_temperature = forms.FloatField(label='ITC Temperature', required=False)
+class MercuryFormIP(forms.Form):
+    mercury_host = forms.CharField(label='IP Address', max_length=100)
+    mercury_port = forms.IntegerField(label='Port', required=False)
+class MercuryFormConfig(forms.Form):
     mercury_heater_power = forms.FloatField(label='Heater Power', required=False)
     mercury_itc_temperature = forms.FloatField(label='ITC Temperature', required=False)
 class RFSoCConfigForm(forms.Form):

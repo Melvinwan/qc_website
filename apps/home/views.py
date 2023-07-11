@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.shortcuts import render, redirect
 from .construct_object import construct_object, construct_caylar,construct_itc,construct_rfsoc,construct_toptica
 from django.forms.formsets import formset_factory
-from .forms import LaserForm, RFSoCConfigForm, CaylarForm, MercuryForm, ExperimentForm, LaserFormConfig, LaserFormIP, RFSoCEOMSequenceForm, RFSoCAOMSequenceForm
+from .forms import LaserForm, RFSoCConfigForm, CaylarForm, MercuryForm, ExperimentForm, LaserFormConfig, LaserFormIP, RFSoCEOMSequenceForm, RFSoCAOMSequenceForm, CaylarFormIP,CaylarFormConfig,MercuryFormConfig,MercuryFormIP
 from staticfiles.XMLGenerator import xml_config_to_dict, dict_to_xml_file
 
 from django.contrib import messages
@@ -153,26 +153,58 @@ def caylar_page_view(request):
         messages.info(request, info)
 
     if request.method == 'POST':
-        form = CaylarForm(request.POST)
-        if form.is_valid():
-            caylar_host["host"] = form.cleaned_data['caylar_host']
-            caylar_host["port"] = form.cleaned_data['caylar_port']
-            caylar_host["current"] = form.cleaned_data['caylar_current']
-            caylar_host["field"] = form.cleaned_data['caylar_field']
-            dict_to_xml_file(caylar_host, "staticfiles/caylar.xml")
+        if "updateall" in request.POST:
+            form = CaylarForm(request.POST)
+            if form.is_valid():
+                caylar_host["host"] = form.cleaned_data['caylar_host']
+                caylar_host["port"] = form.cleaned_data['caylar_port']
+                caylar_host["current"] = form.cleaned_data['caylar_current']
+                caylar_host["field"] = form.cleaned_data['caylar_field']
+                dict_to_xml_file(caylar_host, "staticfiles/caylar.xml")
 
-            if connected:
-                Update_caylar.update_all_xml("staticfiles/caylar.xml")
-                messages.success(request, 'Changes saved successfully in Caylar!')
+                if connected:
+                    Update_caylar.update_all_xml("staticfiles/caylar.xml")
+                    messages.success(request, 'Changes saved successfully in Caylar!')
+                else:
+                    # Add success message to the Django messages framework
+                    messages.success(request, 'Changes saved successfully in XML!')
+
+                # Redirect to the magnet page to reload the page with the updated values
+                return redirect('caylar_page')
             else:
-                # Add success message to the Django messages framework
+                messages.warning(request, 'Cannot be updated!')
+                return redirect('caylar_page')
+        elif "updateip" in request.POST:
+            form = CaylarFormIP(request.POST)
+            if form.is_valid():
+                caylar_host["host"] = form.cleaned_data['caylar_host']
+                caylar_host["port"] = form.cleaned_data['caylar_port']
+                dict_to_xml_file(caylar_host, "staticfiles/caylar.xml")
                 messages.success(request, 'Changes saved successfully in XML!')
+                # Redirect to the magnet page to reload the page with the updated values
+                return redirect('caylar_page')
+            else:
+                messages.warning(request, 'Cannot be updated!')
+                return redirect('caylar_page')
+        elif "updateconfig" in request.POST:
+            form = CaylarFormConfig(request.POST)
+            if form.is_valid():
+                caylar_host["current"] = form.cleaned_data['caylar_current']
+                caylar_host["field"] = form.cleaned_data['caylar_field']
+                dict_to_xml_file(caylar_host, "staticfiles/caylar.xml")
 
-            # Redirect to the magnet page to reload the page with the updated values
-            return redirect('caylar_page')
-        else:
-            messages.warning(request, 'Cannot be updated!')
-            return redirect('caylar_page')
+                if connected:
+                    Update_caylar.update_all_xml("staticfiles/caylar.xml")
+                    messages.success(request, 'Changes saved successfully in Caylar!')
+                else:
+                    # Add success message to the Django messages framework
+                    messages.success(request, 'Changes saved successfully in XML!')
+
+                # Redirect to the magnet page to reload the page with the updated values
+                return redirect('caylar_page')
+            else:
+                messages.warning(request, 'Cannot be updated!')
+                return redirect('caylar_page')
     else:
         # Initialize the form with the current magnet information
         form = CaylarForm(initial={
@@ -366,26 +398,54 @@ def mercury_page_view(request):
         mercury_host = {}
 
     if request.method == 'POST':
-        form = MercuryForm(request.POST)
-        if form.is_valid():
-            mercury_host["host"] = form.cleaned_data['mercury_host']
-            mercury_host["port"] = form.cleaned_data['mercury_port']
-            mercury_host["heater_power"] = form.cleaned_data['mercury_heater_power']
-            mercury_host["ITC_temperature"] = form.cleaned_data['mercury_itc_temperature']
-            dict_to_xml_file(mercury_host, "staticfiles/mercuryITC.xml")
+        if "updateall" in request.POST:
+            form = MercuryForm(request.POST)
+            if form.is_valid():
+                mercury_host["host"] = form.cleaned_data['mercury_host']
+                mercury_host["port"] = form.cleaned_data['mercury_port']
+                mercury_host["heater_power"] = form.cleaned_data['mercury_heater_power']
+                mercury_host["ITC_temperature"] = form.cleaned_data['mercury_itc_temperature']
+                dict_to_xml_file(mercury_host, "staticfiles/mercuryITC.xml")
 
-            if connected:
-                Update_mercury.update_all_xml("staticfiles/mercuryITC.xml")
-                messages.success(request, 'Changes saved successfully in MercuryITC!')
+                if connected:
+                    Update_mercury.update_all_xml("staticfiles/mercuryITC.xml")
+                    messages.success(request, 'Changes saved successfully in MercuryITC!')
+                else:
+                    # Add success message to the Django messages framework
+                    messages.success(request, 'Changes saved successfully in XML!')
+
+                # Redirect to the cryostat page to reload the page with the updated values
+                return redirect('mercury_page')
             else:
+                messages.warning(request, 'Cannot be updated!')
+                return redirect('mercury_page')
+        elif "updateip" in request.POST:
+            form = MercuryFormIP(request.POST)
+            if form.is_valid():
+                mercury_host["host"] = form.cleaned_data['mercury_host']
+                mercury_host["port"] = form.cleaned_data['mercury_port']
+                dict_to_xml_file(mercury_host, "staticfiles/mercuryITC.xml")
                 # Add success message to the Django messages framework
                 messages.success(request, 'Changes saved successfully in XML!')
+        elif "updateconfig" in request.POST:
+            form = MercuryFormConfig(request.POST)
+            if form.is_valid():
+                mercury_host["heater_power"] = form.cleaned_data['mercury_heater_power']
+                mercury_host["ITC_temperature"] = form.cleaned_data['mercury_itc_temperature']
+                dict_to_xml_file(mercury_host, "staticfiles/mercuryITC.xml")
 
-            # Redirect to the cryostat page to reload the page with the updated values
-            return redirect('mercury_page')
-        else:
-            messages.warning(request, 'Cannot be updated!')
-            return redirect('mercury_page')
+                if connected:
+                    Update_mercury.update_all_xml("staticfiles/mercuryITC.xml")
+                    messages.success(request, 'Changes saved successfully in MercuryITC!')
+                else:
+                    # Add success message to the Django messages framework
+                    messages.success(request, 'Changes saved successfully in XML!')
+
+                # Redirect to the cryostat page to reload the page with the updated values
+                return redirect('mercury_page')
+            else:
+                messages.warning(request, 'Cannot be updated!')
+                return redirect('mercury_page')
     else:
         # Initialize the form with the current cryostat information
         form = MercuryForm(initial={
@@ -556,7 +616,6 @@ def get_live_data_and_run_rfsoc(request):
 @login_required(login_url="/login/")
 def index(request):
     form = ExperimentForm()
-
     return render(request, 'home/index.html', {'form': form, 'run':True})
 
 # URFSoC = None

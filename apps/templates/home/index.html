@@ -110,6 +110,7 @@
     <div id="messageUpdateExpContainer"></div>
   </div>
 </div>
+<div id="messageLaserOff"></div>
 <div id="livePlot" class="hidden">
   <button type="button" class="btn btn-danger" id="pauseExperimentButton">Pause Experiment</button>
   <button type="button" class="btn btn-danger" id="continueExperimentButton">Continue Experiment</button>
@@ -123,6 +124,7 @@
     <div class="parameter-number">Scan Wavelength: <span id="laser_scan_wavelength_number">-</span></div>
   </div>
 </div>
+<div id="messageCaylarOff"></div>
 <div id="livePlotCaylar" class="hidden">
   <div class="col-auto">
     <div class="parameter-number">Caylar Current: <span id="caylar_current_number">-</span></div>
@@ -134,6 +136,7 @@
     <div class="parameter-number">Caylar Water Flow: <span id="caylar_water_flow_number">-</span></div>
   </div>
 </div>
+<div id="messageITCOff"></div>
 <div id="livePlotITC" class="hidden">
   <div class="col-auto">
     <!-- Placeholder for ITC parameters -->
@@ -262,6 +265,7 @@
           data: formData,
           success: function (response) {
             // Handle the response if needed
+            isDashboardUpdating = false;
             $("#messageLoadingContainer .alert").remove();
             console.log(response);
 
@@ -361,12 +365,13 @@
   // Create a plotly object with the laser_data and layout
   // let livePlot = Plotly.newPlot("livePlot", laser_data, layout);
   let isUpdating = false;
+
   // Function to update the plot with new data
   function updatePlot(interval) {
     if (!isUpdating) return;
 
     const currentDate = new Date();
-    $("#livePlot").removeClass("hidden");
+
     $.ajax({
       url: "{% url 'live_data_rfsoc' %}", // Replace with your Django view URL
       type: "GET",
@@ -376,6 +381,7 @@
         xDate.push(getCurrentDateTime());
         // console.log(data);
         if (response.caylar_status == "ON") {
+          $("#livePlotCaylar").removeClass("hidden");
           $("#caylar_current_number").text(response.caylar_current);
           $("#caylar_field_number").text(response.caylar_field);
           $("#caylar_adcdac_temp_number").text(response.caylar_adcdac_temp);
@@ -384,37 +390,48 @@
           $("#caylar_water_temp_number").text(response.caylar_water_temp);
           $("#caylar_water_flow_number").text(response.caylar_water_flow);
           // Update Caylar data
-          caylar_current["y"].push(response.caylar_current);
-          caylar_field["y"].push(response.caylar_field);
-          caylar_adcdac_temp["y"].push(response.caylar_adcdac_temp);
-          caylar_box_temp["y"].push(response.caylar_box_temp);
-          caylar_rack_temp["y"].push(response.caylar_rack_temp);
-          caylar_water_temp["y"].push(response.caylar_water_temp);
-          caylar_water_flow["y"].push(response.caylar_water_flow);
+          appendToList(caylar_current["y"], response.caylar_current);
+          appendToList(caylar_field["y"], response.caylar_field);
+          appendToList(caylar_adcdac_temp["y"], response.caylar_adcdac_temp);
+          appendToList(caylar_box_temp["y"], response.caylar_box_temp);
+          appendToList(caylar_rack_temp["y"], response.caylar_rack_temp);
+          appendToList(caylar_water_temp["y"], response.caylar_water_temp);
+          appendToList(caylar_water_flow["y"], response.caylar_water_flow);
           // Update the Caylar plot with the new data
           let livePlotCaylar = Plotly.newPlot("livePlotCaylar", caylar_data, layoutCaylar);
+        } else {
+          let messageCaylarOff = $("#messageCaylarOff");
+          messageCaylarOff.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + "Caylar is OFF" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
         }
         if (response.mercury_status == "ON") {
+          $("#livePlotITC").removeClass("hidden");
           $("#itc_heater_power_number").text(response.itc_heater_power);
           $("#itc_temperature_number").text(response.itc_temperature);
           // Update ITC data
-          itc_heater_power["y"].push(response.itc_heater_power);
-          itc_temperature["y"].push(response.itc_temperature);
+          appendToList(itc_heater_power["y"], response.itc_heater_power);
+          appendToList(itc_temperature["y"], response.itc_temperature);
           // Update the ITC plot with the new data
           let livePlotITC = Plotly.newPlot("livePlotITC", itc_data, layoutITC);
+        } else {
+          let messageITCOff = $("#messageITCOff");
+          messageITCOff.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + "ITC is OFF" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
         }
         if (response.laser_status == "ON") {
+          $("#livePlot").removeClass("hidden");
           $("#laser_scan_end_number").text(response.laser_scan_end);
           $("#laser_scan_start_number").text(response.laser_scan_start);
           $("#laser_scan_offset_number").text(response.laser_scan_offset);
           $("#laser_scan_frequency_number").text(response.laser_scan_frequency);
           $("#laser_scan_wavelength_number").text(response.laser_scan_wavelength);
-          laser_scan_end["y"].push(response.laser_scan_end);
-          laser_scan_start["y"].push(response.laser_scan_start);
-          laser_scan_offset["y"].push(response.laser_scan_offset);
-          laser_scan_frequency["y"].push(response.laser_scan_frequency);
+          appendToList(laser_scan_end["y"], response.laser_scan_end);
+          appendToList(laser_scan_start["y"], response.laser_scan_start);
+          appendToList(laser_scan_offset["y"], response.laser_scan_offset);
+          appendToList(laser_scan_frequency["y"], response.laser_scan_frequency);
           // Update the plot with the new data
           let livePlot = Plotly.newPlot("livePlot", laser_data, layout);
+        } else {
+          let messageLaserOff = $("#messageLaserOff");
+          messageLaserOff.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + "Laser is OFF" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
         }
       },
       error: function (xhr, status, error) {
@@ -467,6 +484,78 @@
       statusElement.css("color", "#adb5bd"); // Set text color to #adb5bd (gray)
     }
   }
+  let isDashboardUpdating = false;
+  function DashboardPlot(interval) {
+    if (!isDashboardUpdating) return;
+    $.ajax({
+      url: "{% url 'plot' %}", // URL mapped to the status view
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        xDate.push(getCurrentDateTime());
+        // console.log(data);
+        if (response.caylar_status == "ON") {
+          $("#livePlotCaylar").removeClass("hidden");
+          $("#caylar_current_number").text(response.caylar_current);
+          $("#caylar_field_number").text(response.caylar_field);
+          $("#caylar_adcdac_temp_number").text(response.caylar_adcdac_temp);
+          $("#caylar_box_temp_number").text(response.caylar_box_temp);
+          $("#caylar_rack_temp_number").text(response.caylar_rack_temp);
+          $("#caylar_water_temp_number").text(response.caylar_water_temp);
+          $("#caylar_water_flow_number").text(response.caylar_water_flow);
+          // Update Caylar data
+          appendToList(caylar_current["y"], response.caylar_current);
+          appendToList(caylar_field["y"], response.caylar_field);
+          appendToList(caylar_adcdac_temp["y"], response.caylar_adcdac_temp);
+          appendToList(caylar_box_temp["y"], response.caylar_box_temp);
+          appendToList(caylar_rack_temp["y"], response.caylar_rack_temp);
+          appendToList(caylar_water_temp["y"], response.caylar_water_temp);
+          appendToList(caylar_water_flow["y"], response.caylar_water_flow);
+          // Update the Caylar plot with the new data
+          let livePlotCaylar = Plotly.newPlot("livePlotCaylar", caylar_data, layoutCaylar);
+        } else {
+          $("#livePlotCaylar").addClass("hidden");
+        }
+        if (response.mercury_status == "ON") {
+          $("#livePlotITC").removeClass("hidden");
+          $("#itc_heater_power_number").text(response.itc_heater_power);
+          $("#itc_temperature_number").text(response.itc_temperature);
+          // Update ITC data
+          appendToList(itc_heater_power["y"], response.itc_heater_power);
+          appendToList(itc_temperature["y"], response.itc_temperature);
+          // Update the ITC plot with the new data
+          let livePlotITC = Plotly.newPlot("livePlotITC", itc_data, layoutITC);
+        } else {
+          $("#livePlotITC").addClass("hidden");
+        }
+        if (response.laser_status == "ON") {
+          $("#livePlot").removeClass("hidden");
+          $("#laser_scan_end_number").text(response.laser_scan_end);
+          $("#laser_scan_start_number").text(response.laser_scan_start);
+          $("#laser_scan_offset_number").text(response.laser_scan_offset);
+          $("#laser_scan_frequency_number").text(response.laser_scan_frequency);
+          $("#laser_scan_wavelength_number").text(response.laser_scan_wavelength);
+          appendToList(laser_scan_end["y"], response.laser_scan_end);
+          appendToList(laser_scan_start["y"], response.laser_scan_start);
+          appendToList(laser_scan_offset["y"], response.laser_scan_offset);
+          appendToList(laser_scan_frequency["y"], response.laser_scan_frequency);
+          // Update the plot with the new data
+          let livePlot = Plotly.newPlot("livePlot", laser_data, layout);
+        } else {
+          $("#livePlot").addClass("hidden");
+        }
+      },
+      error: function (xhr, status, error) {
+        console.log(xhr.responseText);
+      },
+      complete: function () {
+        // Call the updatePlot function again after the specified interval
+        setTimeout(function () {
+          DashboardPlot(interval);
+        }, interval);
+      },
+    });
+  }
   function updateStatus() {
     $("#messageUpdateExpContainer").html('<div class="alert alert-info" role="alert">Please Wait Until The Status Loading Finished</div>');
     $.ajax({
@@ -489,6 +578,8 @@
       complete: function () {
         $("#experimentForms").removeClass("hidden");
         $("#messageUpdateExpContainer .alert").remove();
+        isDashboardUpdating = true;
+        DashboardPlot(1000);
       },
     });
   }
