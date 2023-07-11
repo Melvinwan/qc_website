@@ -498,13 +498,13 @@ def get_live_data_and_run_rfsoc(request):
     global GCaylar
     global GmercuryITC
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    laser_status = "OFF"
-    rfsoc_status = "OFF"
-    mercury_status = "OFF"
-    caylar_status = "OFF"
 
+    data = {'laser_status' : "OFF",
+    'rfsoc_status' : "OFF",
+    'mercury_status' : "OFF",
+    'caylar_status' : "OFF"}
     if GLaser != None:
-        laser_status = "ON"
+        data['laser_status'] = "ON"
         laser_scan_end = GLaser.report_scan_end()
         laser_scan_start = GLaser.report_scan_start()
         laser_scan_offset = GLaser.report_scan_offset()
@@ -514,8 +514,13 @@ def get_live_data_and_run_rfsoc(request):
         laser_data_row = [timestamp, laser_scan_start, laser_scan_end, laser_scan_offset, laser_scan_frequency, laser_wavelength]
         laser_csv_file_path = 'laser.csv'
         append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
+        data['laser_scan_end']= laser_scan_end,
+        data['laser_scan_start']= laser_scan_start,
+        data['laser_scan_offset']= laser_scan_offset,
+        data['laser_scan_frequency']= laser_scan_frequency,
+        data['laser_wavelength']= laser_wavelength,
     if GCaylar !=None:
-        caylar_status = "ON"
+        data['caylar_status'] = "ON"
         caylar_current = GCaylar.current()
         caylar_field = GCaylar.field()
         caylar_ADCDAC_temp = GCaylar.ADCDAC_temp()
@@ -527,74 +532,110 @@ def get_live_data_and_run_rfsoc(request):
         caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
         caylar_csv_file_path = 'caylar.csv'
         append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
+        data['caylar_current']= caylar_current,
+        data['caylar_field']= caylar_field,
+        data['caylar_ADCDAC_temp']= caylar_ADCDAC_temp,
+        data['caylar_box_temp']= caylar_box_temp,
+        data['caylar_rack_temp']= caylar_rack_temp,
+        data['caylar_water_temp']= caylar_water_temp,
+        data['caylar_water_flow']= caylar_water_flow,
     if GmercuryITC!=None:
-        mercury_status = "ON"
+        data['mercury_status'] = "ON"
         itc_heater_power = GmercuryITC.report_heater_power()
         itc_temperature = GmercuryITC.report_temperature()
         itc_data_row = [timestamp,itc_heater_power,itc_temperature]
         itc_column_headers = ['timestamp', 'Heater Power','temperature']
         itc_csv_file_path = 'itc.csv'
         append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
+        data['itc_heater_power']= itc_heater_power,
+        data['itc_temperature']= itc_temperature,
 
-
-
-    data = {'laser_scan_end': laser_scan_end,
-            'laser_scan_start': laser_scan_start,
-            'laser_scan_offset': laser_scan_offset,
-            'laser_scan_frequency': laser_scan_frequency,
-            'laser_wavelength': laser_wavelength,
-            'caylar_current': caylar_current,
-            'caylar_field': caylar_field,
-            'caylar_ADCDAC_temp': caylar_ADCDAC_temp,
-            'caylar_box_temp': caylar_box_temp,
-            'caylar_rack_temp': caylar_rack_temp,
-            'caylar_water_temp': caylar_water_temp,
-            'caylar_water_flow': caylar_water_flow,
-            'itc_heater_power': itc_heater_power,
-            'itc_temperature': itc_temperature,
-            'rfsoc_status': rfsoc_status,
-            'laser_status': laser_status,
-            'mercury_status': mercury_status,
-            'caylar_status': caylar_status,}
     return JsonResponse(data)
 
 
 @login_required(login_url="/login/")
 def index(request):
-    # if request.method == 'POST':
-    #     form = ExperimentForm(request.POST)
-    #     print(form)
-    #     if form.is_valid():
-    #         experiment_name = form.cleaned_data.get('experiment_name')
-    #         description = form.cleaned_data['description']
-    #         file_name = form.cleaned_data['file_name']
-
-    #         # Perform further processing or save the data to the database
-    #         # ...
-    #     else:
-    #         messages.warning(request, 'Cannot be updated!')
-    #         return render(request, 'home/index.html', {'form': form, 'run':False})
-    # else:
     form = ExperimentForm()
 
     return render(request, 'home/index.html', {'form': form, 'run':True})
+
+# URFSoC = None
+ULaser = None
+UCaylar = None
+UmercuryITC = None
+def update_live_plot(request):
+    global ULaser
+    global UCaylar
+    global UmercuryITC
+
+    data = {'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+    if GLaser != None:
+        data['laser_status'] = "ON"
+        laser_scan_end = GLaser.report_scan_end()
+        laser_scan_start = GLaser.report_scan_start()
+        laser_scan_offset = GLaser.report_scan_offset()
+        laser_scan_frequency = GLaser.report_scan_frequency()
+        laser_wavelength = GLaser.report_ctl_wavelength_act()
+        data['laser_scan_end']= laser_scan_end,
+        data['laser_scan_start']= laser_scan_start,
+        data['laser_scan_offset']= laser_scan_offset,
+        data['laser_scan_frequency']= laser_scan_frequency,
+        data['laser_wavelength']= laser_wavelength,
+    if GCaylar !=None:
+        data['caylar_status'] = "ON"
+        caylar_current = GCaylar.current()
+        caylar_field = GCaylar.field()
+        caylar_ADCDAC_temp = GCaylar.ADCDAC_temp()
+        caylar_box_temp = GCaylar.box_temp()
+        caylar_rack_temp = GCaylar.rack_temp()
+        caylar_water_temp = GCaylar.water_temp()
+        caylar_water_flow = GCaylar.water_flow()
+        data['caylar_current']= caylar_current,
+        data['caylar_field']= caylar_field,
+        data['caylar_ADCDAC_temp']= caylar_ADCDAC_temp,
+        data['caylar_box_temp']= caylar_box_temp,
+        data['caylar_rack_temp']= caylar_rack_temp,
+        data['caylar_water_temp']= caylar_water_temp,
+        data['caylar_water_flow']= caylar_water_flow,
+    if GmercuryITC!=None:
+        data['mercury_status'] = "ON"
+        itc_heater_power = GmercuryITC.report_heater_power()
+        itc_temperature = GmercuryITC.report_temperature()
+        data['itc_heater_power']= itc_heater_power,
+        data['itc_temperature']= itc_temperature,
+
+    return JsonResponse(data)
 def status(request):
+    # global URFSoC
+    global ULaser
+    global UCaylar
+    global UmercuryITC
+    if ULaser!=None:
+        ULaser.disconnect()
+        ULaser = None
+    if UCaylar != None:
+        UCaylar = None
+    if UmercuryITC != None:
+        UmercuryITC = None
     RFSoC, Laser, Caylar, mercuryITC = construct_object()
 
     if RFSoC.try_connect():
         rfsoc_status = "ON"
+        URFSoC = RFSoC
     else:
         rfsoc_status = "OFF"
 
     if Laser.try_connect():
         laser_status = "ON"
-        Laser.disconnect()
+        ULaser = Laser
+        # Laser.disconnect()
     else:
         laser_status = "OFF"
 
 
     if mercuryITC.try_connect():
         mercury_status = "ON"
+        UmercuryITC = mercuryITC
     else:
         mercury_status = "OFF"
 
