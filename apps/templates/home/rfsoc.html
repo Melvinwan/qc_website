@@ -41,7 +41,7 @@
                 <div class="row ml-1">
                   <button type="submit" class="btn btn-sm btn-primary" name="updateall">Update All</button>
                   <button type="submit" class="btn btn-sm btn-primary" name="updateip">Update IP</button>
-                  <button type="submit" class="btn btn-sm btn-primary" name="updateconfig">Update Config</button>
+                  <!-- <button type="submit" class="btn btn-sm btn-primary" name="updateconfig">Update Config</button> -->
                 </div>
                 <div class="col-6 text-right">
                   <a href="{% url 'home' %}" class="btn btn-sm btn-secondary">Back</a>
@@ -204,7 +204,7 @@
                     <tbody id="empty-form0" class="hidden">
                       <tr>
                         <td>
-                          <select name="channel0" required>
+                          <select name="channel0">
                             <option>--Select--</option>
                             <option value="0">0</option>
                             <option value="1">1</option>
@@ -212,19 +212,19 @@
                           </select>
                         </td>
                         <td>
-                          <input style="width: 100%" type="number" step="any" name="frequency0" required/>
+                          <input style="width: 100%" type="number" step="any" name="frequency0"/>
                         </td>
                         <td>
-                          <input style="width: 100%" type="number" step="any" name="phase0" required/>
+                          <input style="width: 100%" type="number" step="any" name="phase0"/>
                         </td>
                         <td>
-                          <input style="width: 100%" type="number" step="any" name="gain0" required/>
+                          <input style="width: 100%" type="number" step="any" name="gain0"/>
                         </td>
                         <td>
-                          <input style="width: 100%" type="number" step="any" name="time0" required/>
+                          <input style="width: 100%" type="number" step="any" name="time0"/>
                         </td>
                         <td>
-                          <input style="width: 100%" type="number" step="any" name="length0" required/>
+                          <input style="width: 100%" type="number" step="any" name="length0"/>
                         </td>
                         <td>
                           <button style="width: 100%" type="button" class="btn btn-sm btn-danger delete-btn0">Delete</button>
@@ -235,7 +235,7 @@
                     <tbody id="formset0-{{ forloop.counter|add:'-1' }}" class="channel0-form">
                       <tr>
                         <td>
-                          <select name="formset0-{{ forloop.counter|add:'-1' }}-channel0" required>
+                          <select name="formset0-{{ forloop.counter|add:'-1' }}-channel0">
                             {% if form0.channel0.value == '0' %}
                             <option>--Select--</option>
                             <option value="0" selected>0</option>
@@ -259,11 +259,11 @@
                             {% endif %}
                           </select>
                         </td>
-                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-frequency0" name="formset0-{{ forloop.counter|add:'-1' }}-frequency0" value="{{ form0.frequency0.value }}" required/></td>
-                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-phase0" name="formset0-{{ forloop.counter|add:'-1' }}-phase0" value="{{ form0.phase0.value }}" required/></td>
-                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-gain0" name="formset0-{{ forloop.counter|add:'-1' }}-gain0" value="{{ form0.gain0.value }}" required/></td>
-                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-time0" name="formset0-{{ forloop.counter|add:'-1' }}-time0" value="{{ form0.time0.value }}" required/></td>
-                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-length0" name="formset0-{{ forloop.counter|add:'-1' }}-length0" value="{{ form0.length0.value }}" required/></td>
+                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-frequency0" name="formset0-{{ forloop.counter|add:'-1' }}-frequency0" value="{{ form0.frequency0.value }}"/></td>
+                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-phase0" name="formset0-{{ forloop.counter|add:'-1' }}-phase0" value="{{ form0.phase0.value }}"/></td>
+                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-gain0" name="formset0-{{ forloop.counter|add:'-1' }}-gain0" value="{{ form0.gain0.value }}"/></td>
+                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-time0" name="formset0-{{ forloop.counter|add:'-1' }}-time0" value="{{ form0.time0.value }}"/></td>
+                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-length0" name="formset0-{{ forloop.counter|add:'-1' }}-length0" value="{{ form0.length0.value }}"/></td>
                         <td>
                           <button type="button" class="btn btn-sm btn-danger delete-btn0">Delete</button>
                         </td>
@@ -316,10 +316,10 @@
                   </td>
 
                   <td>
-                    <input type="number" step="any" name="time1" required/>
+                    <input type="number" step="any" name="time1"/>
                   </td>
                   <td>
-                    <input type="number" step="any" name="length1" required/>
+                    <input type="number" step="any" name="length1"/>
                   </td>
                   <td>
                     <button type="button" class="btn btn-sm btn-danger delete-btn1">Delete</button>
@@ -369,7 +369,7 @@
                   <div class="row ml-1">
                     <button type="submit" class="btn btn-sm btn-primary" name="updateall">Update All</button>
                     <button type="submit" class="btn btn-sm btn-primary" name="updateip">Update IP</button>
-                    <button type="submit" class="btn btn-sm btn-primary" name="updateconfig">Update Config</button>
+                    <!-- <button type="submit" class="btn btn-sm btn-primary" name="updateconfig">Update Config</button> -->
                   </div>
                 </div>
                 <div class="col-6 text-right">

@@ -62,12 +62,11 @@ class MultiSequenceProgram(AveragerProgram):
 
         #EOM
         self.trigger(adcs=[0,1],adc_trig_offset=cfg["adc_trig_offset"])  # trigger the adc acquisition
-        for ii, ch in enumerate(cfg["EOM"]['out_ch']):
-            for jj,freq in enumerate(cfg["EOM"]["freq_seq"+str(ch)]):
-                #PULSE REGISTER AT CHANNEL 0 and 1
-                self.set_pulse_registers(ch=ch, freq=soccfg.freq2reg(cfg["EOM"][freq]["pulse_freq"]), phase=soccfg.deg2reg(cfg["EOM"][freq]["res_phase"]), gain=cfg["EOM"][freq]["pulse_gain"])
+        for ii, chseq in enumerate(cfg["EOM"]['channel_seq0']):
+            for kk, ch in enumerate(chseq):
+                self.set_pulse_registers(ch=ch, freq=soccfg.freq2reg(cfg["EOM"]["freq_seq0"][ii]), phase=soccfg.deg2reg(cfg["EOM"]["phase_seq0"][ii]), gain=cfg["EOM"]["gain_seq0"][ii])
                 #PULSE AT CHANNEL 0 and 1
-                self.pulse(ch=ch, t=cfg["EOM"]["time_seq"+str(ch)][jj]) # play readout pulse
+                self.pulse(ch=ch, t=cfg["EOM"]["time_seq"][ii]) # play readout pulse
 
         #AOM
         self.cfg["AOM"]["time"] = divide_nested_list(self.cfg["AOM"]["time"],2.6)

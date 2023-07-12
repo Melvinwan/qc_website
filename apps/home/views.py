@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.shortcuts import render, redirect
 from .construct_object import construct_object, construct_caylar,construct_itc,construct_rfsoc,construct_toptica
 from django.forms.formsets import formset_factory
-from .forms import LaserForm, RFSoCConfigForm, CaylarForm, MercuryForm, ExperimentForm, LaserFormConfig, LaserFormIP, RFSoCEOMSequenceForm, RFSoCAOMSequenceForm, CaylarFormIP,CaylarFormConfig,MercuryFormConfig,MercuryFormIP
+from .forms import LaserForm, RFSoCConfigForm,RFSoCConfigFormIP, CaylarForm, MercuryForm, ExperimentForm, LaserFormConfig, LaserFormIP, RFSoCEOMSequenceForm, RFSoCAOMSequenceForm, CaylarFormIP,CaylarFormConfig,MercuryFormConfig,MercuryFormIP
 from staticfiles.XMLGenerator import xml_config_to_dict, dict_to_xml_file
 
 from django.contrib import messages
@@ -138,13 +138,19 @@ def laser_page_view(request):
 # views.py
 def caylar_page_view(request):
     # Load the data from the magnet XML file
+    context={}
     Update_caylar = construct_caylar()
     connected = Update_caylar.try_connect()
     caylar_host = xml_config_to_dict("staticfiles/caylar.xml")
     if connected:
         Update_caylar.update_all_xml("staticfiles/caylar.xml")
-        caylar_host["current"] = Update_caylar.current()
-        caylar_host["field"] =  Update_caylar.field()
+        context["current"] = Update_caylar.current()
+        context["field"] =  Update_caylar.field()
+        context["ADCDAC_temp"] = Update_caylar.ADCDAC_temp()
+        context["box_temp"] = Update_caylar.box_temp()
+        context["rack_temp"] = Update_caylar.rack_temp()
+        context["water_temp"] = Update_caylar.water_temp()
+        context["water_flow"] = Update_caylar.water_flow()
         caylar_host["time_update"] =  datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         dict_to_xml_file(caylar_host, "staticfiles/caylar.xml")
         caylar_host = xml_config_to_dict("staticfiles/caylar.xml")
@@ -215,18 +221,13 @@ def caylar_page_view(request):
         })
 
     # Assign the variables with the initial values
-    magnet_host = caylar_host["host"] if caylar_host["host"] is not None else ''
-    magnet_port = caylar_host["port"] if caylar_host["port"] is not None else ''
-    magnet_current = caylar_host["current"] if caylar_host["current"] is not None else ''
-    magnet_field = caylar_host["field"] if caylar_host["field"] is not None else ''
-
-    return render(request, 'home/caylar.html', {
-        'form': form,
-        'magnet_host': magnet_host,
-        'magnet_port': magnet_port,
-        'magnet_current': magnet_current,
-        'magnet_field': magnet_field,
-    })
+    # magnet_host = caylar_host["host"] if caylar_host["host"] is not None else ''
+    # magnet_port = caylar_host["port"] if caylar_host["port"] is not None else ''
+    # magnet_current = caylar_host["current"] if caylar_host["current"] is not None else ''
+    # magnet_field = caylar_host["field"] if caylar_host["field"] is not None else ''
+    context["form"]=form
+    context["connected"]=connected
+    return render(request, 'home/caylar.html', context)
 
 
 def rfsoc_page_view(request):
@@ -252,95 +253,120 @@ def rfsoc_page_view(request):
     FormsetAOM = formset_factory(RFSoCAOMSequenceForm, extra=0)
 
     if request.method == 'POST':
-        form = RFSoCConfigForm(request.POST)
-        Formset0 = FormsetChannel(request.POST,prefix='formset0')
-        Formset1 = FormsetAOM(request.POST,prefix='formset1')
+        if "updateall" in request.POST:
+            form = RFSoCConfigForm(request.POST)
+            Formset0 = FormsetChannel(request.POST,prefix='formset0')
+            Formset1 = FormsetAOM(request.POST,prefix='formset1')
 
-        if all([form.is_valid(),Formset0.is_valid(),Formset1.is_valid()]):
-            channel0=[]
-            frequency0=[]
-            phase0=[]
-            gain0=[]
-            time0 = []
-            length0 = []
-            for form0 in Formset0:
-                if form0.cleaned_data.get('channel0')!=None:
-                    channel0.append([int(x) for x in form0.cleaned_data.get('channel0')])
-                if form0.cleaned_data.get('time0')!=None:
-                    time0.append(form0.cleaned_data.get('time0'))
-                if form0.cleaned_data.get('length0')!=None:
-                    length0.append(form0.cleaned_data.get('length0'))
-                if form0.cleaned_data.get('frequency0')!=None:
-                    frequency0.append(form0.cleaned_data.get('frequency0'))
-                if form0.cleaned_data.get('phase0')!=None:
-                    phase0.append(form0.cleaned_data.get('phase0'))
-                if form0.cleaned_data.get('gain0')!=None:
-                    gain0.append(form0.cleaned_data.get('gain0'))
-            rfsoc_config["EOM"]["channel_seq0"] = channel0
-            rfsoc_config["EOM"]["freq_seq0"] = frequency0
-            rfsoc_config["EOM"]["phase_seq0"] = phase0
-            rfsoc_config["EOM"]["gain_seq0"] = gain0
-            rfsoc_config["EOM"]["time_seq0"] = time0
-            rfsoc_config["EOM"]["lengthseq0"] = length0
-            time1 = []
-            length1 = []
-            pins1 = []
-            for form1 in Formset1:
+            if all([form.is_valid(),Formset0.is_valid(),Formset1.is_valid()]):
+                channel0=[]
+                frequency0=[]
+                phase0=[]
+                gain0=[]
+                time0 = []
+                length0 = []
+                for form0 in Formset0:
+                    if form0.cleaned_data.get('channel0')!=None:
+                        channel0.append([int(x) for x in form0.cleaned_data.get('channel0')])
+                    if form0.cleaned_data.get('time0')!=None:
+                        time0.append(form0.cleaned_data.get('time0'))
+                    if form0.cleaned_data.get('length0')!=None:
+                        length0.append(form0.cleaned_data.get('length0'))
+                    if form0.cleaned_data.get('frequency0')!=None:
+                        frequency0.append(form0.cleaned_data.get('frequency0'))
+                    if form0.cleaned_data.get('phase0')!=None:
+                        phase0.append(form0.cleaned_data.get('phase0'))
+                    if form0.cleaned_data.get('gain0')!=None:
+                        gain0.append(form0.cleaned_data.get('gain0'))
+                rfsoc_config["EOM"]["channel_seq0"] = channel0
+                rfsoc_config["EOM"]["freq_seq0"] = frequency0
+                rfsoc_config["EOM"]["phase_seq0"] = phase0
+                rfsoc_config["EOM"]["gain_seq0"] = gain0
+                rfsoc_config["EOM"]["time_seq0"] = time0
+                rfsoc_config["EOM"]["lengthseq0"] = length0
+                time1 = [[],[],[],[]]
+                length1 = [[],[],[],[]]
+                pins1 = []
+                timeformttl = []
+                lengthformttl = []
+                pinsformttl = []
+                for form1 in Formset1:
+                    if form1.cleaned_data.get('aom_pins')!=None:
+                        pinsformttl.append([int(x) for x in form1.cleaned_data.get('aom_pins')])
+                        for pin in form1.cleaned_data.get('aom_pins'):
+                            if int(pin) not in pins1:
+                                pins1.append(int(pin))
+                                pins1.sort()
+                            if form1.cleaned_data.get('time1')!=None:
+                                time1[int(pin)].append(form1.cleaned_data.get('time1'))
+                            if form1.cleaned_data.get('length1')!=None:
+                                length1[int(pin)].append(form1.cleaned_data.get('length1'))
+                    if form1.cleaned_data.get('time1')!=None:
+                        timeformttl.append(form1.cleaned_data.get('time1'))
+                    if form1.cleaned_data.get('length1')!=None:
+                        lengthformttl.append(form1.cleaned_data.get('length1'))
 
-                if form1.cleaned_data.get('time1')!=None:
-                    time1.append(form1.cleaned_data.get('time1'))
-                if form1.cleaned_data.get('length1')!=None:
-                    length1.append(form1.cleaned_data.get('length1'))
-                if form1.cleaned_data.get('aom_pins')!=None:
-                    pins1.append([int(x) for x in form1.cleaned_data.get('aom_pins')])
-            rfsoc_config["AOM"]["time_seq1"] = time1
-            rfsoc_config["AOM"]["pins_seq1"] = pins1
-            rfsoc_config["AOM"]["lengthseq1"] = length1
-            # Update RFSoC host and port
-            xilinx_host["host"] = form.cleaned_data['rfsoc_host']
-            xilinx_host["username"] = form.cleaned_data['rfsoc_username']
-            xilinx_host["password"] = form.cleaned_data['rfsoc_password']
-            xilinx_host["port"] = form.cleaned_data['rfsoc_port'] if form.cleaned_data['rfsoc_port'] is not None else ''
-            xilinx_host["time_update"] =  datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-            dict_to_xml_file(xilinx_host, "staticfiles/xilinx_host.xml")
 
-            # Update General configuration
-            rfsoc_config["adc_trig_offset"] = form.cleaned_data['adc_trig_offset']
-            rfsoc_config["soft_avgs"] = form.cleaned_data['soft_avgs']
-            rfsoc_config["relax_delay"] = form.cleaned_data['relax_delay']
-            rfsoc_config["readout_length"] = form.cleaned_data['readout_length']
-            rfsoc_config["pulse_freq"] = form.cleaned_data['pulse_freq']
-            rfsoc_config["reps"] = form.cleaned_data['reps']
+                rfsoc_config["AOM"]["time"] = time1
+                rfsoc_config["AOM"]["pins"] = pins1
+                rfsoc_config["AOM"]["length"] = length1
+                rfsoc_config["AOM"]["timeseqformttl"] = timeformttl
+                rfsoc_config["AOM"]["pinsformttl"] = pinsformttl
+                rfsoc_config["AOM"]["lengthseqttl"] = lengthformttl
+                # Update RFSoC host and port
+                xilinx_host["host"] = form.cleaned_data['rfsoc_host']
+                xilinx_host["username"] = form.cleaned_data['rfsoc_username']
+                xilinx_host["password"] = form.cleaned_data['rfsoc_password']
+                xilinx_host["port"] = form.cleaned_data['rfsoc_port'] if form.cleaned_data['rfsoc_port'] is not None else ''
+                xilinx_host["time_update"] =  datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                dict_to_xml_file(xilinx_host, "staticfiles/xilinx_host.xml")
 
-            # Update EOM configuration
-            rfsoc_config["EOM"]["length0"] = form.cleaned_data['eom_length0']
-            rfsoc_config["EOM"]["length1"] = form.cleaned_data['eom_length1']
-            rfsoc_config["EOM"]["zone0"] = form.cleaned_data['eom_zone0']
-            rfsoc_config["EOM"]["mode0"] = form.cleaned_data['eom_mode0']
-            rfsoc_config["EOM"]["zone1"] = form.cleaned_data['eom_zone1']
-            rfsoc_config["EOM"]["mode1"] = form.cleaned_data['eom_mode1']
+                # Update General configuration
+                rfsoc_config["adc_trig_offset"] = form.cleaned_data['adc_trig_offset']
+                rfsoc_config["soft_avgs"] = form.cleaned_data['soft_avgs']
+                rfsoc_config["relax_delay"] = form.cleaned_data['relax_delay']
+                rfsoc_config["readout_length"] = form.cleaned_data['readout_length']
+                rfsoc_config["pulse_freq"] = form.cleaned_data['pulse_freq']
+                rfsoc_config["reps"] = form.cleaned_data['reps']
 
-            # Update the rfsoc.xml file
-            dict_to_xml_file(rfsoc_config, "staticfiles/xilinx.xml")
+                # Update EOM configuration
+                rfsoc_config["EOM"]["length0"] = form.cleaned_data['eom_length0']
+                rfsoc_config["EOM"]["length1"] = form.cleaned_data['eom_length1']
+                rfsoc_config["EOM"]["zone0"] = form.cleaned_data['eom_zone0']
+                rfsoc_config["EOM"]["mode0"] = form.cleaned_data['eom_mode0']
+                rfsoc_config["EOM"]["zone1"] = form.cleaned_data['eom_zone1']
+                rfsoc_config["EOM"]["mode1"] = form.cleaned_data['eom_mode1']
 
-            if connected:
-                Update_rfsoc.build_config(rfsoc_config)
-                messages.success(request, 'Changes saved successfully in RFSoC!')
-            else:
+                # Update the rfsoc.xml file
+                dict_to_xml_file(rfsoc_config, "staticfiles/xilinx.xml")
+
+                if connected:
+                    Update_rfsoc.build_config(rfsoc_config)
+                    messages.success(request, 'Changes saved successfully in RFSoC!')
+                else:
+                    # Add success message to the Django messages framework
+                    messages.success(request, 'Changes saved successfully in XML!')
                 # Add success message to the Django messages framework
-                messages.success(request, 'Changes saved successfully in XML!')
-            # Add success message to the Django messages framework
-            messages.success(request, 'Changes saved successfully!')
+                messages.success(request, 'Changes saved successfully!')
 
-            # Redirect to the rfsoc page to reload the page with the updated values
-            return redirect('rfsoc_page')
-        else:
-            messages.warning(request, 'Cannot be updated!')
-            return redirect('rfsoc_page')
+                # Redirect to the rfsoc page to reload the page with the updated values
+                return redirect('rfsoc_page')
+            else:
+                messages.warning(request, 'Cannot be updated!')
+                return redirect('rfsoc_page')
+        elif "updateip" in request.POST:
+            form = RFSoCConfigFormIP(request.POST)
+            if form.is_valid():
+                xilinx_host["host"] = form.cleaned_data['rfsoc_host']
+                xilinx_host["username"] = form.cleaned_data['rfsoc_username']
+                xilinx_host["password"] = form.cleaned_data['rfsoc_password']
+                xilinx_host["port"] = form.cleaned_data['rfsoc_port'] if form.cleaned_data['rfsoc_port'] is not None else ''
+                xilinx_host["time_update"] =  datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                dict_to_xml_file(xilinx_host, "staticfiles/xilinx_host.xml")
     else:
         form = RFSoCConfigForm()
         initial_data0 = [{'time0': t, 'channel0': ''.join(map(str,c)), 'length0': l, 'frequency0':f,'phase0':p,'gain0':g} for t, c, l,f,p,g in zip(rfsoc_config["EOM"]["time_seq0"], rfsoc_config["EOM"]["channel_seq0"], rfsoc_config["EOM"]["lengthseq0"], rfsoc_config["EOM"]["freq_seq0"], rfsoc_config["EOM"]["phase_seq0"], rfsoc_config["EOM"]["gain_seq0"])]
-        initial_data1 = [{'time1': t, 'aom_pins': p, 'length1': l} for t, p, l in zip(rfsoc_config["AOM"]["time_seq1"], rfsoc_config["AOM"]["pins_seq1"], rfsoc_config["AOM"]["lengthseq1"])]
+        initial_data1 = [{'time1': t, 'aom_pins': p, 'length1': l} for t, p, l in zip(rfsoc_config["AOM"]["timeseqformttl"], rfsoc_config["AOM"]["pinsformttl"], rfsoc_config["AOM"]["lengthseqttl"])]
         if len(initial_data0)!=0:
             Formset0 = FormsetChannel(initial=initial_data0,prefix='formset0')
         else:
@@ -381,13 +407,14 @@ def rfsoc_page_view(request):
 
 def mercury_page_view(request):
     # Load the data from the cryostat XML file
+    context = {}
     Update_mercury = construct_itc()
     connected = Update_mercury.try_connect()
     mercury_host = xml_config_to_dict("staticfiles/mercuryITC.xml")
     if connected:
         Update_mercury.update_all_xml("staticfiles/mercuryITC.xml")
-        mercury_host["current"] = Update_mercury.current()
-        mercury_host["field"] =  Update_mercury.field()
+        context["heater_power"] = Update_mercury.report_heater_power()
+        context["temperature"] =  Update_mercury.report_temperature()
         mercury_host["time_update"] =  datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         dict_to_xml_file(mercury_host, "staticfiles/mercuryITC.xml")
         mercury_host = xml_config_to_dict("staticfiles/mercuryITC.xml")
@@ -456,16 +483,11 @@ def mercury_page_view(request):
         })
 
     # Assign the variables with the initial values
-    cryostat_host = mercury_host.get("host", "")
-    cryostat_port = mercury_host.get("port", "")
-
-    return render(request, 'home/mercury.html', {
-        'form': form,
-        'mercury_host': cryostat_host,
-        'mercury_port': cryostat_port,
-        'mercury_heater_power': mercury_host.get("heater_power", ""),
-        'mercury_itc_temperature': mercury_host.get("ITC_temperature", ""),
-    })
+    # cryostat_host = mercury_host.get("host", "")
+    # cryostat_port = mercury_host.get("port", "")
+    context['connected'] = connected
+    context['form']=form
+    return render(request, 'home/mercury.html', context)
 
 GRFSoC = None
 GLaser = None

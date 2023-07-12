@@ -196,7 +196,11 @@ class RFSoCConfigForm(forms.Form):
     eom_mode0 = forms.CharField(label='EOM Mode 0', required=False)
     eom_zone1 = forms.FloatField(label='EOM Zone 1', required=False)
     eom_mode1 = forms.CharField(label='EOM Mode 1', required=False)
-
+class RFSoCConfigFormIP(forms.Form):
+    rfsoc_host = forms.CharField(label='IP Address', max_length=100)
+    rfsoc_port = forms.IntegerField(label='Port', required=False)
+    rfsoc_username = forms.CharField(label='Username', required=False)
+    rfsoc_password = forms.CharField(label='Password', required=False)
 class RFSoCEOMSequenceForm(forms.Form):
     channel0 = forms.ChoiceField(choices=[('0', '0'), ('1', '1'),('01','01')])
     frequency0 = forms.FloatField(label='EOM Frequency')
