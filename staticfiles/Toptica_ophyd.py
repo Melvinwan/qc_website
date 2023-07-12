@@ -210,7 +210,9 @@ class LaserController(OphydObject): #On off laser similar to controller
             "main scan start":{"value": self.dlc.laser1.scan.start.get()},
             "main scan frequency":{"value": self.dlc.laser1.scan.frequency.get()},
             "main scan offset":{"value": self.dlc.laser1.scan.offset.get()},
-            "ctl wavelength":{"value":self.dlc.laser1.ctl.wavelength_act.get()}
+            "ctl wavelength":{"value":self.dlc.laser1.ctl.wavelength_act.get()},
+            "voltage act":{"value":self.dlc.laser1.dl.pc.voltage_act.get()},
+            "current act":{"value":self.dlc.laser1.dl.cc.current_act.get()},
         }
         return signals
 
@@ -230,7 +232,12 @@ class LaserController(OphydObject): #On off laser similar to controller
 
     # def widescan_remaining_time(self):
     #     return self.dlc.laser1.wide_scan.remaining_time.get()
-
+    def current_act(self):
+        logger.debug(f"recv current act")
+        return self.dlc.laser1.dl.cc.current_act.get()
+    def voltage_act(self):
+        logger.debug(f"recv voltage act")
+        return self.dlc.laser1.dl.pc.voltage_act.get()
     def scan_end(self):
         logger.debug(f"recv scan end")
         return self.dlc.laser1.scan.end.get()
@@ -285,7 +292,9 @@ class LaserController(OphydObject): #On off laser similar to controller
             "main scan start",
             "main scan frequency",
             "main scan offset",
-            "wavelength act"
+            "wavelength act",
+            "voltage act",
+            "current act"
         ]
         t.add_row(
                     [
@@ -296,7 +305,9 @@ class LaserController(OphydObject): #On off laser similar to controller
                         self.scan_start(),
                         self.scan_frequency(),
                         self.scan_offset(),
-                        self.wavelength_act()
+                        self.wavelength_act(),
+                        self.voltage_act(),
+                        self.current_act()
                     ]
                 )
         print(t)
@@ -387,7 +398,14 @@ class LaserSignalRO(LaserSignalBase):
 #     # @threadlocked
 #     def _get(self):
 #         return self.dlc.widescan_remaining_time()
-
+class LaserVoltageAct(LaserSignalRO):
+    # @threadlocked
+    def _get(self):
+        return self.dlc.voltage_act()
+class LaserCurrentAct(LaserSignalRO):
+    # @threadlocked
+    def _get(self):
+        return self.dlc.current_act()
 class LaserMainScanEnd(LaserSignalBase):
     # @threadlocked
     def _get(self):
@@ -442,6 +460,8 @@ class LaserToptica(Device):
     # widescan_amplitude = Cpt(LaserWideScanAmplitude, signal_name="widescan_amplitude")
     # widescan_offset = Cpt(LaserWideScanOffset, signal_name="widescan_offset")
     # widescan_time = Cpt(LaserWideScanRemainingTime, signal_name="widescan_remaining_time")
+    current_act = Cpt(LaserCurrentAct, signal_name="current_act", kind="hinted")
+    voltage_act = Cpt(LaserVoltageAct, signal_name="voltage_act", kind="hinted")
     scan_end = Cpt(LaserMainScanEnd, signal_name="scan_end")
     scan_start = Cpt(LaserMainScanStart, signal_name="scan_start")
     scan_offset = Cpt(LaserMainScanOffset, signal_name="scan_offset")
@@ -513,6 +533,10 @@ class LaserToptica(Device):
     #     return self.widescan_offset.get()
     # def report_widescan_time(self,val):
     #     return self.widescan_time.get()
+    def report_current_act(self):
+        return self.current_act.get()
+    def report_voltage_act(self):
+        return self.voltage_act.get()
     def report_scan_end(self):
         return self.scan_end.get()
     def report_scan_start(self):

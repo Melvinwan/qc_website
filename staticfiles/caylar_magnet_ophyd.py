@@ -367,7 +367,9 @@ class CaylarMagnet(Device):
     def field_setter(self, val):
         if isinstance(val, float):
             return self.magnetic_field.put(val)
-
+    @property
+    def voltage(self):
+        return self.magnetic_voltage.get()
     @property
     def ADCDAC_temp(self):
         return self.magnetic_ADCDAC_temp.get()

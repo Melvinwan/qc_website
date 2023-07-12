@@ -42,6 +42,8 @@ def laser_page_view(request):
         context["scan_start"] =  Update_Laser.report_scan_start()
         context["scan_freq"] =  Update_Laser.report_scan_frequency()
         context["scan_offset"] =  Update_Laser.report_scan_offset()
+        context["current_act"] =  Update_Laser.report_current_act()
+        context["voltage_act"] =  Update_Laser.report_voltage_act()
         toptica_host["time_update"] =  datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         dict_to_xml_file(toptica_host, "staticfiles/toptica.xml")
         toptica_host = xml_config_to_dict("staticfiles/toptica.xml")
@@ -144,13 +146,14 @@ def caylar_page_view(request):
     caylar_host = xml_config_to_dict("staticfiles/caylar.xml")
     if connected:
         Update_caylar.update_all_xml("staticfiles/caylar.xml")
-        context["current"] = Update_caylar.current()
-        context["field"] =  Update_caylar.field()
-        context["ADCDAC_temp"] = Update_caylar.ADCDAC_temp()
-        context["box_temp"] = Update_caylar.box_temp()
-        context["rack_temp"] = Update_caylar.rack_temp()
-        context["water_temp"] = Update_caylar.water_temp()
-        context["water_flow"] = Update_caylar.water_flow()
+        context["caylar_current"] = Update_caylar.current()
+        context["caylar_field"] =  Update_caylar.field()
+        context["caylar_voltage"] =  Update_caylar.voltage()
+        context["caylar_ADCDAC_temp"] = Update_caylar.ADCDAC_temp()
+        context["caylar_box_temp"] = Update_caylar.box_temp()
+        context["caylar_rack_temp"] = Update_caylar.rack_temp()
+        context["caylar_water_temp"] = Update_caylar.water_temp()
+        context["caylar_water_flow"] = Update_caylar.water_flow()
         caylar_host["time_update"] =  datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         dict_to_xml_file(caylar_host, "staticfiles/caylar.xml")
         caylar_host = xml_config_to_dict("staticfiles/caylar.xml")
@@ -591,8 +594,10 @@ def get_live_data_and_run_rfsoc(request):
         laser_scan_offset = GLaser.report_scan_offset()
         laser_scan_frequency = GLaser.report_scan_frequency()
         laser_wavelength = GLaser.report_ctl_wavelength_act()
-        laser_column_headers = ['timestamp', 'scan start', 'scan end', 'scan offset', 'scan frequency', 'wavelength']
-        laser_data_row = [timestamp, laser_scan_start, laser_scan_end, laser_scan_offset, laser_scan_frequency, laser_wavelength]
+        laser_current = GLaser.report_current_act()
+        laser_voltage = GLaser.report_voltage_act()
+        laser_column_headers = ['timestamp', 'scan start', 'scan end', 'scan offset', 'scan frequency', 'wavelength','current','voltage']
+        laser_data_row = [timestamp, laser_scan_start, laser_scan_end, laser_scan_offset, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage]
         laser_csv_file_path = 'laser.csv'
         append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
         data['laser_scan_end']= laser_scan_end,
@@ -600,6 +605,8 @@ def get_live_data_and_run_rfsoc(request):
         data['laser_scan_offset']= laser_scan_offset,
         data['laser_scan_frequency']= laser_scan_frequency,
         data['laser_wavelength']= laser_wavelength,
+        data['laser_current']= laser_current,
+        data['laser_voltage']= laser_voltage,
     if GCaylar !=None:
         data['caylar_status'] = "ON"
         caylar_current = GCaylar.current()
@@ -656,11 +663,15 @@ def update_live_plot(request):
         laser_scan_offset = ULaser.report_scan_offset()
         laser_scan_frequency = ULaser.report_scan_frequency()
         laser_wavelength = ULaser.report_ctl_wavelength_act()
+        laser_current = ULaser.report_current_act()
+        laser_voltage = ULaser.report_voltage_act()
         data['laser_scan_end']= laser_scan_end,
         data['laser_scan_start']= laser_scan_start,
         data['laser_scan_offset']= laser_scan_offset,
         data['laser_scan_frequency']= laser_scan_frequency,
         data['laser_wavelength']= laser_wavelength,
+        data['laser_current']= laser_current,
+        data['laser_voltage']= laser_voltage,
     if UCaylar !=None:
         data['caylar_status'] = "ON"
         caylar_current = UCaylar.current()

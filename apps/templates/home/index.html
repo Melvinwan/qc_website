@@ -112,7 +112,9 @@
 </div>
 <div>
   <div id="messageLaserOff"></div>
-  <div id="livePlot" class="hidden">
+  <div id="livePlotCurrent" class="hidden"></div>
+  <div id="livePlotVoltage" class="hidden"></div>
+  <div id="livePlotWavelength" class="hidden">
     <button type="button" class="btn btn-danger" id="pauseExperimentButton">Pause Experiment</button>
     <button type="button" class="btn btn-danger" id="continueExperimentButton">Continue Experiment</button>
     <button type="button" class="btn btn-danger" id="stopExperimentButton">Stop Experiment</button>
@@ -123,6 +125,8 @@
       <div class="card-body">Scan Offset: <span id="laser_scan_offset_number">-</span></div>
       <div class="card-body">Scan Frequency: <span id="laser_scan_frequency_number">-</span></div>
       <div class="card-body">Scan Wavelength: <span id="laser_scan_wavelength_number">-</span></div>
+      <div class="card-body">Current: <span id="laser_current_number">-</span></div>
+      <div class="card-body">Voltage: <span id="laser_voltage_number">-</span></div>
     </div>
   </div>
   <div id="messageCaylarOff"></div>
@@ -174,7 +178,7 @@
               <label for="id_file_Name">Experiment File:</label>
               <input type="text" class="form-control" id="id_file_Name" name="file_name" />
             </div>
-            <div class="form-group">
+            <div class="form-group px-4">
               <label for="id_selected_devices">Select Devices:</label>
               <div class="col-auto">
                 <div class="form-check">
@@ -305,11 +309,9 @@
   }
   let xDate = [];
   // Initialize an empty data array
-  let laser_scan_end = { x: xDate, y: [], mode: "lines+markers", name: "scan end" };
-  let laser_scan_start = { x: xDate, y: [], mode: "lines+markers", name: "scan start" };
-  let laser_scan_offset = { x: xDate, y: [], mode: "lines+markers", name: "scan offset" };
-  let laser_scan_frequency = { x: xDate, y: [], mode: "lines+markers", name: "scan frequency" };
-  let laser_scan_wavelength = { x: xDate, y: [], mode: "lines+markers", name: "scan wavelength" };
+  let laser_wavelength = { x: xDate, y: [], mode: "lines+markers", name: "wavelength" };
+  let laser_current = { x: xDate, y: [], mode: "lines+markers", name: "current" };
+  let laser_voltage = { x: xDate, y: [], mode: "lines+markers", name: "voltage" };
   // Caylar data
   let caylar_current = { x: xDate, y: [], mode: "lines+markers", name: "Caylar Current" };
   let caylar_field = { x: xDate, y: [], mode: "lines+markers", name: "Caylar Field" };
@@ -320,12 +322,34 @@
   let caylar_water_flow = { x: xDate, y: [], mode: "lines+markers", name: "Caylar Water Flow" };
   let itc_heater_power = { x: xDate, y: [], mode: "lines+markers", name: "ITC Heater Power" };
   let itc_temperature = { x: xDate, y: [], mode: "lines+markers", name: "ITC Temperature" };
-  let laser_data = [laser_scan_end, laser_scan_start, laser_scan_offset, laser_scan_frequency];
+  // let laser_data = [laser_scan_end, laser_scan_start, laser_scan_offset, laser_scan_frequency];
   let caylar_data = [caylar_current, caylar_field, caylar_adcdac_temp, caylar_box_temp, caylar_rack_temp, caylar_water_temp, caylar_water_flow];
   let itc_data = [itc_heater_power, itc_temperature];
   // Create an empty plot with a layout
-  let layout = {
-    title: "Live Plot Laser",
+  let layoutWavelength = {
+    title: "Live Plot Wavelength",
+    xaxis: {
+      title: "X-axis",
+      type: "date",
+    },
+    yaxis: {
+      title: "Y-axis",
+    },
+    autosize: false, // Disable automatic resizing
+  };
+  let layoutCurrent = {
+    title: "Live Plot Current",
+    xaxis: {
+      title: "X-axis",
+      type: "date",
+    },
+    yaxis: {
+      title: "Y-axis",
+    },
+    autosize: false, // Disable automatic resizing
+  };
+  let layoutVoltage = {
+    title: "Live Plot Voltage",
     xaxis: {
       title: "X-axis",
       type: "date",
@@ -418,19 +442,26 @@
           messageITCOff.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + "ITC is OFF" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
         }
         if (response.laser_status == "ON") {
-          $("#livePlot").removeClass("hidden");
-          $("#laser_scan_end_number").text(response.laser_scan_end);
-          $("#laser_scan_start_number").text(response.laser_scan_start);
-          $("#laser_scan_offset_number").text(response.laser_scan_offset);
-          $("#laser_scan_frequency_number").text(response.laser_scan_frequency);
-          $("#laser_scan_wavelength_number").text(response.laser_wavelength);
-          appendToList(laser_scan_end["y"], response.laser_scan_end);
-          appendToList(laser_scan_start["y"], response.laser_scan_start);
-          appendToList(laser_scan_offset["y"], response.laser_scan_offset);
-          appendToList(laser_scan_frequency["y"], response.laser_scan_frequency);
+          $("#livePlotWavelength").removeClass("hidden");
+          $("#livePlotCurrent").removeClass("hidden");
+          $("#livePlotVoltage").removeClass("hidden");
+          $("#laser_scan_end_number").text(response.laser_scan_end[0]);
+          $("#laser_scan_start_number").text(response.laser_scan_start[0]);
+          $("#laser_scan_offset_number").text(response.laser_scan_offset[0]);
+          $("#laser_scan_frequency_number").text(response.laser_scan_frequency[0]);
+          $("#laser_scan_wavelength_number").text(response.laser_wavelength[0]);
+          $("#laser_current_number").text(response.laser_wavelength[0]);
+          $("#laser_voltage_number").text(response.laser_wavelength[0]);
+          appendToList(laser_wavelength["y"], response.laser_wavelength[0]);
+          appendToList(laser_current["y"], response.laser_current[0]);
+          appendToList(laser_voltage["y"], response.laser_voltage[0]);
           // Update the plot with the new data
-          laser_data = [laser_scan_end, laser_scan_start, laser_scan_offset, laser_scan_frequency];
-          let livePlot = Plotly.newPlot("livePlot", laser_data, layout);
+          laser_wavelength_data = [laser_wavelength];
+          laser_current_data = [laser_current];
+          laser_voltage_data = [laser_voltage];
+          let livePlotWavelength = Plotly.newPlot("livePlotWavelength", laser_wavelength_data, layoutWavelength);
+          let livePlotCurrent = Plotly.newPlot("livePlotCurrent", laser_current_data, layoutCurrent);
+          let livePlotVoltage = Plotly.newPlot("livePlotVoltage", laser_voltage_data, layoutVoltage);
         } else {
           let messageLaserOff = $("#messageLaserOff");
           messageLaserOff.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + "Laser is OFF" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
@@ -536,22 +567,30 @@
           $("#livePlotITC").addClass("hidden");
         }
         if (response.laser_status == "ON") {
-          $("#livePlot").removeClass("hidden");
+          $("#livePlotWavelength").removeClass("hidden");
+          $("#livePlotCurrent").removeClass("hidden");
+          $("#livePlotVoltage").removeClass("hidden");
           $("#laser_scan_end_number").text(response.laser_scan_end[0]);
           $("#laser_scan_start_number").text(response.laser_scan_start[0]);
           $("#laser_scan_offset_number").text(response.laser_scan_offset[0]);
           $("#laser_scan_frequency_number").text(response.laser_scan_frequency[0]);
           $("#laser_scan_wavelength_number").text(response.laser_wavelength[0]);
-          appendToList(laser_scan_end["y"], response.laser_scan_end[0]);
-          appendToList(laser_scan_start["y"], response.laser_scan_start[0]);
-          appendToList(laser_scan_offset["y"], response.laser_scan_offset[0]);
-          appendToList(laser_scan_frequency["y"], response.laser_scan_frequency[0]);
+          $("#laser_current_number").text(response.laser_wavelength[0]);
+          $("#laser_voltage_number").text(response.laser_wavelength[0]);
+          appendToList(laser_wavelength["y"], response.laser_wavelength[0]);
+          appendToList(laser_current["y"], response.laser_current[0]);
+          appendToList(laser_voltage["y"], response.laser_voltage[0]);
           // Update the plot with the new data
-          laser_data = [laser_scan_end, laser_scan_start, laser_scan_offset, laser_scan_frequency];
-          let livePlot = Plotly.newPlot("livePlot", laser_data, layout);
-          console.log(laser_data);
+          laser_wavelength_data = [laser_wavelength];
+          laser_current_data = [laser_current];
+          laser_voltage_data = [laser_voltage];
+          let livePlotWavelength = Plotly.newPlot("livePlotWavelength", laser_wavelength_data, layoutWavelength);
+          let livePlotCurrent = Plotly.newPlot("livePlotCurrent", laser_current_data, layoutCurrent);
+          let livePlotVoltage = Plotly.newPlot("livePlotVoltage", laser_voltage_data, layoutVoltage);
         } else {
-          $("#livePlot").addClass("hidden");
+          $("#livePlotWavelength").addClass("hidden");
+          $("#livePlotCurrent").addClass("hidden");
+          $("#livePlotVoltage").addClass("hidden");
         }
       },
       error: function (xhr, status, error) {

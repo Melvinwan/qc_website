@@ -139,6 +139,22 @@
                   </div>
                 </div>
                 <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-current">Current</label>
+                    {% if connected %}
+                    <input type="number" step="any" id="input-current" class="form-control" name="current_act" placeholder="current" value="{{current_act}}" disabled />
+                    {% else %} <input type="number" step="any" id="input-current" class="form-control" name="current_act" placeholder="current" value="NA" disabled /> {% endif %}
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-voltage">Voltage</label>
+                    {% if connected %}
+                    <input type="number" step="any" id="input-voltage" class="form-control" name="voltage_act" placeholder="voltage" value="{{voltage_act}}" disabled />
+                    {% else %} <input type="number" step="any" id="input-voltage" class="form-control" name="voltage_act" placeholder="voltage" value="NA" disabled /> {% endif %}
+                  </div>
+                </div>
+                <div class="col-md-4">
                   <div class="form-group"><label class="form-control-label" for="input-scan-end">Scan End</label>{% if connected %} <input type="number" step="any" id="input-scan-end" class="form-control" name="scan_end" placeholder="Scan End" value="{{scan_end}}" disabled />{% else %} <input type="number" step="any" id="input-scan-end" class="form-control" name="scan_end" placeholder="Scan End" value="NA" disabled />{% endif %}</div>
                 </div>
                 <div class="col-md-4">
@@ -150,7 +166,7 @@
                   <div class="form-group"><label class="form-control-label" for="input-scan-freq">Scan Frequency</label>{% if connected %} <input type="number" step="any" id="input-scan-freq" class="form-control" name="scan_freq" placeholder="Scan Frequency" value="{{scan_freq}}" disabled />{% else %}<input type="number" step="any" id="input-scan-freq" class="form-control" name="scan_freq" placeholder="Scan Frequency" value="NA" disabled />{% endif %}</div>
                 </div>
                 <div class="col-md-4">
-                  <div class="form-group"><label class="form-control-label" for="input-scan-offset">Scan Offset</label>{% if connected %} <input type="number" step="any" id="input-scan-offset" class="form-control" name="scan_offset" placeholder="Scan Offset" value="{scan_offset}}" disabled />{% else %}<input type="number" step="any" id="input-scan-offset" class="form-control" name="scan_offset" placeholder="Scan Offset" value="NA" disabled />{% endif %}</div>
+                  <div class="form-group"><label class="form-control-label" for="input-scan-offset">Scan Offset</label>{% if connected %} <input type="number" step="any" id="input-scan-offset" class="form-control" name="scan_offset" placeholder="Scan Offset" value="{{scan_offset}}" disabled />{% else %}<input type="number" step="any" id="input-scan-offset" class="form-control" name="scan_offset" placeholder="Scan Offset" value="NA" disabled />{% endif %}</div>
                 </div>
               </div>
             </div>
