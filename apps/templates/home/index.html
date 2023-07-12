@@ -110,101 +110,102 @@
     <div id="messageUpdateExpContainer"></div>
   </div>
 </div>
-<div id="messageLaserOff"></div>
-<div id="livePlot" class="hidden">
-  <button type="button" class="btn btn-danger" id="pauseExperimentButton">Pause Experiment</button>
-  <button type="button" class="btn btn-danger" id="continueExperimentButton">Continue Experiment</button>
-  <button type="button" class="btn btn-danger" id="stopExperimentButton">Stop Experiment</button>
-  <div class="col-auto">
-    <!-- Placeholder for laser parameters -->
-    <div class="parameter-number">Scan End: <span id="laser_scan_end_number">-</span></div>
-    <div class="parameter-number">Scan Start: <span id="laser_scan_start_number">-</span></div>
-    <div class="parameter-number">Scan Offset: <span id="laser_scan_offset_number">-</span></div>
-    <div class="parameter-number">Scan Frequency: <span id="laser_scan_frequency_number">-</span></div>
-    <div class="parameter-number">Scan Wavelength: <span id="laser_scan_wavelength_number">-</span></div>
-  </div>
-</div>
-<div id="messageCaylarOff"></div>
-<div id="livePlotCaylar" class="hidden">
-  <div class="col-auto">
-    <div class="parameter-number">Caylar Current: <span id="caylar_current_number">-</span></div>
-    <div class="parameter-number">Caylar Field: <span id="caylar_field_number">-</span></div>
-    <div class="parameter-number">Caylar ADC/DAC Temp: <span id="caylar_adcdac_temp_number">-</span></div>
-    <div class="parameter-number">Caylar Box Temp: <span id="caylar_box_temp_number">-</span></div>
-    <div class="parameter-number">Caylar Rack Temp: <span id="caylar_rack_temp_number">-</span></div>
-    <div class="parameter-number">Caylar Water Temp: <span id="caylar_water_temp_number">-</span></div>
-    <div class="parameter-number">Caylar Water Flow: <span id="caylar_water_flow_number">-</span></div>
-  </div>
-</div>
-<div id="messageITCOff"></div>
-<div id="livePlotITC" class="hidden">
-  <div class="col-auto">
-    <!-- Placeholder for ITC parameters -->
-    <div class="parameter-number">ITC Heater Power: <span id="itc_heater_power_number">-</span></div>
-    <div class="parameter-number">ITC Temperature: <span id="itc_temperature_number">-</span></div>
-  </div>
-</div>
-<!-- Page content -->
-<!-- <form id="experimentForms" method="POST" action="{% url 'home' %}"> -->
-<form id="experimentForms" class="hidden" method="POST">
-  <!-- <form id="experimentForms" method="POST"> -->
-  {% csrf_token %} {{ experiment_formset.management_form }}
-  <!-- Include management form here -->
-
-  <div class="container-fluid mt--6">
-    <div class="row">
-      <div class="col">
-        <div class="card shadow">
-          <div id="messageLoadingContainer"></div>
-          <div id="messageContainer"></div>
-          <div class="card-header bg-transparent">
-            <h3 class="mb-0">Experiments</h3>
-          </div>
-          <input type="hidden" id="experimentCountInput" name="experimentCount" value="{{ experiment_forms|length }}" />
-          <div class="form-group px-4 py-4">
-            <label for="id_experiment_name">Experiment Name:</label>
-            <input type="text" class="form-control" id="id_experiment_name" name="experiment_name" />
-          </div>
-          <div class="form-group px-4">
-            <label for="id_experiment_description">Experiment Description:</label>
-            <textarea class="form-control" id="id_experiment_description" name="description" rows="4"></textarea>
-          </div>
-          <div class="form-group px-4">
-            <label for="id_file_Name">Experiment File:</label>
-            <input type="text" class="form-control" id="id_file_Name" name="file_name" />
-          </div>
-          <div class="form-group">
-            <label for="id_selected_devices">Select Devices:</label>
-            <div class="col-auto">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="selected_devices[]" id="input-device-laser" value="Laser" />
-                <label class="form-check-label" for="input-device-laser">Laser</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="selected_devices[]" id="input-device-mercuryitc" value="Mercury" />
-                <label class="form-check-label" for="input-device-mercuryitc">MercuryITC</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="selected_devices[]" id="input-device-caylar" value="Caylar" />
-                <label class="form-check-label" for="input-device-caylar">Caylar Magnet</label>
-              </div>
-            </div>
-          </div>
-
-          <div class="row px-4">
-            <div class="card-body">
-              <button type="submit" class="btn btn-primary" id="startExperimentButton">Start Experiment</button>
-            </div>
-          </div>
-          <!-- <div id="messageLoadingContainer"></div> -->
-        </div>
-        <div id="formSectionContainer"></div>
-        <!-- Container for dynamically added form sections -->
-      </div>
+<div>
+  <div id="messageLaserOff"></div>
+  <div id="livePlot" class="hidden">
+    <button type="button" class="btn btn-danger" id="pauseExperimentButton">Pause Experiment</button>
+    <button type="button" class="btn btn-danger" id="continueExperimentButton">Continue Experiment</button>
+    <button type="button" class="btn btn-danger" id="stopExperimentButton">Stop Experiment</button>
+    <div class="row container-fluid">
+      <!-- Placeholder for laser parameters -->
+      <div class="card-body">Scan End: <span id="laser_scan_end_number">-</span></div>
+      <div class="card-body">Scan Start: <span id="laser_scan_start_number">-</span></div>
+      <div class="card-body">Scan Offset: <span id="laser_scan_offset_number">-</span></div>
+      <div class="card-body">Scan Frequency: <span id="laser_scan_frequency_number">-</span></div>
+      <div class="card-body">Scan Wavelength: <span id="laser_scan_wavelength_number">-</span></div>
     </div>
   </div>
-</form>
+  <div id="messageCaylarOff"></div>
+  <div id="livePlotCaylar" class="hidden">
+    <div class="row container-fluid">
+      <div class="card-body">Caylar Current: <span id="caylar_current_number">-</span></div>
+      <div class="card-body">Caylar Field: <span id="caylar_field_number">-</span></div>
+      <div class="card-body">Caylar ADC/DAC Temp: <span id="caylar_adcdac_temp_number">-</span></div>
+      <div class="card-body">Caylar Box Temp: <span id="caylar_box_temp_number">-</span></div>
+      <div class="card-body">Caylar Rack Temp: <span id="caylar_rack_temp_number">-</span></div>
+      <div class="card-body">Caylar Water Temp: <span id="caylar_water_temp_number">-</span></div>
+      <div class="card-body">Caylar Water Flow: <span id="caylar_water_flow_number">-</span></div>
+    </div>
+  </div>
+  <div id="messageITCOff"></div>
+  <div id="livePlotITC" class="hidden">
+    <div class="row container-fluid">
+      <!-- Placeholder for ITC parameters -->
+      <div class="card-body">ITC Heater Power: <span id="itc_heater_power_number">-</span></div>
+      <div class="card-body">ITC Temperature: <span id="itc_temperature_number">-</span></div>
+    </div>
+  </div>
+  <!-- Page content -->
+  <!-- <form id="experimentForms" method="POST" action="{% url 'home' %}"> -->
+  <form id="experimentForms" class="hidden" method="POST">
+    <!-- <form id="experimentForms" method="POST"> -->
+    {% csrf_token %} {{ experiment_formset.management_form }}
+    <!-- Include management form here -->
 
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col">
+          <div class="card shadow">
+            <div id="messageLoadingContainer"></div>
+            <div id="messageContainer"></div>
+            <div class="card-header bg-transparent">
+              <h3 class="mb-0">Experiments</h3>
+            </div>
+            <input type="hidden" id="experimentCountInput" name="experimentCount" value="{{ experiment_forms|length }}" />
+            <div class="form-group px-4 py-4">
+              <label for="id_experiment_name">Experiment Name:</label>
+              <input type="text" class="form-control" id="id_experiment_name" name="experiment_name" />
+            </div>
+            <div class="form-group px-4">
+              <label for="id_experiment_description">Experiment Description:</label>
+              <textarea class="form-control" id="id_experiment_description" name="description" rows="4"></textarea>
+            </div>
+            <div class="form-group px-4">
+              <label for="id_file_Name">Experiment File:</label>
+              <input type="text" class="form-control" id="id_file_Name" name="file_name" />
+            </div>
+            <div class="form-group">
+              <label for="id_selected_devices">Select Devices:</label>
+              <div class="col-auto">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="selected_devices[]" id="input-device-laser" value="Laser" />
+                  <label class="form-check-label" for="input-device-laser">Laser</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="selected_devices[]" id="input-device-mercuryitc" value="Mercury" />
+                  <label class="form-check-label" for="input-device-mercuryitc">MercuryITC</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="selected_devices[]" id="input-device-caylar" value="Caylar" />
+                  <label class="form-check-label" for="input-device-caylar">Caylar Magnet</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="row px-4">
+              <div class="card-body">
+                <button type="submit" class="btn btn-primary" id="startExperimentButton">Start Experiment</button>
+              </div>
+            </div>
+            <!-- <div id="messageLoadingContainer"></div> -->
+          </div>
+          <div id="formSectionContainer"></div>
+          <!-- Container for dynamically added form sections -->
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
 {% include "includes/footer.html" %} {% endblock content %}
 
 <!-- Specific JS goes HERE -->
@@ -214,14 +215,10 @@
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script>
   function appendToList(listName, element) {
-    if (!Array.isArray(window[listName])) {
-      window[listName] = [];
-    }
+    listName.push(element);
 
-    window[listName].push(element);
-
-    if (window[listName].length > 100) {
-      window[listName].shift();
+    if (listName.length > 100) {
+      listName.shift();
     }
   }
 
@@ -369,7 +366,9 @@
   // Function to update the plot with new data
   function updatePlot(interval) {
     if (!isUpdating) return;
-
+    $("#pauseExperimentButton").removeClass("hidden");
+    $("#continueExperimentButton").removeClass("hidden");
+    $("#stopExperimentButton").removeClass("hidden");
     const currentDate = new Date();
 
     $.ajax({
@@ -378,7 +377,7 @@
       dataType: "json",
       success: function (response) {
         // Update the data array with new data points
-        xDate.push(getCurrentDateTime());
+        appendToList(xDate, getCurrentDateTime());
         // console.log(data);
         if (response.caylar_status == "ON") {
           $("#livePlotCaylar").removeClass("hidden");
@@ -398,6 +397,7 @@
           appendToList(caylar_water_temp["y"], response.caylar_water_temp);
           appendToList(caylar_water_flow["y"], response.caylar_water_flow);
           // Update the Caylar plot with the new data
+          caylar_data = [caylar_current, caylar_field, caylar_adcdac_temp, caylar_box_temp, caylar_rack_temp, caylar_water_temp, caylar_water_flow];
           let livePlotCaylar = Plotly.newPlot("livePlotCaylar", caylar_data, layoutCaylar);
         } else {
           let messageCaylarOff = $("#messageCaylarOff");
@@ -411,6 +411,7 @@
           appendToList(itc_heater_power["y"], response.itc_heater_power);
           appendToList(itc_temperature["y"], response.itc_temperature);
           // Update the ITC plot with the new data
+          itc_data = [itc_heater_power, itc_temperature];
           let livePlotITC = Plotly.newPlot("livePlotITC", itc_data, layoutITC);
         } else {
           let messageITCOff = $("#messageITCOff");
@@ -422,12 +423,13 @@
           $("#laser_scan_start_number").text(response.laser_scan_start);
           $("#laser_scan_offset_number").text(response.laser_scan_offset);
           $("#laser_scan_frequency_number").text(response.laser_scan_frequency);
-          $("#laser_scan_wavelength_number").text(response.laser_scan_wavelength);
+          $("#laser_scan_wavelength_number").text(response.laser_wavelength);
           appendToList(laser_scan_end["y"], response.laser_scan_end);
           appendToList(laser_scan_start["y"], response.laser_scan_start);
           appendToList(laser_scan_offset["y"], response.laser_scan_offset);
           appendToList(laser_scan_frequency["y"], response.laser_scan_frequency);
           // Update the plot with the new data
+          laser_data = [laser_scan_end, laser_scan_start, laser_scan_offset, laser_scan_frequency];
           let livePlot = Plotly.newPlot("livePlot", laser_data, layout);
         } else {
           let messageLaserOff = $("#messageLaserOff");
@@ -486,61 +488,68 @@
   }
   let isDashboardUpdating = false;
   function DashboardPlot(interval) {
+    $("#pauseExperimentButton").addClass("hidden");
+    $("#continueExperimentButton").addClass("hidden");
+    $("#stopExperimentButton").addClass("hidden");
     if (!isDashboardUpdating) return;
     $.ajax({
       url: "{% url 'plot' %}", // URL mapped to the status view
       type: "GET",
       dataType: "json",
       success: function (response) {
-        xDate.push(getCurrentDateTime());
+        appendToList(xDate, getCurrentDateTime());
         // console.log(data);
         if (response.caylar_status == "ON") {
           $("#livePlotCaylar").removeClass("hidden");
-          $("#caylar_current_number").text(response.caylar_current);
-          $("#caylar_field_number").text(response.caylar_field);
-          $("#caylar_adcdac_temp_number").text(response.caylar_adcdac_temp);
-          $("#caylar_box_temp_number").text(response.caylar_box_temp);
-          $("#caylar_rack_temp_number").text(response.caylar_rack_temp);
-          $("#caylar_water_temp_number").text(response.caylar_water_temp);
-          $("#caylar_water_flow_number").text(response.caylar_water_flow);
+          $("#caylar_current_number").text(response.caylar_current[0]);
+          $("#caylar_field_number").text(response.caylar_field[0]);
+          $("#caylar_adcdac_temp_number").text(response.caylar_adcdac_temp[0]);
+          $("#caylar_box_temp_number").text(response.caylar_box_temp[0]);
+          $("#caylar_rack_temp_number").text(response.caylar_rack_temp[0]);
+          $("#caylar_water_temp_number").text(response.caylar_water_temp[0]);
+          $("#caylar_water_flow_number").text(response.caylar_water_flow[0]);
           // Update Caylar data
-          appendToList(caylar_current["y"], response.caylar_current);
-          appendToList(caylar_field["y"], response.caylar_field);
-          appendToList(caylar_adcdac_temp["y"], response.caylar_adcdac_temp);
-          appendToList(caylar_box_temp["y"], response.caylar_box_temp);
-          appendToList(caylar_rack_temp["y"], response.caylar_rack_temp);
-          appendToList(caylar_water_temp["y"], response.caylar_water_temp);
-          appendToList(caylar_water_flow["y"], response.caylar_water_flow);
+          appendToList(caylar_current["y"], response.caylar_current[0]);
+          appendToList(caylar_field["y"], response.caylar_field[0]);
+          appendToList(caylar_adcdac_temp["y"], response.caylar_adcdac_temp[0]);
+          appendToList(caylar_box_temp["y"], response.caylar_box_temp[0]);
+          appendToList(caylar_rack_temp["y"], response.caylar_rack_temp[0]);
+          appendToList(caylar_water_temp["y"], response.caylar_water_temp[0]);
+          appendToList(caylar_water_flow["y"], response.caylar_water_flow[0]);
           // Update the Caylar plot with the new data
+          caylar_data = [caylar_current, caylar_field, caylar_adcdac_temp, caylar_box_temp, caylar_rack_temp, caylar_water_temp, caylar_water_flow];
           let livePlotCaylar = Plotly.newPlot("livePlotCaylar", caylar_data, layoutCaylar);
         } else {
           $("#livePlotCaylar").addClass("hidden");
         }
         if (response.mercury_status == "ON") {
           $("#livePlotITC").removeClass("hidden");
-          $("#itc_heater_power_number").text(response.itc_heater_power);
-          $("#itc_temperature_number").text(response.itc_temperature);
+          $("#itc_heater_power_number").text(response.itc_heater_power[0]);
+          $("#itc_temperature_number").text(response.itc_temperature[0]);
           // Update ITC data
-          appendToList(itc_heater_power["y"], response.itc_heater_power);
-          appendToList(itc_temperature["y"], response.itc_temperature);
+          appendToList(itc_heater_power["y"], response.itc_heater_power[0]);
+          appendToList(itc_temperature["y"], response.itc_temperature[0]);
           // Update the ITC plot with the new data
+          itc_data = [itc_heater_power, itc_temperature];
           let livePlotITC = Plotly.newPlot("livePlotITC", itc_data, layoutITC);
         } else {
           $("#livePlotITC").addClass("hidden");
         }
         if (response.laser_status == "ON") {
           $("#livePlot").removeClass("hidden");
-          $("#laser_scan_end_number").text(response.laser_scan_end);
-          $("#laser_scan_start_number").text(response.laser_scan_start);
-          $("#laser_scan_offset_number").text(response.laser_scan_offset);
-          $("#laser_scan_frequency_number").text(response.laser_scan_frequency);
-          $("#laser_scan_wavelength_number").text(response.laser_scan_wavelength);
-          appendToList(laser_scan_end["y"], response.laser_scan_end);
-          appendToList(laser_scan_start["y"], response.laser_scan_start);
-          appendToList(laser_scan_offset["y"], response.laser_scan_offset);
-          appendToList(laser_scan_frequency["y"], response.laser_scan_frequency);
+          $("#laser_scan_end_number").text(response.laser_scan_end[0]);
+          $("#laser_scan_start_number").text(response.laser_scan_start[0]);
+          $("#laser_scan_offset_number").text(response.laser_scan_offset[0]);
+          $("#laser_scan_frequency_number").text(response.laser_scan_frequency[0]);
+          $("#laser_scan_wavelength_number").text(response.laser_wavelength[0]);
+          appendToList(laser_scan_end["y"], response.laser_scan_end[0]);
+          appendToList(laser_scan_start["y"], response.laser_scan_start[0]);
+          appendToList(laser_scan_offset["y"], response.laser_scan_offset[0]);
+          appendToList(laser_scan_frequency["y"], response.laser_scan_frequency[0]);
           // Update the plot with the new data
+          laser_data = [laser_scan_end, laser_scan_start, laser_scan_offset, laser_scan_frequency];
           let livePlot = Plotly.newPlot("livePlot", laser_data, layout);
+          console.log(laser_data);
         } else {
           $("#livePlot").addClass("hidden");
         }
@@ -591,6 +600,7 @@
     updateStatusColor(statusCaylarElement);
     updateStatusColor(statusMercuryElement);
     updateStatusColor(statusRFSoCElement);
+    isDashboardUpdating = false;
     updateStatus(); // Update the status immediately when the page loads
   });
 

@@ -90,21 +90,19 @@
               </div>
             </div>
             <hr class="my-4" />
-            <h6 class="heading-small text-muted mb-4">Mercury ITC Configuration</h6>
+            <h6 class="heading-small text-muted mb-4">Mercury ITC Actual Value</h6>
             <div class="pl-lg-4">
               <div class="row">
                 <div class="col-md-12">
                   <div class="form-group">
                     <label class="form-control-label" for="input-heater-power">Heater Power</label>
-                    <input id="input-heater-power" class="form-control" name="mercury_heater_power" placeholder="Heater Power" type="number" step="any" value="{{ connected ? mercury_heater_power : 'NA' }}" disabled />
+                    {% if connected %}<input id="input-heater-power" class="form-control" name="mercury_heater_power" placeholder="Heater Power" type="number" step="any" value="{{mercury_heater_power}}" disabled />{% else %} <input id="input-heater-power" class="form-control" name="mercury_heater_power" placeholder="Heater Power" type="number" step="any" value="NA" disabled /> {% endif %}
                   </div>
                 </div>
-              </div>
-              <div class="row">
                 <div class="col-md-12">
                   <div class="form-group">
                     <label class="form-control-label" for="input-itc-temperature">ITC Temperature</label>
-                    <input id="input-itc-temperature" class="form-control" name="mercury_itc_temperature" placeholder="ITC Temperature" type="number" step="any" value="{{ connected ? mercury_itc_temperature : 'NA' }}" disabled />
+                    {% if connected %}<input id="input-itc-temperature" class="form-control" name="mercury_itc_temperature" placeholder="ITC Temperature" type="number" step="any" value="{{mercury_itc_temperature}}" disabled />{% else %} <input id="input-itc-temperature" class="form-control" name="mercury_itc_temperature" placeholder="ITC Temperature" type="number" step="any" value="NA" disabled /> {% endif %}
                   </div>
                 </div>
               </div>

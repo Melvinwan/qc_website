@@ -96,15 +96,46 @@
                 <div class="col-md-12">
                   <div class="form-group">
                     <label class="form-control-label" for="input-current">Current</label>
-                    <input id="input-current" class="form-control" name="caylar_current" placeholder="Caylar Current" type="number" step="any" value="{{ connected ? magnet_current : 'NA' }}" disabled />
+                    {% if connected %}
+                    <input id="input-current" class="form-control" name="caylar_current" placeholder="Caylar Current" type="number" step="any" value="{{magnet_current}}" disabled />{% else %} <input id="input-current" class="form-control" name="caylar_current" placeholder="Caylar Current" type="number" step="any" value="NA" disabled />{% endif %}
                   </div>
                 </div>
-              </div>
-              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group"><label class="form-control-label" for="input-field">Field</label>{% if connected %} <input id="input-field" class="form-control" name="caylar_field" placeholder="Caylar Field" type="number" step="any" value="{{magnet_field}}" disabled />{% else %} <input id="input-field" class="form-control" name="caylar_field" placeholder="Caylar Field" type="number" step="any" value="NA" disabled />{% endif %}</div>
+                </div>
                 <div class="col-md-12">
                   <div class="form-group">
-                    <label class="form-control-label" for="input-field">Field</label>
-                    <input id="input-field" class="form-control" name="caylar_field" placeholder="Caylar Field" type="number" step="any" value="{{ connected ? magnet_field : 'NA' }}" disabled />
+                    <label class="form-control-label" for="input-ADCDAC_temp">ADC DAC Temp</label>
+                    {% if connected %}
+                    <input id="input-ADCDAC_temp" class="form-control" name="caylar_ADCDAC_temp" placeholder="Caylar ADCDAC_temp" type="number" step="any" value="{{magnet_ADCDAC_temp}}" disabled />{% else %} <input id="input-ADCDAC_temp" class="form-control" name="caylar_ADCDAC_temp" placeholder="Caylar ADCDAC_temp" type="number" step="any" value="NA" disabled />{% endif %}
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-box_temp">Box Temp</label>
+                    {% if connected %}
+                    <input id="input-box_temp" class="form-control" name="caylar_box_temp" placeholder="Caylar box_temp" type="number" step="any" value="{{magnet_box_temp}}" disabled />{% else %} <input id="input-box_temp" class="form-control" name="caylar_box_temp" placeholder="Caylar box_temp" type="number" step="any" value="NA" disabled />{% endif %}
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-rack_temp">Rack Temp</label>
+                    {% if connected %}
+                    <input id="input-rack_temp" class="form-control" name="caylar_rack_temp" placeholder="Caylar rack_temp" type="number" step="any" value="{{magnet_rack_temp}}" disabled />{% else %} <input id="input-rack_temp" class="form-control" name="caylar_rack_temp" placeholder="Caylar rack_temp" type="number" step="any" value="NA" disabled />{% endif %}
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-water_temp">Water Temp</label>
+                    {% if connected %}
+                    <input id="input-water_temp" class="form-control" name="caylar_water_temp" placeholder="Caylar water_temp" type="number" step="any" value="{{magnet_water_temp}}" disabled />{% else %} <input id="input-water_temp" class="form-control" name="caylar_water_temp" placeholder="Caylar water_temp" type="number" step="any" value="NA" disabled />{% endif %}
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-water_flow">Water Flow</label>
+                    {% if connected %}
+                    <input id="input-water_flow" class="form-control" name="caylar_water_flow" placeholder="Caylar water_flow" type="number" step="any" value="{{magnet_water_flow}}" disabled />{% else %} <input id="input-water_flow" class="form-control" name="caylar_water_flow" placeholder="Caylar water_flow" type="number" step="any" value="NA" disabled />{% endif %}
                   </div>
                 </div>
               </div>

@@ -233,8 +233,7 @@ def caylar_page_view(request):
 def rfsoc_page_view(request):
     # Load the data from the rfsoc XML file
     Update_rfsoc = construct_rfsoc()
-    connected = False
-    # connected = Update_rfsoc.try_connect()
+    connected = Update_rfsoc.try_connect()
 
     xilinx_host = xml_config_to_dict("staticfiles/xilinx_host.xml")
     #IF FILE IS NOT FOUND MAYBE CAN BUILD ONE
@@ -650,27 +649,27 @@ def update_live_plot(request):
     global UmercuryITC
 
     data = {'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-    if GLaser != None:
+    if ULaser != None:
         data['laser_status'] = "ON"
-        laser_scan_end = GLaser.report_scan_end()
-        laser_scan_start = GLaser.report_scan_start()
-        laser_scan_offset = GLaser.report_scan_offset()
-        laser_scan_frequency = GLaser.report_scan_frequency()
-        laser_wavelength = GLaser.report_ctl_wavelength_act()
+        laser_scan_end = ULaser.report_scan_end()
+        laser_scan_start = ULaser.report_scan_start()
+        laser_scan_offset = ULaser.report_scan_offset()
+        laser_scan_frequency = ULaser.report_scan_frequency()
+        laser_wavelength = ULaser.report_ctl_wavelength_act()
         data['laser_scan_end']= laser_scan_end,
         data['laser_scan_start']= laser_scan_start,
         data['laser_scan_offset']= laser_scan_offset,
         data['laser_scan_frequency']= laser_scan_frequency,
         data['laser_wavelength']= laser_wavelength,
-    if GCaylar !=None:
+    if UCaylar !=None:
         data['caylar_status'] = "ON"
-        caylar_current = GCaylar.current()
-        caylar_field = GCaylar.field()
-        caylar_ADCDAC_temp = GCaylar.ADCDAC_temp()
-        caylar_box_temp = GCaylar.box_temp()
-        caylar_rack_temp = GCaylar.rack_temp()
-        caylar_water_temp = GCaylar.water_temp()
-        caylar_water_flow = GCaylar.water_flow()
+        caylar_current = UCaylar.current()
+        caylar_field = UCaylar.field()
+        caylar_ADCDAC_temp = UCaylar.ADCDAC_temp()
+        caylar_box_temp = UCaylar.box_temp()
+        caylar_rack_temp = UCaylar.rack_temp()
+        caylar_water_temp = UCaylar.water_temp()
+        caylar_water_flow = UCaylar.water_flow()
         data['caylar_current']= caylar_current,
         data['caylar_field']= caylar_field,
         data['caylar_ADCDAC_temp']= caylar_ADCDAC_temp,
@@ -678,10 +677,10 @@ def update_live_plot(request):
         data['caylar_rack_temp']= caylar_rack_temp,
         data['caylar_water_temp']= caylar_water_temp,
         data['caylar_water_flow']= caylar_water_flow,
-    if GmercuryITC!=None:
+    if UmercuryITC!=None:
         data['mercury_status'] = "ON"
-        itc_heater_power = GmercuryITC.report_heater_power()
-        itc_temperature = GmercuryITC.report_temperature()
+        itc_heater_power = UmercuryITC.report_heater_power()
+        itc_temperature = UmercuryITC.report_temperature()
         data['itc_heater_power']= itc_heater_power,
         data['itc_temperature']= itc_temperature,
 
