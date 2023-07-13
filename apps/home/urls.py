@@ -4,6 +4,10 @@ from apps.home import views
 urlpatterns = [
     path('', views.index, name='home'),
     path('status/', views.status, name='status'),
+    path('status-caylar/', views.statusCaylar, name='statuscaylar'),
+    path('status-laser/', views.statusLaser, name='statuslaser'),
+    path('status-mercury/', views.statusMercury, name='statusmercury'),
+    path('status-rfsoc/', views.statusRFSoC, name='statusrfsoc'),
     path('plot/', views.update_live_plot, name='plot'),
     path('laser/', views.laser_page_view, name='laser_page'),
     path('rfsoc/', views.rfsoc_page_view, name='rfsoc_page'),

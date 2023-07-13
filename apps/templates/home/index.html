@@ -22,25 +22,33 @@
         </nav>
       </div>
       <!-- Card stats -->
+      <div id="messageLastUpdate"></div>
+
       <div class="row">
         <div class="col-xl-3 col-md-6">
           <div class="card card-stats">
             <!-- Card body -->
-
-            <div class="card-body" id="card_body_laser">
-              <a href="{% url 'laser_page' %}">
-                <div class="row">
-                  <div class="col">
-                    <h5 class="card-title text-uppercase text-muted mb-0">Laser Toptica</h5>
-                    <span class="h2 font-weight-bold mb-0" id="laser_status">Connecting</span>
-                  </div>
-                  <div class="col-auto">
-                    <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
-                      <i class="ni ni-active-40"></i>
+            <div>
+              <div class="card-body" id="card_body_laser">
+                <a href="{% url 'laser_page' %}">
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0">Laser Toptica</h5>
+                      <span class="h2 font-weight-bold mb-0" id="laser_status">Connecting</span>
+                    </div>
+                    <div class="col-auto">
+                      <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
+                        <i class="ni ni-active-40"></i>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </a>
+                </a>
+              </div>
+            </div>
+            <div>
+              <div class="card-body">Emission: <span id="laser_emission">-</span></div>
+              <div class="card-body">System Health: <span id="laser_system_health">-</span></div>
+              <div class="card-body">Scan Wavelength: <span id="laser_scan_wavelength_number">-</span></div>
             </div>
           </div>
         </div>
@@ -82,6 +90,7 @@
                 </div>
               </a>
             </div>
+            <div class="card-body">Caylar Field: <span id="caylar_field_number">-</span></div>
           </div>
         </div>
         <div class="col-xl-3 col-md-6">
@@ -102,6 +111,8 @@
                 </div>
               </a>
             </div>
+            <div class="card-body">ITC Heater Power: <span id="itc_heater_power_number">-</span></div>
+            <div class="card-body">ITC Temperature: <span id="itc_temperature_number">-</span></div>
           </div>
         </div>
       </div>
@@ -110,43 +121,90 @@
     <div id="messageUpdateExpContainer"></div>
   </div>
 </div>
-<div>
+<div class="container-fluid">
   <div id="messageLaserOff"></div>
-  <div id="livePlotCurrent" class="hidden"></div>
-  <div id="livePlotVoltage" class="hidden"></div>
-  <div id="livePlotWavelength" class="hidden">
-    <button type="button" class="btn btn-danger" id="pauseExperimentButton">Pause Experiment</button>
-    <button type="button" class="btn btn-danger" id="continueExperimentButton">Continue Experiment</button>
-    <button type="button" class="btn btn-danger" id="stopExperimentButton">Stop Experiment</button>
-    <div class="row container-fluid">
-      <!-- Placeholder for laser parameters -->
-      <div class="card-body">Scan End: <span id="laser_scan_end_number">-</span></div>
-      <div class="card-body">Scan Start: <span id="laser_scan_start_number">-</span></div>
-      <div class="card-body">Scan Offset: <span id="laser_scan_offset_number">-</span></div>
-      <div class="card-body">Scan Frequency: <span id="laser_scan_frequency_number">-</span></div>
-      <div class="card-body">Scan Wavelength: <span id="laser_scan_wavelength_number">-</span></div>
-      <div class="card-body">Current: <span id="laser_current_number">-</span></div>
-      <div class="card-body">Voltage: <span id="laser_voltage_number">-</span></div>
+  <div id="TopticaCurrentPlot" class="hidden">
+    <div class="row">
+      <div class="col-8"><h4 class="heading-small text-muted mb-4">Toptica Current</h4></div>
+      <div class="col-4 text-right">
+        <label>Close</label>
+        <input type="checkbox" id="toggleCheckboxTopticaCurrent" onchange="toggleVisibilityTopticaCurrent()" />
+      </div>
+      <div id="livePlotCurrent"></div>
     </div>
   </div>
+  <div id="TopticaVoltagePlot" class="hidden">
+    <div class="row">
+      <div class="col-8"><h4 class="heading-small text-muted mb-4">Toptica Voltage</h4></div>
+      <div class="col-4 text-right">
+        <label>Close</label>
+        <input type="checkbox" id="toggleCheckboxTopticaVoltage" onchange="toggleVisibilityTopticaVoltage()" />
+      </div>
+    </div>
+    <div id="livePlotVoltage"></div>
+  </div>
+
+  <div id="TopticaWavelengthPlot" class="hidden">
+    <div class="row">
+      <div class="col-8"><h4 class="heading-small text-muted mb-4">Toptica Wavelength</h4></div>
+      <div class="col-4 text-right">
+        <label>Close</label>
+        <input type="checkbox" id="toggleCheckboxTopticaWavelength" onchange="toggleVisibilityTopticaWavelength()" />
+      </div>
+    </div>
+    <div id="livePlotWavelength">
+      <button type="button" class="btn btn-danger" id="pauseExperimentButton">Pause Experiment</button>
+      <button type="button" class="btn btn-danger" id="continueExperimentButton">Continue Experiment</button>
+      <button type="button" class="btn btn-danger" id="stopExperimentButton">Stop Experiment</button>
+      <div class="row container-fluid">
+        <!-- Placeholder for laser parameters -->
+        <div class="card-body">Scan End: <span id="laser_scan_end_number">-</span></div>
+        <div class="card-body">Scan Start: <span id="laser_scan_start_number">-</span></div>
+        <div class="card-body">Scan Offset: <span id="laser_scan_offset_number">-</span></div>
+        <div class="card-body">Scan Frequency: <span id="laser_scan_frequency_number">-</span></div>
+        <div class="card-body">Scan Wavelength: <span id="laser_scan_wavelength_number">-</span></div>
+        <div class="card-body">Current: <span id="laser_current_number">-</span></div>
+        <div class="card-body">Voltage: <span id="laser_voltage_number">-</span></div>
+      </div>
+    </div>
+  </div>
+
   <div id="messageCaylarOff"></div>
-  <div id="livePlotCaylar" class="hidden">
-    <div class="row container-fluid">
-      <div class="card-body">Caylar Current: <span id="caylar_current_number">-</span></div>
-      <div class="card-body">Caylar Field: <span id="caylar_field_number">-</span></div>
-      <div class="card-body">Caylar ADC/DAC Temp: <span id="caylar_adcdac_temp_number">-</span></div>
-      <div class="card-body">Caylar Box Temp: <span id="caylar_box_temp_number">-</span></div>
-      <div class="card-body">Caylar Rack Temp: <span id="caylar_rack_temp_number">-</span></div>
-      <div class="card-body">Caylar Water Temp: <span id="caylar_water_temp_number">-</span></div>
-      <div class="card-body">Caylar Water Flow: <span id="caylar_water_flow_number">-</span></div>
+  <div id="CaylarPlot" class="hidden">
+    <div class="row">
+      <div class="col-8"><h4 class="heading-small text-muted mb-4">Caylar</h4></div>
+      <div class="col-4 text-right">
+        <label>Close</label>
+        <input type="checkbox" id="toggleCheckboxCaylar" onchange="toggleVisibilityCaylar()" />
+      </div>
+    </div>
+    <div id="livePlotCaylar">
+      <div class="row container-fluid">
+        <div class="card-body">Caylar Current: <span id="caylar_current_number">-</span></div>
+        <div class="card-body">Caylar Field: <span id="caylar_field_number">-</span></div>
+        <div class="card-body">Caylar ADC/DAC Temp: <span id="caylar_adcdac_temp_number">-</span></div>
+        <div class="card-body">Caylar Box Temp: <span id="caylar_box_temp_number">-</span></div>
+        <div class="card-body">Caylar Rack Temp: <span id="caylar_rack_temp_number">-</span></div>
+        <div class="card-body">Caylar Water Temp: <span id="caylar_water_temp_number">-</span></div>
+        <div class="card-body">Caylar Water Flow: <span id="caylar_water_flow_number">-</span></div>
+      </div>
     </div>
   </div>
   <div id="messageITCOff"></div>
-  <div id="livePlotITC" class="hidden">
-    <div class="row container-fluid">
-      <!-- Placeholder for ITC parameters -->
-      <div class="card-body">ITC Heater Power: <span id="itc_heater_power_number">-</span></div>
-      <div class="card-body">ITC Temperature: <span id="itc_temperature_number">-</span></div>
+  <div id="ITCPlot" class="hidden">
+    <div class="row">
+      <div class="col-8"><h4 class="heading-small text-muted mb-4">ITC</h4></div>
+      <div class="col-4 text-right">
+        <label>Close</label>
+        <input type="checkbox" id="toggleCheckboxITC" onchange="toggleVisibilityITC()" />
+      </div>
+    </div>
+    <div id="livePlotITC">
+      <div class="row container-fluid">
+        <!-- Placeholder for ITC parameters -->
+        <div class="card-body">ITC Heater Power: <span id="itc_heater_power_number">-</span></div>
+        <div class="card-body">ITC Temperature: <span id="itc_temperature_number">-</span></div>
+      </div>
     </div>
   </div>
   <!-- Page content -->
@@ -225,7 +283,26 @@
       listName.shift();
     }
   }
-
+  function toggleVisibilityTopticaCurrent() {
+    var div = document.getElementById("livePlotCurrent");
+    div.classList.toggle("hidden");
+  }
+  function toggleVisibilityTopticaVoltage() {
+    var div = document.getElementById("livePlotVoltage");
+    div.classList.toggle("hidden");
+  }
+  function toggleVisibilityTopticaWavelength() {
+    var div = document.getElementById("livePlotWavelength");
+    div.classList.toggle("hidden");
+  }
+  function toggleVisibilityMercuryITC() {
+    var div = document.getElementById("livePlotITC");
+    div.classList.toggle("hidden");
+  }
+  function toggleVisibilityCaylar() {
+    var div = document.getElementById("livePlotCaylar");
+    div.classList.toggle("hidden");
+  }
   function validateDeviceListForm() {
     var checkboxes = document.querySelectorAll('input[name="selected_devices[]"]');
     var checkedCount = 0;
@@ -327,42 +404,42 @@
   let itc_data = [itc_heater_power, itc_temperature];
   // Create an empty plot with a layout
   let layoutWavelength = {
-    title: "Live Plot Wavelength",
+    title: "Toptica Wavelength (nm)",
     xaxis: {
-      title: "X-axis",
+      title: "Date",
       type: "date",
     },
     yaxis: {
-      title: "Y-axis",
+      title: "Wavelength (nm)",
     },
     autosize: false, // Disable automatic resizing
   };
   let layoutCurrent = {
-    title: "Live Plot Current",
+    title: "Toptica Current (mA)",
     xaxis: {
-      title: "X-axis",
+      title: "Date",
       type: "date",
     },
     yaxis: {
-      title: "Y-axis",
+      title: "Current (mA)",
     },
     autosize: false, // Disable automatic resizing
   };
   let layoutVoltage = {
-    title: "Live Plot Voltage",
+    title: "Toptica Voltage (V)",
     xaxis: {
-      title: "X-axis",
+      title: "Date",
       type: "date",
     },
     yaxis: {
-      title: "Y-axis",
+      title: "Voltage (v)",
     },
     autosize: false, // Disable automatic resizing
   };
   let layoutCaylar = {
     title: "Live Plot Caylar",
     xaxis: {
-      title: "X-axis",
+      title: "Date",
       type: "date",
     },
     yaxis: {
@@ -374,7 +451,7 @@
   let layoutITC = {
     title: "Live Plot ITC",
     xaxis: {
-      title: "X-axis",
+      title: "Date",
       type: "date",
     },
     yaxis: {
@@ -404,7 +481,7 @@
         appendToList(xDate, getCurrentDateTime());
         // console.log(data);
         if (response.caylar_status == "ON") {
-          $("#livePlotCaylar").removeClass("hidden");
+          $("#CaylarPlot").removeClass("hidden");
           $("#caylar_current_number").text(response.caylar_current);
           $("#caylar_field_number").text(response.caylar_field);
           $("#caylar_adcdac_temp_number").text(response.caylar_adcdac_temp);
@@ -425,10 +502,11 @@
           let livePlotCaylar = Plotly.newPlot("livePlotCaylar", caylar_data, layoutCaylar);
         } else {
           let messageCaylarOff = $("#messageCaylarOff");
-          messageCaylarOff.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + "Caylar is OFF" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
+          messageCaylarOff.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + "Caylar is not connected" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
+          $("#CaylarPlot").addClass("hidden");
         }
         if (response.mercury_status == "ON") {
-          $("#livePlotITC").removeClass("hidden");
+          $("#ITCPlot").removeClass("hidden");
           $("#itc_heater_power_number").text(response.itc_heater_power);
           $("#itc_temperature_number").text(response.itc_temperature);
           // Update ITC data
@@ -439,12 +517,13 @@
           let livePlotITC = Plotly.newPlot("livePlotITC", itc_data, layoutITC);
         } else {
           let messageITCOff = $("#messageITCOff");
-          messageITCOff.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + "ITC is OFF" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
+          messageITCOff.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + "ITC is not connected" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
+          $("#ITCPlot").addClass("hidden");
         }
         if (response.laser_status == "ON") {
-          $("#livePlotWavelength").removeClass("hidden");
-          $("#livePlotCurrent").removeClass("hidden");
-          $("#livePlotVoltage").removeClass("hidden");
+          $("#TopticaWavelengthPlot").removeClass("hidden");
+          $("#TopticaCurrentPlot").removeClass("hidden");
+          $("#TopticaVoltagePlot").removeClass("hidden");
           $("#laser_scan_end_number").text(response.laser_scan_end[0]);
           $("#laser_scan_start_number").text(response.laser_scan_start[0]);
           $("#laser_scan_offset_number").text(response.laser_scan_offset[0]);
@@ -464,7 +543,10 @@
           let livePlotVoltage = Plotly.newPlot("livePlotVoltage", laser_voltage_data, layoutVoltage);
         } else {
           let messageLaserOff = $("#messageLaserOff");
-          messageLaserOff.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + "Laser is OFF" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
+          messageLaserOff.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + "Toptica is not connected" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
+          $("#TopticaWavelengthPlot").addClass("hidden");
+          $("#TopticaCurrentPlot").addClass("hidden");
+          $("#TopticaVoltagePlot").addClass("hidden");
         }
       },
       error: function (xhr, status, error) {
@@ -509,9 +591,9 @@
     let statusText = statusElement.text().trim();
     statusElement.removeClass("text-success text-danger").css("color", "");
 
-    if (statusText === "ON") {
+    if (statusText === "Connected") {
       statusElement.addClass("text-success"); // Add green text color class
-    } else if (statusText === "OFF") {
+    } else if (statusText === "Not Connected") {
       statusElement.addClass("text-danger"); // Add red text color class
     } else {
       statusElement.css("color", "#adb5bd"); // Set text color to #adb5bd (gray)
@@ -531,7 +613,7 @@
         appendToList(xDate, getCurrentDateTime());
         // console.log(data);
         if (response.caylar_status == "ON") {
-          $("#livePlotCaylar").removeClass("hidden");
+          $("#CaylarPlot").removeClass("hidden");
           $("#caylar_current_number").text(response.caylar_current[0]);
           $("#caylar_field_number").text(response.caylar_field[0]);
           $("#caylar_adcdac_temp_number").text(response.caylar_adcdac_temp[0]);
@@ -551,10 +633,10 @@
           caylar_data = [caylar_current, caylar_field, caylar_adcdac_temp, caylar_box_temp, caylar_rack_temp, caylar_water_temp, caylar_water_flow];
           let livePlotCaylar = Plotly.newPlot("livePlotCaylar", caylar_data, layoutCaylar);
         } else {
-          $("#livePlotCaylar").addClass("hidden");
+          $("#CaylarPlot").addClass("hidden");
         }
         if (response.mercury_status == "ON") {
-          $("#livePlotITC").removeClass("hidden");
+          $("#ITCPlot").removeClass("hidden");
           $("#itc_heater_power_number").text(response.itc_heater_power[0]);
           $("#itc_temperature_number").text(response.itc_temperature[0]);
           // Update ITC data
@@ -564,12 +646,12 @@
           itc_data = [itc_heater_power, itc_temperature];
           let livePlotITC = Plotly.newPlot("livePlotITC", itc_data, layoutITC);
         } else {
-          $("#livePlotITC").addClass("hidden");
+          $("#ITCPlot").addClass("hidden");
         }
         if (response.laser_status == "ON") {
-          $("#livePlotWavelength").removeClass("hidden");
-          $("#livePlotCurrent").removeClass("hidden");
-          $("#livePlotVoltage").removeClass("hidden");
+          $("#TopticaWavelengthPlot").removeClass("hidden");
+          $("#TopticaCurrentPlot").removeClass("hidden");
+          $("#TopticaVoltagePlot").removeClass("hidden");
           $("#laser_scan_end_number").text(response.laser_scan_end[0]);
           $("#laser_scan_start_number").text(response.laser_scan_start[0]);
           $("#laser_scan_offset_number").text(response.laser_scan_offset[0]);
@@ -577,6 +659,8 @@
           $("#laser_scan_wavelength_number").text(response.laser_wavelength[0]);
           $("#laser_current_number").text(response.laser_current[0]);
           $("#laser_voltage_number").text(response.laser_voltage[0]);
+          $("#laser_emission").text(response.laser_emission[0]);
+          $("#laser_system_health").text(response.laser_system_health[0]);
           appendToList(laser_wavelength["y"], response.laser_wavelength[0]);
           appendToList(laser_current["y"], response.laser_current[0]);
           appendToList(laser_voltage["y"], response.laser_voltage[0]);
@@ -588,9 +672,9 @@
           let livePlotCurrent = Plotly.newPlot("livePlotCurrent", laser_current_data, layoutCurrent);
           let livePlotVoltage = Plotly.newPlot("livePlotVoltage", laser_voltage_data, layoutVoltage);
         } else {
-          $("#livePlotWavelength").addClass("hidden");
-          $("#livePlotCurrent").addClass("hidden");
-          $("#livePlotVoltage").addClass("hidden");
+          $("#TopticaWavelengthPlot").addClass("hidden");
+          $("#TopticaCurrentPlot").addClass("hidden");
+          $("#TopticaVoltagePlot").addClass("hidden");
         }
       },
       error: function (xhr, status, error) {
@@ -605,20 +689,20 @@
     });
   }
   function updateStatus() {
-    $("#messageUpdateExpContainer").html('<div class="alert alert-info" role="alert">Please Wait Until The Status Loading Finished</div>');
     $.ajax({
       url: "{% url 'status' %}", // URL mapped to the status view
       type: "GET",
       dataType: "json",
       success: function (data) {
-        document.getElementById("rfsoc_status").innerHTML = data.rfsoc_status;
-        document.getElementById("laser_status").innerHTML = data.laser_status;
-        document.getElementById("mercury_status").innerHTML = data.mercury_status;
-        document.getElementById("caylar_status").innerHTML = data.caylar_status;
+        document.getElementById("rfsoc_status").innerHTML = data.rfsoc_status == "ON" ? "Connected" : "Not Connected";
+        document.getElementById("laser_status").innerHTML = data.laser_status == "ON" ? "Connected" : "Not Connected";
+        document.getElementById("mercury_status").innerHTML = data.mercury_status == "ON" ? "Connected" : "Not Connected";
+        document.getElementById("caylar_status").innerHTML = data.caylar_status == "ON" ? "Connected" : "Not Connected";
         updateStatusColor(statusLaserElement);
         updateStatusColor(statusCaylarElement);
         updateStatusColor(statusMercuryElement);
         updateStatusColor(statusRFSoCElement);
+        $("#messageLastUpdate").html('<div class="alert alert-info" role="alert">Last Update Status: ' + data.Dtime + "</div>");
       },
       error: function (xhr, errmsg, err) {
         console.log(xhr.status + ": " + xhr.responseText);
@@ -631,7 +715,80 @@
       },
     });
   }
-
+  function updateStatusLaser() {
+    $("#messageUpdateExpContainer").html('<div class="alert alert-info" role="alert">Please Wait Until The Status Loading Finished</div>');
+    $.ajax({
+      url: "{% url 'statuslaser' %}", // URL mapped to the status view
+      type: "GET",
+      dataType: "json",
+      success: function (data) {
+        document.getElementById("laser_status").innerHTML = data.laser_status == "ON" ? "Connected" : "Not Connected";
+        updateStatusColor(statusLaserElement);
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      },
+      complete: function () {
+        updateStatusRFSoC();
+      },
+    });
+  }
+  function updateStatusRFSoC() {
+    $.ajax({
+      url: "{% url 'statusrfsoc' %}", // URL mapped to the status view
+      type: "GET",
+      dataType: "json",
+      success: function (data) {
+        document.getElementById("rfsoc_status").innerHTML = data.rfsoc_status == "ON" ? "Connected" : "Not Connected";
+        updateStatusColor(statusRFSoCElement);
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      },
+      complete: function () {
+        updateStatusMercury();
+      },
+    });
+  }
+  function updateStatusMercury() {
+    $.ajax({
+      url: "{% url 'statusmercury' %}", // URL mapped to the status view
+      type: "GET",
+      dataType: "json",
+      success: function (data) {
+        document.getElementById("mercury_status").innerHTML = data.mercury_status == "ON" ? "Connected" : "Not Connected";
+        updateStatusColor(statusMercuryElement);
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      },
+      complete: function () {
+        updateStatusCaylar();
+      },
+    });
+  }
+  function updateStatusCaylar() {
+    $.ajax({
+      url: "{% url 'statuscaylar' %}", // URL mapped to the status view
+      type: "GET",
+      dataType: "json",
+      success: function (data) {
+        document.getElementById("caylar_status").innerHTML = data.caylar_status == "ON" ? "Connected" : "Not Connected";
+        updateStatusColor(statusCaylarElement);
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      },
+      complete: function () {
+        $("#experimentForms").removeClass("hidden");
+        $("#messageUpdateExpContainer .alert").remove();
+        isDashboardUpdating = true;
+        // Set the flag indicating that the script has been executed
+        sessionStorage.setItem("script_executed", true);
+        DashboardPlot(1000);
+      },
+    });
+  }
   // Add event listener for the update button
   const updateButton = document.getElementById("update_button");
   updateButton.addEventListener("click", function () {
@@ -640,16 +797,27 @@
     updateStatusColor(statusMercuryElement);
     updateStatusColor(statusRFSoCElement);
     isDashboardUpdating = false;
-    updateStatus(); // Update the status immediately when the page loads
+    updateStatusLaser(); // Update the status immediately when the page loads
   });
 
   // Start the script once the HTML has finished loading
   document.addEventListener("DOMContentLoaded", function () {
-    updateStatusColor(statusLaserElement);
-    updateStatusColor(statusCaylarElement);
-    updateStatusColor(statusMercuryElement);
-    updateStatusColor(statusRFSoCElement);
-    updateStatus(); // Update the status immediately when the page loads
+    // Check if the script has already been executed
+    let scriptExecuted = sessionStorage.getItem("script_executed");
+    console.log(scriptExecuted);
+    if (!scriptExecuted) {
+      updateStatusColor(statusLaserElement);
+      updateStatusColor(statusCaylarElement);
+      updateStatusColor(statusMercuryElement);
+      updateStatusColor(statusRFSoCElement);
+      updateStatusLaser(); // Update the status immediately when the page loads
+    } else {
+      updateStatusColor(statusLaserElement);
+      updateStatusColor(statusCaylarElement);
+      updateStatusColor(statusMercuryElement);
+      updateStatusColor(statusRFSoCElement);
+      updateStatus();
+    }
   });
 </script>
 

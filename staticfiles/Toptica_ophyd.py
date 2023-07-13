@@ -213,6 +213,8 @@ class LaserController(OphydObject): #On off laser similar to controller
             "ctl wavelength":{"value":self.dlc.laser1.ctl.wavelength_act.get()},
             "voltage act":{"value":self.dlc.laser1.dl.pc.voltage_act.get()},
             "current act":{"value":self.dlc.laser1.dl.cc.current_act.get()},
+            "emission":{"value":self.dlc.emission.get()},
+            "system health":{"value":self.dlc.system_health.get()},
         }
         return signals
 
@@ -232,6 +234,12 @@ class LaserController(OphydObject): #On off laser similar to controller
 
     # def widescan_remaining_time(self):
     #     return self.dlc.laser1.wide_scan.remaining_time.get()
+    def emission(self):
+        logger.debug(f"recv emission")
+        return self.dlc.emission.get()
+    def system_health(self):
+        logger.debug(f"recv system health")
+        return self.dlc.system_health.get()
     def current_act(self):
         logger.debug(f"recv current act")
         return self.dlc.laser1.dl.cc.current_act.get()
@@ -307,7 +315,9 @@ class LaserController(OphydObject): #On off laser similar to controller
                         self.scan_offset(),
                         self.wavelength_act(),
                         self.voltage_act(),
-                        self.current_act()
+                        self.current_act(),
+                        self.emission(),
+                        self.system_health(),
                     ]
                 )
         print(t)
@@ -398,6 +408,14 @@ class LaserSignalRO(LaserSignalBase):
 #     # @threadlocked
 #     def _get(self):
 #         return self.dlc.widescan_remaining_time()
+class LaserEmission(LaserSignalRO):
+    # @threadlocked
+    def _get(self):
+        return self.dlc.emission()
+class LaserSystemHealth(LaserSignalRO):
+    # @threadlocked
+    def _get(self):
+        return self.dlc.system_health()
 class LaserVoltageAct(LaserSignalRO):
     # @threadlocked
     def _get(self):
@@ -462,6 +480,8 @@ class LaserToptica(Device):
     # widescan_time = Cpt(LaserWideScanRemainingTime, signal_name="widescan_remaining_time")
     current_act = Cpt(LaserCurrentAct, signal_name="current_act", kind="hinted")
     voltage_act = Cpt(LaserVoltageAct, signal_name="voltage_act", kind="hinted")
+    emission = Cpt(LaserEmission, signal_name="emission", kind="hinted")
+    system_health = Cpt(LaserSystemHealth, signal_name="system_health", kind="hinted")
     scan_end = Cpt(LaserMainScanEnd, signal_name="scan_end")
     scan_start = Cpt(LaserMainScanStart, signal_name="scan_start")
     scan_offset = Cpt(LaserMainScanOffset, signal_name="scan_offset")
@@ -533,6 +553,10 @@ class LaserToptica(Device):
     #     return self.widescan_offset.get()
     # def report_widescan_time(self,val):
     #     return self.widescan_time.get()
+    def report_emission(self):
+        return self.emission.get()
+    def report_system_health(self):
+        return self.system_health.get()
     def report_current_act(self):
         return self.current_act.get()
     def report_voltage_act(self):

@@ -77,7 +77,7 @@
                 <div class="row">
                   <div class="col-md-4">
                     <div class="form-group">
-                      <label class="form-control-label" for="input-wavelength">Wavelength</label>
+                      <label class="form-control-label" for="input-wavelength">Wavelength (nm)</label>
                       <input type="number" step="any" id="input-wavelength" class="form-control" name="wavelength_act" placeholder="Wavelength" value="{{ form.wavelength_act.value }}" />
                     </div>
                   </div>
@@ -132,7 +132,7 @@
               <div class="row">
                 <div class="col-md-4">
                   <div class="form-group">
-                    <label class="form-control-label" for="input-wavelength">Wavelength</label>
+                    <label class="form-control-label" for="input-wavelength">Wavelength (nm)</label>
                     {% if connected %}
                     <input type="number" step="any" id="input-wavelength" class="form-control" name="wavelength_act" placeholder="Wavelength" value="{{wavelength_act}}" disabled />
                     {% else %} <input type="number" step="any" id="input-wavelength" class="form-control" name="wavelength_act" placeholder="Wavelength" value="NA" disabled /> {% endif %}
@@ -140,7 +140,7 @@
                 </div>
                 <div class="col-md-4">
                   <div class="form-group">
-                    <label class="form-control-label" for="input-current">Current</label>
+                    <label class="form-control-label" for="input-current">Current (mA)</label>
                     {% if connected %}
                     <input type="number" step="any" id="input-current" class="form-control" name="current_act" placeholder="current" value="{{current_act}}" disabled />
                     {% else %} <input type="number" step="any" id="input-current" class="form-control" name="current_act" placeholder="current" value="NA" disabled /> {% endif %}
@@ -148,7 +148,7 @@
                 </div>
                 <div class="col-md-4">
                   <div class="form-group">
-                    <label class="form-control-label" for="input-voltage">Voltage</label>
+                    <label class="form-control-label" for="input-voltage">Voltage (V)</label>
                     {% if connected %}
                     <input type="number" step="any" id="input-voltage" class="form-control" name="voltage_act" placeholder="voltage" value="{{voltage_act}}" disabled />
                     {% else %} <input type="number" step="any" id="input-voltage" class="form-control" name="voltage_act" placeholder="voltage" value="NA" disabled /> {% endif %}

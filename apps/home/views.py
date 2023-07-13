@@ -596,8 +596,10 @@ def get_live_data_and_run_rfsoc(request):
         laser_wavelength = GLaser.report_ctl_wavelength_act()
         laser_current = GLaser.report_current_act()
         laser_voltage = GLaser.report_voltage_act()
-        laser_column_headers = ['timestamp', 'scan start', 'scan end', 'scan offset', 'scan frequency', 'wavelength','current','voltage']
-        laser_data_row = [timestamp, laser_scan_start, laser_scan_end, laser_scan_offset, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage]
+        laser_emission = ULaser.report_emission()
+        laser_system_health = ULaser.report_system_health()
+        laser_column_headers = ['timestamp', 'scan start', 'scan end', 'scan offset', 'scan frequency', 'wavelength','current','voltage','emission','system health']
+        laser_data_row = [timestamp, laser_scan_start, laser_scan_end, laser_scan_offset, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
         laser_csv_file_path = 'laser.csv'
         append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
         data['laser_scan_end']= laser_scan_end,
@@ -607,6 +609,8 @@ def get_live_data_and_run_rfsoc(request):
         data['laser_wavelength']= laser_wavelength,
         data['laser_current']= laser_current,
         data['laser_voltage']= laser_voltage,
+        data['laser_emission']= laser_emission,
+        data['laser_system_health']= laser_system_health,
     if GCaylar !=None:
         data['caylar_status'] = "ON"
         caylar_current = GCaylar.current()
@@ -644,6 +648,9 @@ def get_live_data_and_run_rfsoc(request):
 @login_required(login_url="/login/")
 def index(request):
     form = ExperimentForm()
+    if not request.session.get('script_executed', False):
+        request.session['script_executed'] = True
+        # Execute any additional logic or actions you need before rendering the HTML
     return render(request, 'home/index.html', {'form': form, 'run':True})
 
 # URFSoC = None
@@ -665,6 +672,8 @@ def update_live_plot(request):
         laser_wavelength = ULaser.report_ctl_wavelength_act()
         laser_current = ULaser.report_current_act()
         laser_voltage = ULaser.report_voltage_act()
+        laser_emission = ULaser.report_emission()
+        laser_system_health = ULaser.report_system_health()
         data['laser_scan_end']= laser_scan_end,
         data['laser_scan_start']= laser_scan_start,
         data['laser_scan_offset']= laser_scan_offset,
@@ -672,6 +681,8 @@ def update_live_plot(request):
         data['laser_wavelength']= laser_wavelength,
         data['laser_current']= laser_current,
         data['laser_voltage']= laser_voltage,
+        data['laser_emission']= laser_emission,
+        data['laser_system_health']= laser_system_health,
     if UCaylar !=None:
         data['caylar_status'] = "ON"
         caylar_current = UCaylar.current()
@@ -696,54 +707,120 @@ def update_live_plot(request):
         data['itc_temperature']= itc_temperature,
 
     return JsonResponse(data)
+Drfsoc_status = None
+Dlaser_status = None
+Dmercury_status = None
+Dcaylar_status = None
+Dtime = None
 def status(request):
-    # global URFSoC
+    global URFSoC
     global ULaser
     global UCaylar
     global UmercuryITC
+    global Drfsoc_status
+    global Dlaser_status
+    global Dmercury_status
+    global Dcaylar_status
+    global Dtime
+
+    status = {
+        'rfsoc_status': Drfsoc_status,
+        'laser_status': Dlaser_status,
+        'mercury_status': Dmercury_status,
+        'caylar_status': Dcaylar_status,
+        'Dtime': Dtime
+    }
+
+    return JsonResponse(status)
+
+def statusLaser(request):
+    # global URFSoC
+    global ULaser
+    global Dlaser_status
     if ULaser!=None:
         ULaser.disconnect()
         ULaser = None
-    if UCaylar != None:
-        UCaylar = None
-    if UmercuryITC != None:
-        UmercuryITC = None
     RFSoC, Laser, Caylar, mercuryITC = construct_object()
-
-    if RFSoC.try_connect():
-        rfsoc_status = "ON"
-        URFSoC = RFSoC
-    else:
-        rfsoc_status = "OFF"
 
     if Laser.try_connect():
         laser_status = "ON"
         ULaser = Laser
         # Laser.disconnect()
+        Dlaser_status = laser_status
     else:
         laser_status = "OFF"
+        Dlaser_status = laser_status
 
+
+    status = {
+        'laser_status': laser_status,
+    }
+    return JsonResponse(status)
+def statusRFSoC(request):
+    global URFSoC
+    global Drfsoc_status
+
+    RFSoC, Laser, Caylar, mercuryITC = construct_object()
+    if RFSoC.try_connect():
+        rfsoc_status = "ON"
+        URFSoC = RFSoC
+        Drfsoc_status = rfsoc_status
+    else:
+        rfsoc_status = "OFF"
+        Drfsoc_status = rfsoc_status
+
+
+    status = {
+        'rfsoc_status': rfsoc_status,
+    }
+
+    return JsonResponse(status)
+def statusMercury(request):
+    global UmercuryITC
+    global Dmercury_status
+
+    if UmercuryITC != None:
+        UmercuryITC = None
+    RFSoC, Laser, Caylar, mercuryITC = construct_object()
 
     if mercuryITC.try_connect():
         mercury_status = "ON"
         UmercuryITC = mercuryITC
+        Dmercury_status = mercury_status
     else:
         mercury_status = "OFF"
+        Dmercury_status = mercury_status
 
-    if Caylar.try_connect():
-        caylar_status = "ON"
-    else:
-        caylar_status = "OFF"
 
     status = {
-        'rfsoc_status': rfsoc_status,
-        'laser_status': laser_status,
         'mercury_status': mercury_status,
-        'caylar_status': caylar_status,
     }
 
     return JsonResponse(status)
 
+def statusCaylar(request):
+    global UCaylar
+    global Dcaylar_status
+    global Dtime
+    if UCaylar != None:
+        UCaylar = None
+    RFSoC, Laser, Caylar, mercuryITC = construct_object()
+
+    if Caylar.try_connect():
+        caylar_status = "ON"
+        UCaylar =Caylar
+        Dcaylar_status = caylar_status
+    else:
+        caylar_status = "OFF"
+        Dcaylar_status = caylar_status
+
+    Dtime = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    status = {
+        'caylar_status': caylar_status,
+
+    }
+
+    return JsonResponse(status)
 @login_required(login_url="/login/")
 def pages(request):
     context = {}
