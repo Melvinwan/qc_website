@@ -716,6 +716,15 @@
     });
   }
   function updateStatusLaser() {
+    $("#messageLastUpdate .alert").remove();
+    document.getElementById("laser_status").innerHTML = "Connecting";
+    document.getElementById("rfsoc_status").innerHTML = "Connecting";
+    document.getElementById("mercury_status").innerHTML = "Connecting";
+    document.getElementById("caylar_status").innerHTML = "Connecting";
+    updateStatusColor(statusLaserElement);
+    updateStatusColor(statusRFSoCElement);
+    updateStatusColor(statusMercuryElement);
+    updateStatusColor(statusCaylarElement);
     $("#messageUpdateExpContainer").html('<div class="alert alert-info" role="alert">Please Wait Until The Status Loading Finished</div>');
     $.ajax({
       url: "{% url 'statuslaser' %}", // URL mapped to the status view
@@ -797,6 +806,8 @@
     updateStatusColor(statusMercuryElement);
     updateStatusColor(statusRFSoCElement);
     isDashboardUpdating = false;
+    let scriptExecuted = sessionStorage.getItem("script_executed");
+    sessionStorage.setItem("script_executed", false);
     updateStatusLaser(); // Update the status immediately when the page loads
   });
 
@@ -804,14 +815,15 @@
   document.addEventListener("DOMContentLoaded", function () {
     // Check if the script has already been executed
     let scriptExecuted = sessionStorage.getItem("script_executed");
-    console.log(scriptExecuted);
-    if (!scriptExecuted) {
+
+    if (!scriptExecuted || scriptExecuted == "false") {
       updateStatusColor(statusLaserElement);
       updateStatusColor(statusCaylarElement);
       updateStatusColor(statusMercuryElement);
       updateStatusColor(statusRFSoCElement);
       updateStatusLaser(); // Update the status immediately when the page loads
     } else {
+      console.log("RUN YANG INI 2");
       updateStatusColor(statusLaserElement);
       updateStatusColor(statusCaylarElement);
       updateStatusColor(statusMercuryElement);
