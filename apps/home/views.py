@@ -544,12 +544,11 @@ def start_experiment(request):
     global GCaylar
     global GmercuryITC
     choosed_device = request.POST.getlist('selected_devices[]')
-    choosed_device.append("RFSoC")
     off_device = ["Laser", "RFSoC", "Mercury", "Caylar"]
     on_device = []
     RFSoC, Laser, Caylar, mercuryITC = construct_object()
     rfsoc_status = "OFF"
-    if RFSoC.try_connect():
+    if RFSoC.try_connect() and "RFSoC" in choosed_device:
         on_device.append(RFSoC)
         off_device.remove("RFSoC")
         GRFSoC = RFSoC
@@ -676,8 +675,8 @@ def get_live_data_and_run_rfsoc(request):
         laser_voltage = GLaser.report_voltage_act()
         laser_emission = ULaser.report_emission()
         laser_system_health = ULaser.report_system_health()
-        laser_column_headers = ['timestamp', 'scan start', 'scan end', 'scan offset', 'scan frequency', 'wavelength','current','voltage','emission','system health']
-        laser_data_row = [timestamp, laser_scan_start, laser_scan_end, laser_scan_offset, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
+        laser_column_headers = ['timestamp', 'scan frequency', 'wavelength','current','voltage','emission','system health']
+        laser_data_row = [timestamp, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
         laser_csv_file_path = 'laser.csv' #ADD PARENT DIRECTORY
         append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
         data['laser_scan_end']= laser_scan_end,
@@ -777,8 +776,8 @@ def update_live_plot(request):
         laser_voltage = ULaser.report_voltage_act()
         laser_emission = ULaser.report_emission()
         laser_system_health = ULaser.report_system_health()
-        laser_column_headers = ['timestamp', 'scan start', 'scan end', 'scan offset', 'scan frequency', 'wavelength','current','voltage','emission','system health']
-        laser_data_row = [timestamp, laser_scan_start, laser_scan_end, laser_scan_offset, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
+        laser_column_headers = ['timestamp', 'scan frequency', 'wavelength','current','voltage','emission','system health']
+        laser_data_row = [timestamp, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
         laser_csv_file_path = 'laser.csv'
         append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
         data['laser_scan_end']= laser_scan_end,

@@ -171,7 +171,7 @@ class ITCController(OphydObject): #On off laser similar to controller
         print("connecting to Mercury ITC")
         try:
 
-            self.ITC = MercuryITC(f"TCPIP0::{self.host}::7020::SOCKET")
+            self.ITC = MercuryITC(f"TCPIP0::{self.host}::{self.port}::SOCKET")
             self.htr = self.ITC.modules[1] #main htr
             self.temp = self.ITC.modules[2]
             self.aux = self.ITC.modules[0]
