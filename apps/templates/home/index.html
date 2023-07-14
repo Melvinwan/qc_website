@@ -359,7 +359,7 @@
             $("#experimentForms")[0].reset();
             $("#experimentForms").addClass("hidden");
             isUpdating = true;
-            updatePlot(1000);
+            updatePlot(1000, response.file_name);
           },
           error: function (xhr, status, error) {
             // Handle any error that occurs during the request
@@ -469,7 +469,7 @@
   let isUpdating = false;
 
   // Function to update the plot with new data
-  function updatePlot(interval) {
+  function updatePlot(interval, file_name) {
     if (!isUpdating) return;
     $("#pauseExperimentButton").removeClass("hidden");
     $("#continueExperimentButton").removeClass("hidden");
@@ -478,7 +478,10 @@
 
     $.ajax({
       url: "{% url 'live_data_rfsoc' %}", // Replace with your Django view URL
-      type: "GET",
+      type: "POST",
+      data: {
+        file_name: file_name,
+      },
       dataType: "json",
       success: function (response) {
         // Update the data array with new data points
