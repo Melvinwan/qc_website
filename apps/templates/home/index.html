@@ -162,7 +162,7 @@
         <div class="card-body">Scan Start: <span id="laser_scan_start_number">-</span></div>
         <div class="card-body">Scan Offset: <span id="laser_scan_offset_number">-</span></div>
         <div class="card-body">Scan Frequency: <span id="laser_scan_frequency_number">-</span></div>
-        <div class="card-body">Scan Wavelength: <span id="laser_scan_wavelength_number">-</span></div>
+        <div class="card-body">Scan Wavelength: <span id="laser_scan_wavelength_number1">-</span></div>
         <div class="card-body">Current: <span id="laser_current_number">-</span></div>
         <div class="card-body">Voltage: <span id="laser_voltage_number">-</span></div>
       </div>
@@ -529,6 +529,7 @@
           $("#laser_scan_offset_number").text(response.laser_scan_offset[0]);
           $("#laser_scan_frequency_number").text(response.laser_scan_frequency[0]);
           $("#laser_scan_wavelength_number").text(response.laser_wavelength[0]);
+          $("#laser_scan_wavelength_number1").text(response.laser_wavelength[0]);
           $("#laser_current_number").text(response.laser_current[0]);
           $("#laser_voltage_number").text(response.laser_voltage[0]);
           appendToList(laser_wavelength["y"], response.laser_wavelength[0]);
@@ -657,6 +658,7 @@
           $("#laser_scan_offset_number").text(response.laser_scan_offset[0]);
           $("#laser_scan_frequency_number").text(response.laser_scan_frequency[0]);
           $("#laser_scan_wavelength_number").text(response.laser_wavelength[0]);
+          $("#laser_scan_wavelength_number1").text(response.laser_wavelength[0]);
           $("#laser_current_number").text(response.laser_current[0]);
           $("#laser_voltage_number").text(response.laser_voltage[0]);
           $("#laser_emission").text(response.laser_emission[0]);

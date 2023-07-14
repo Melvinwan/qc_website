@@ -196,7 +196,7 @@ class ITCController(OphydObject): #On off laser similar to controller
         self.ITC.disconnect()
         self.connected = False
 
-    def get_laser_data(self):
+    def get_itc_data(self):
         """
         The function `get_laser_data` returns a dictionary of various laser data values.
         @returns a dictionary called "signals" which contains various laser data values.
@@ -239,7 +239,6 @@ class ITCController(OphydObject): #On off laser similar to controller
         logger.debug(f"recv heater power")
         return self.htr.powr
 
-    # @scan_end.setter
     def heater_power_setter(self,val):
         logger.debug(f"set scan end")
         self.htr.powr(val)
@@ -247,7 +246,6 @@ class ITCController(OphydObject): #On off laser similar to controller
         logger.debug(f"recv temperature")
         return self.temp.temp[0]
 
-    # @scan_start.setter
     def temperature_setter(self,val):
         logger.debug(f"set temperature")
         self.temp.temp(val)
@@ -352,9 +350,6 @@ class ITCTemperature(ITCSignalBase):
         self.ITC.temperature(val)
 
 class MercuryITCDevice(Device):
-    # widescan_amplitude = Cpt(ITCWideScanAmplitude, signal_name="widescan_amplitude")
-    # widescan_offset = Cpt(ITCWideScanOffset, signal_name="widescan_offset")
-    # widescan_time = Cpt(ITCWideScanRemainingTime, signal_name="widescan_remaining_time")
     heater_power = Cpt(ITCHeaterPower, signal_name="heater_power",kind="hinted")
     temperature = Cpt(ITCTemperature, signal_name="temperature", kind="hinted")
 
@@ -414,7 +409,7 @@ class MercuryITCDevice(Device):
         The function returns the value of the scan_start attribute.
         @returns The value of `self.scan_start.get()` is being returned.
         """
-        return self.scan_start.get()
+        return self.temperature.get()
 
     def stage(self) -> List[object]:
         """
