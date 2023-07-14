@@ -202,8 +202,8 @@
     <div id="livePlotITC">
       <div class="row container-fluid">
         <!-- Placeholder for ITC parameters -->
-        <div class="card-body">ITC Heater Power: <span id="itc_heater_power_number">-</span></div>
-        <div class="card-body">ITC Temperature: <span id="itc_temperature_number">-</span></div>
+        <div class="card-body">ITC Heater Power: <span id="itc_heater_power_number1">-</span></div>
+        <div class="card-body">ITC Temperature: <span id="itc_temperature_number1">-</span></div>
       </div>
     </div>
   </div>
@@ -508,7 +508,9 @@
         if (response.mercury_status == "ON") {
           $("#ITCPlot").removeClass("hidden");
           $("#itc_heater_power_number").text(response.itc_heater_power);
+          $("#itc_heater_power_number1").text(response.itc_heater_power);
           $("#itc_temperature_number").text(response.itc_temperature);
+          $("#itc_temperature_number1").text(response.itc_temperature);
           // Update ITC data
           appendToList(itc_heater_power["y"], response.itc_heater_power);
           appendToList(itc_temperature["y"], response.itc_temperature);
@@ -639,7 +641,9 @@
         if (response.mercury_status == "ON") {
           $("#ITCPlot").removeClass("hidden");
           $("#itc_heater_power_number").text(response.itc_heater_power[0]);
+          $("#itc_heater_power_number1").text(response.itc_heater_power[0]);
           $("#itc_temperature_number").text(response.itc_temperature[0]);
+          $("#itc_temperature_number1").text(response.itc_temperature[0]);
           // Update ITC data
           appendToList(itc_heater_power["y"], response.itc_heater_power[0]);
           appendToList(itc_temperature["y"], response.itc_temperature[0]);
