@@ -475,7 +475,15 @@
     $("#continueExperimentButton").removeClass("hidden");
     $("#stopExperimentButton").removeClass("hidden");
     const currentDate = new Date();
+    // Retrieve the CSRF token from the HTML page
+    const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
 
+    // Include the CSRF token in the AJAX request headers
+    $.ajaxSetup({
+      headers: {
+        "X-CSRFToken": csrfToken,
+      },
+    });
     $.ajax({
       url: "{% url 'live_data_rfsoc' %}", // Replace with your Django view URL
       type: "POST",
