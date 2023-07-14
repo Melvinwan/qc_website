@@ -138,7 +138,7 @@
             <hr class="my-4" />
 
             <!-- Configuration - EOM -->
-            <h5 class="heading-small text-muted mb-4">Configuration - EOM - Channel</h6>
+            <h5 class="heading-small text-muted mb-4">Configuration - EOM - Channel</h5>
             <h6 class="heading-small text-muted mb-4">Configuration - EOM - Channel 1</h6>
             <div class="row">
               <div class="col-md-6">
@@ -212,19 +212,19 @@
                           </select>
                         </td>
                         <td>
-                          <input style="width: 100%" type="number" step="any" name="frequency0"/>
+                          <input style="width: 100%" type="number" step="any" name="frequency0" />
                         </td>
                         <td>
-                          <input style="width: 100%" type="number" step="any" name="phase0"/>
+                          <input style="width: 100%" type="number" step="any" name="phase0" />
                         </td>
                         <td>
-                          <input style="width: 100%" type="number" step="any" name="gain0"/>
+                          <input style="width: 100%" type="number" step="any" name="gain0" />
                         </td>
                         <td>
-                          <input style="width: 100%" type="number" step="any" name="time0"/>
+                          <input style="width: 100%" type="number" step="any" name="time0" />
                         </td>
                         <td>
-                          <input style="width: 100%" type="number" step="any" name="length0"/>
+                          <input style="width: 100%" type="number" step="any" name="length0" />
                         </td>
                         <td>
                           <button style="width: 100%" type="button" class="btn btn-sm btn-danger delete-btn0">Delete</button>
@@ -249,7 +249,7 @@
                             {% elif form0.channel0.value == '01' %}
                             <option>--Select--</option>
                             <option value="0">0</option>
-                            <option value="1" >1</option>
+                            <option value="1">1</option>
                             <option value="01" selected>0 & 1</option>
                             {% else %}
                             <option>--Select--</option>
@@ -259,11 +259,11 @@
                             {% endif %}
                           </select>
                         </td>
-                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-frequency0" name="formset0-{{ forloop.counter|add:'-1' }}-frequency0" value="{{ form0.frequency0.value }}"/></td>
-                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-phase0" name="formset0-{{ forloop.counter|add:'-1' }}-phase0" value="{{ form0.phase0.value }}"/></td>
-                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-gain0" name="formset0-{{ forloop.counter|add:'-1' }}-gain0" value="{{ form0.gain0.value }}"/></td>
-                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-time0" name="formset0-{{ forloop.counter|add:'-1' }}-time0" value="{{ form0.time0.value }}"/></td>
-                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-length0" name="formset0-{{ forloop.counter|add:'-1' }}-length0" value="{{ form0.length0.value }}"/></td>
+                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-frequency0" name="formset0-{{ forloop.counter|add:'-1' }}-frequency0" value="{{ form0.frequency0.value }}" /></td>
+                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-phase0" name="formset0-{{ forloop.counter|add:'-1' }}-phase0" value="{{ form0.phase0.value }}" /></td>
+                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-gain0" name="formset0-{{ forloop.counter|add:'-1' }}-gain0" value="{{ form0.gain0.value }}" /></td>
+                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-time0" name="formset0-{{ forloop.counter|add:'-1' }}-time0" value="{{ form0.time0.value }}" /></td>
+                        <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-length0" name="formset0-{{ forloop.counter|add:'-1' }}-length0" value="{{ form0.length0.value }}" /></td>
                         <td>
                           <button type="button" class="btn btn-sm btn-danger delete-btn0">Delete</button>
                         </td>
@@ -316,10 +316,10 @@
                   </td>
 
                   <td>
-                    <input type="number" step="any" name="time1"/>
+                    <input type="number" step="any" name="time1" />
                   </td>
                   <td>
-                    <input type="number" step="any" name="length1"/>
+                    <input type="number" step="any" name="length1" />
                   </td>
                   <td>
                     <button type="button" class="btn btn-sm btn-danger delete-btn1">Delete</button>
@@ -332,19 +332,19 @@
                   <td>
                     <div class="form-check">
                       <div class="form-check-inline">
-                        <input class="form-check-input" name="formset1-{{ forloop.counter|add:'-1' }}-aom_pins" id="id_formset1-{{ forloop.counter|add:'-1' }}-aom_pins_0" type="checkbox" value="0" {% if 0 in form1.aom_pins.value %}checked{% endif %}/>
+                        <input class="form-check-input" name="formset1-{{ forloop.counter|add:'-1' }}-aom_pins" id="id_formset1-{{ forloop.counter|add:'-1' }}-aom_pins_0" type="checkbox" value="0" {% if 0 in form1.aom_pins.value %}checked{% endif %} />
                         <label class="form-check-label">0</label>
                       </div>
                       <div class="form-check-inline">
-                        <input class="form-check-input" name="formset1-{{ forloop.counter|add:'-1' }}-aom_pins" id="id_formset1-{{ forloop.counter|add:'-1' }}-aom_pins_1" type="checkbox" value="1" {% if 1 in form1.aom_pins.value %}checked{% endif %}/>
+                        <input class="form-check-input" name="formset1-{{ forloop.counter|add:'-1' }}-aom_pins" id="id_formset1-{{ forloop.counter|add:'-1' }}-aom_pins_1" type="checkbox" value="1" {% if 1 in form1.aom_pins.value %}checked{% endif %} />
                         <label class="form-check-label">1</label>
                       </div>
                       <div class="form-check-inline">
-                        <input class="form-check-input" name="formset1-{{ forloop.counter|add:'-1' }}-aom_pins" id="id_formset1-{{ forloop.counter|add:'-1' }}-aom_pins_2" type="checkbox" value="2" {% if 2 in form1.aom_pins.value %}checked{% endif %}/>
+                        <input class="form-check-input" name="formset1-{{ forloop.counter|add:'-1' }}-aom_pins" id="id_formset1-{{ forloop.counter|add:'-1' }}-aom_pins_2" type="checkbox" value="2" {% if 2 in form1.aom_pins.value %}checked{% endif %} />
                         <label class="form-check-label">2</label>
                       </div>
                       <div class="form-check-inline">
-                        <input class="form-check-input" name="formset1-{{ forloop.counter|add:'-1' }}-aom_pins" id="id_formset1-{{ forloop.counter|add:'-1' }}-aom_pins_3" type="checkbox" value="3" {% if 3 in form1.aom_pins.value %}checked{% endif %}/>
+                        <input class="form-check-input" name="formset1-{{ forloop.counter|add:'-1' }}-aom_pins" id="id_formset1-{{ forloop.counter|add:'-1' }}-aom_pins_3" type="checkbox" value="3" {% if 3 in form1.aom_pins.value %}checked{% endif %} />
                         <label class="form-check-label">3</label>
                       </div>
                     </div>
@@ -408,12 +408,22 @@
       delete_form1(event.target);
     }
   });
+  function clearForm(clearButton) {
+    const formRow = clearButton.closest("tbody");
+    const inputFields = formRow.querySelectorAll("input");
+
+    inputFields.forEach((input) => {
+      input.value = ""; // Clear the value of each input field
+    });
+  }
+
   function delete_form0(deleteButton, ch) {
     const formRow = deleteButton.closest("tbody");
     const formTableBody = formRow.parentNode;
     let currentForm0Count = currentChannel0Forms.length;
     console.log(currentForm0Count);
     if (currentForm0Count === 1) {
+      clearForm(deleteButton);
       return;
     }
     formTableBody.removeChild(formRow);
@@ -425,6 +435,7 @@
     let currentForm1Count = currentChannel1Forms.length;
     console.log(currentForm1Count);
     if (currentForm1Count === 1) {
+      clearForm(deleteButton);
       return;
     }
     formTableBody.removeChild(formRow);
