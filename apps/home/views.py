@@ -678,7 +678,7 @@ def get_live_data_and_run_rfsoc(request):
         laser_system_health = ULaser.report_system_health()
         laser_column_headers = ['timestamp', 'scan start', 'scan end', 'scan offset', 'scan frequency', 'wavelength','current','voltage','emission','system health']
         laser_data_row = [timestamp, laser_scan_start, laser_scan_end, laser_scan_offset, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
-        laser_csv_file_path = 'laser.csv'
+        laser_csv_file_path = 'laser.csv' #ADD PARENT DIRECTORY
         append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
         data['laser_scan_end']= laser_scan_end,
         data['laser_scan_start']= laser_scan_start,
@@ -764,6 +764,8 @@ def update_live_plot(request):
     global UmercuryITC
 
     data = {'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
     if ULaser != None:
         data['laser_status'] = "ON"
         laser_scan_end = ULaser.report_scan_end()
@@ -775,6 +777,10 @@ def update_live_plot(request):
         laser_voltage = ULaser.report_voltage_act()
         laser_emission = ULaser.report_emission()
         laser_system_health = ULaser.report_system_health()
+        laser_column_headers = ['timestamp', 'scan start', 'scan end', 'scan offset', 'scan frequency', 'wavelength','current','voltage','emission','system health']
+        laser_data_row = [timestamp, laser_scan_start, laser_scan_end, laser_scan_offset, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
+        laser_csv_file_path = 'laser.csv'
+        append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
         data['laser_scan_end']= laser_scan_end,
         data['laser_scan_start']= laser_scan_start,
         data['laser_scan_offset']= laser_scan_offset,
@@ -793,6 +799,10 @@ def update_live_plot(request):
         caylar_rack_temp = UCaylar.rack_temp()
         caylar_water_temp = UCaylar.water_temp()
         caylar_water_flow = UCaylar.water_flow()
+        caylar_column_headers = ['timestamp', 'current', 'field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
+        caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
+        caylar_csv_file_path = 'caylar.csv'
+        append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
         data['caylar_current']= caylar_current,
         data['caylar_field']= caylar_field,
         data['caylar_ADCDAC_temp']= caylar_ADCDAC_temp,
@@ -804,6 +814,10 @@ def update_live_plot(request):
         data['mercury_status'] = "ON"
         itc_heater_power = UmercuryITC.report_heater_power()
         itc_temperature = UmercuryITC.report_temperature()
+        itc_data_row = [timestamp,itc_heater_power,itc_temperature]
+        itc_column_headers = ['timestamp', 'Heater Power','temperature']
+        itc_csv_file_path = 'itc.csv'
+        append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
         data['itc_heater_power']= itc_heater_power,
         data['itc_temperature']= itc_temperature,
 
