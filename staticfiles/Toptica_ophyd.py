@@ -162,6 +162,13 @@ class LaserController(OphydObject): #On off laser similar to controller
         return self._connected
 
     def try_connect(self):
+        """
+        The function `try_connect` attempts to establish a connection to a laser device and returns
+        `True` if successful, `False` otherwise.
+        @returns The function `try_connect` returns a boolean value. If the connection to the laser is
+        successfully established, it returns `True`. Otherwise, if there is an exception or the
+        connection cannot be established, it returns `False`.
+        """
         print(f"connecting to {self.host}")
         try:
             loop = asyncio.new_event_loop()
@@ -183,25 +190,20 @@ class LaserController(OphydObject): #On off laser similar to controller
             print("Laser cannot be connected")
             return False
 
-    # def start_wide_scan(self):
-    #     if not self.connected:
-    #         print("The connection has not been established")
-    #     else:
-    #         self.dlc.laser1.wide_scan.start.exec()
-    # def stop_wide_scan(self):
-    #     if not self.connected:
-    #         print("The connection has not been established")
-    #     else:
-    #         self.dlc.laser1.wide_scan.stop.exec()
-
-
     def off(self):
+        """
+        The function closes the connection to the laser.
+        """
         """Close the connection to the laser"""
         logger.info("The connection is already closed.")
         self.dlc.close()
         self.is_open = False
 
     def get_laser_data(self):
+        """
+        The function `get_laser_data` returns a dictionary of various laser data values.
+        @returns a dictionary called "signals" which contains various laser data values.
+        """
         signals = {
             # "wide scan amplitude":{"value": self.dlc.laser1.wide_scan.amplitude.get()},
             # "wide scan offset":{"value": self.dlc.laser1.wide_scan.offset.get()},
@@ -217,79 +219,126 @@ class LaserController(OphydObject): #On off laser similar to controller
             "system health":{"value":self.dlc.system_health.get()},
         }
         return signals
-
-    # def widescan_amplitude(self):
-    #     return self.dlc.laser1.wide_scan.amplitude.get()
-
-    # # @widescan_amplitude.setter
-    # def widescan_amplitude_setter(self,val):
-    #     self.dlc.laser1.wide_scan.amplitude.set(val)
-
-    # def widescan_offset(self):
-    #     return self.dlc.laser1.wide_scan.offset.get()
-
-    # # @widescan_offset.setter
-    # def widescan_offset_setter(self,val):
-    #     self.dlc.laser1.wide_scan.offset.set(val)
-
-    # def widescan_remaining_time(self):
-    #     return self.dlc.laser1.wide_scan.remaining_time.get()
     def emission(self):
+        """
+        The function "emission" logs a debug message and returns the emission value from the "dlc"
+        object.
+        @returns The method `emission` is returning the value of `self.dlc.emission.get()`.
+        """
         logger.debug(f"recv emission")
         return self.dlc.emission.get()
     def system_health(self):
+        """
+        The function retrieves the system health information from the dlc object.
+        @returns The method `system_health` is returning the result of `self.dlc.system_health.get()`.
+        """
         logger.debug(f"recv system health")
         return self.dlc.system_health.get()
     def current_act(self):
+        """
+        The function `current_act` retrieves the current activity of a laser.
+        @returns The code is returning the value of `self.dlc.laser1.dl.cc.current_act.get()`.
+        """
         logger.debug(f"recv current act")
         return self.dlc.laser1.dl.cc.current_act.get()
     def voltage_act(self):
+        """
+        The function "voltage_act" retrieves the current voltage value from a laser device.
+        @returns The method `voltage_act` is returning the value of
+        `self.dlc.laser1.dl.pc.voltage_act.get()`.
+        """
         logger.debug(f"recv voltage act")
         return self.dlc.laser1.dl.pc.voltage_act.get()
     def scan_end(self):
+        """
+        The function `scan_end` retrieves the value of the `end` attribute from the `scan` object of the
+        `laser1` object in the `dlc` object and logs a debug message.
+        @returns the value of `self.dlc.laser1.scan.end.get()`.
+        """
         logger.debug(f"recv scan end")
         return self.dlc.laser1.scan.end.get()
 
     # @scan_end.setter
     def scan_end_setter(self,val):
+        """
+        The function sets the scan end value for a laser in a DLC object.
+        @param val - The parameter "val" is the value that will be set for the scan end parameter.
+        """
         logger.debug(f"set scan end")
         self.dlc.laser1.scan.end.set(val)
     def scan_start(self):
+        """
+        The function `scan_start` logs a debug message and returns the value of
+        `self.dlc.laser1.scan.start.get()`.
+        @returns the value of `self.dlc.laser1.scan.start.get()`.
+        """
         logger.debug(f"recv scan start")
         return self.dlc.laser1.scan.start.get()
 
     # @scan_start.setter
     def scan_start_setter(self,val):
+        """
+        The function sets the scan start value for a laser.
+        @param val - The parameter "val" is the value that will be set for the scan start.
+        """
         logger.debug(f"set scan start")
         self.dlc.laser1.scan.start.set(val)
     def scan_frequency(self):
+        """
+        The function "scan_frequency" retrieves the scan frequency of laser1.
+        @returns the scan frequency of laser1.
+        """
         logger.debug(f"recv scan frequency")
         return self.dlc.laser1.scan.frequency.get()
 
     # @scan_frequency.setter
     def scan_frequency_setter(self,val):
+        """
+        The function sets the scan frequency for a laser.
+        @param val - The parameter "val" is the value that will be set for the scan frequency.
+        """
         logger.debug(f"set scan frequency")
         self.dlc.laser1.scan.frequency.set(val)
 
     def scan_offset(self):
+        """
+        The function `scan_offset` retrieves the scan offset value from the `dlc.laser1.scan.offset`
+        attribute.
+        @returns the value of `self.dlc.laser1.scan.offset.get()`.
+        """
         logger.debug(f"recv scan offset")
         return self.dlc.laser1.scan.offset.get()
 
     # @scan_offset.setter
     def scan_offset_setter(self,val):
+        """
+        The function sets the scan offset value for a laser.
+        @param val - The parameter "val" is the value that will be set for the scan offset.
+        """
         logger.debug(f"set scan offset")
         self.dlc.laser1.scan.offset.set(val)
 
     def wavelength_act(self):
+        """
+        The function returns the current wavelength of a laser.
+        @returns the value of `self.dlc.laser1.ctl.wavelength_act.get()`.
+        """
         logger.debug(f"recv wavelength act")
         return self.dlc.laser1.ctl.wavelength_act.get()
 
     # @wavelength_act.setter
     def wavelength_act_setter(self,val):
+        """
+        The function sets the active wavelength for a laser control.
+        @param val - The parameter "val" is the value that you want to set for the wavelength.
+        """
         logger.debug(f"set wavelength act")
         self.dlc.laser1.ctl.wavelength_set.set(val)
 
     def describe(self) -> None:
+        """
+        The `describe` function prints a table with information about a specific object.
+        """
         t = PrettyTable()
         t.title = f"{self.__class__.__name__} on {self.sock.host}:{self.sock.port}"
         t.field_names = [
@@ -321,17 +370,6 @@ class LaserController(OphydObject): #On off laser similar to controller
                     ]
                 )
         print(t)
-
-    # def __new__(cls, *args, **kwargs):
-    #     socket = kwargs.get("socket")
-    #     if not hasattr(socket, "host"):
-    #         raise RuntimeError("Socket must specify a host.")
-    #     if not hasattr(socket, "port"):
-    #         raise RuntimeError("Socket must specify a port.")
-    #     host_port = f"{socket.host}:{socket.port}"
-    #     if host_port not in Controller._controller_instances:
-    #         Controller._controller_instances[host_port] = object.__new__(cls)
-    #     return Controller._controller_instances[host_port]
 class LaserSignalBase(abc.ABC,Signal): #Similar to socketsignal
     SUB_SETPOINT = "setpoint"
     def __init__(self, signal_name, **kwargs):
@@ -386,28 +424,6 @@ class LaserSignalRO(LaserSignalBase):
     def _set(self):
         raise ReadOnlyError("Read-only signals cannot be set")
 
-# class LaserWideScanAmplitude(LaserSignalBase):
-#     # @threadlocked
-#     def _get(self):
-#         return self.dlc.widescan_amplitude()
-
-#     # @threadlocked
-#     def _set(self, val):
-#         self.dlc.widescan_amplitude_setter(val)
-
-# class LaserWideScanOffset(LaserSignalBase):
-#     # @threadlocked
-#     def _get(self):
-#         return self.dlc.widescan_offset()
-
-#     # @threadlocked
-#     def _set(self, val):
-#         self.dlc.widescan_offset_setter(val)
-
-# class LaserWideScanRemainingTime(LaserSignalRO):
-#     # @threadlocked
-#     def _get(self):
-#         return self.dlc.widescan_remaining_time()
 class LaserEmission(LaserSignalRO):
     # @threadlocked
     def _get(self):
@@ -513,18 +529,26 @@ class LaserToptica(Device):
         self.ctl_wavelength_act.kind = "hinted"
 
     def try_connect(self):
+        """
+        The function "try_connect" attempts to establish a connection with a laser controller.
+        @returns The try_connect() method of the lasercontroller object is being returned.
+        """
         return self.lasercontroller.try_connect()
 
     def disconnect(self):
+        """
+        The function disconnect turns off the laser controller.
+        @returns The method `disconnect` is returning the result of calling the `off` method on the
+        `lasercontroller` object.
+        """
         return self.lasercontroller.off()
-
-    # def update_widescan_amplitude(self,val):
-    #     self.widescan_amplitude.put(val)
-    # def update_widescan_offset(self,val):
-    #     self.widescan_offset.put(val)
-    # def update_widescan_time(self,val):
-    #     self.widescan_time.put(val)
     def update_all_xml(self, xml):
+        """
+        The function updates various parameters in an XML file and prints a message indicating success
+        or failure.
+        @param xml - The `xml` parameter is a string that represents the XML content that needs to be
+        updated.
+        """
         from .XMLGenerator import xml_config_to_dict
         try:
             self.config = xml_config_to_dict(xml)
@@ -536,40 +560,97 @@ class LaserToptica(Device):
         except:
             print("XML not Found")
     def limit_wavelength(self):
+        """
+        The function returns the value of the low limit wavelength.
+        @returns The method is returning the value of the attribute `low_limit_wavelength`.
+        """
         return self.low_limit_wavelength.get()
     def update_scan_end(self,val):
+        """
+        The function updates the value of the "scan_end" attribute with the given value.
+        @param val - The parameter "val" is the value that you want to update the "scan_end" attribute
+        with.
+        """
         self.scan_end.put(val)
     def update_scan_start(self,val):
+        """
+        The function updates the value of the "scan_start" attribute with the given input value.
+        @param val - The parameter "val" is the value that you want to update the "scan_start" attribute
+        with.
+        """
         self.scan_start.put(val)
     def update_scan_offset(self,val):
+        """
+        The function updates the value of the scan_offset attribute with the given value.
+        @param val - The parameter "val" is the value that you want to update the scan offset with.
+        """
         self.scan_offset.put(val)
     def update_scan_offset(self,val):
+        """
+        The function updates the scan offset value with the given input.
+        @param val - The parameter "val" is the value that you want to update the scan offset with.
+        """
         self.scan_frequency.put(val)
     def update_ctl_wavelength_act(self,val):
+        """
+        The function updates the value of the ctl_wavelength_act attribute with the given value.
+        @param val - The parameter "val" is the value that you want to set for the "ctl_wavelength_act"
+        attribute.
+        """
         self.ctl_wavelength_act.put(val)
-    # def report_widescan_amplitude(self,val):
-    #     return self.widescan_amplitude.get()
-    # def report_widescan_offset(self,val):
-    #     return self.widescan_offset.get()
-    # def report_widescan_time(self,val):
-    #     return self.widescan_time.get()
     def report_emission(self):
+        """
+        The function "report_emission" returns the value of the "emission" attribute.
+        @returns The method `report_emission` is returning the value of `self.emission`.
+        """
         return self.emission.get()
     def report_system_health(self):
+        """
+        The function "report_system_health" returns the system health.
+        @returns The method is returning the value of `self.system_health.get()`.
+        """
         return self.system_health.get()
     def report_current_act(self):
+        """
+        The function returns the value of the current_act attribute.
+        @returns The method `report_current_act` is returning the value of the `current_act` attribute.
+        """
         return self.current_act.get()
     def report_voltage_act(self):
+        """
+        The function returns the value of the voltage_act attribute.
+        @returns The method `report_voltage_act` is returning the value of the `voltage_act` attribute.
+        """
         return self.voltage_act.get()
     def report_scan_end(self):
+        """
+        The function "report_scan_end" returns the value of the "scan_end" attribute.
+        @returns The value of the attribute `scan_end`.
+        """
         return self.scan_end.get()
     def report_scan_start(self):
+        """
+        The function returns the value of the scan_start attribute.
+        @returns The method is returning the value of the `scan_start` attribute.
+        """
         return self.scan_start.get()
     def report_scan_offset(self):
+        """
+        The function "report_scan_offset" returns the value of the "scan_offset" attribute.
+        @returns The method is returning the value of the scan_offset attribute.
+        """
         return self.scan_offset.get()
     def report_scan_frequency(self):
+        """
+        The function returns the scan frequency value.
+        @returns The method is returning the value of the scan_frequency attribute.
+        """
         return self.scan_frequency.get()
     def report_ctl_wavelength_act(self):
+        """
+        The function returns the value of the ctl_wavelength_act attribute.
+        @returns The method is returning the value of the attribute `ctl_wavelength_act`.
+        """
         return self.ctl_wavelength_act.get()
 
     def stage(self) -> List[object]:

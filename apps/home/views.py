@@ -5,9 +5,13 @@ Copyright (c) 2019 - present AppSeed.us
 
 from django import template
 from django.contrib.auth.decorators import login_required
+# The above code is importing the `require_POST` decorator from the `django.views.decorators.http`
+# module. This decorator is used to ensure that a view function only accepts POST requests and returns
+# a 405 Method Not Allowed response for any other request method.
 from django.views.decorators.http import require_POST
 from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
 from django.template import loader
+# The above code is importing the `reverse` function from the `django.urls` module.
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from .construct_object import construct_object, construct_caylar,construct_itc,construct_rfsoc,construct_toptica
@@ -19,16 +23,19 @@ from django.contrib import messages
 from datetime import datetime
 import subprocess
 import os
-# def restart_server(request):
-#     # Stop the current runserver process
-#     subprocess.call(["pkill", "-f", "runserver"])
 
-#     # Start a new runserver process
-#     subprocess.Popen(["python", "manage.py", "runserver"])
-
-#     # Redirect to a new URL or template
-#     return redirect('home')  # Replace 'home' with the appropriate URL pattern name or URL path
 def laser_page_view(request):
+    """
+    The `laser_page_view` function is a Django view that loads data from an XML file, updates the XML
+    file with new values if a form is submitted, and renders a template with the updated values.
+
+    @param request The `request` parameter is an object that represents the HTTP request made by the
+    client. It contains information such as the request method (GET, POST, etc.), headers, user session,
+    and any data sent with the request. It is used to handle and process the request and generate an
+    appropriate response
+
+    @return a rendered HTML template called 'laser.html' with the context data.
+    """
     # Load the data from the laser XML file
 
     Update_Laser = construct_toptica()
@@ -139,6 +146,18 @@ def laser_page_view(request):
 
 # views.py
 def caylar_page_view(request):
+    """
+    The `caylar_page_view` function is a view function in a Django web application that handles requests
+    to the Caylar page, updates the XML file with new values, and renders the Caylar template with the
+    updated values.
+
+    @param request The `request` parameter is an object that represents the HTTP request made by the
+    client. It contains information such as the HTTP method (GET, POST, etc.), headers, user session,
+    and any data sent in the request. It is typically passed to view functions in Django to handle the
+    request and
+
+    @return a rendered HTML template called 'caylar.html' with the context data.
+    """
     # Load the data from the magnet XML file
     context={}
     Update_caylar = construct_caylar()
@@ -222,18 +241,23 @@ def caylar_page_view(request):
             'caylar_current': caylar_host["current"] if caylar_host["current"] is not None else '',
             'caylar_field': caylar_host["field"] if caylar_host["field"] is not None else '',
         })
-
-    # Assign the variables with the initial values
-    # magnet_host = caylar_host["host"] if caylar_host["host"] is not None else ''
-    # magnet_port = caylar_host["port"] if caylar_host["port"] is not None else ''
-    # magnet_current = caylar_host["current"] if caylar_host["current"] is not None else ''
-    # magnet_field = caylar_host["field"] if caylar_host["field"] is not None else ''
     context["form"]=form
     context["connected"]=connected
     return render(request, 'home/caylar.html', context)
 
 
 def rfsoc_page_view(request):
+    """
+    The function `rfsoc_page_view` is a view function in a Django web application that handles the
+    rendering and processing of a form for updating RFSoC configuration settings.
+
+    @param request The `request` parameter is an object that represents the HTTP request made by the
+    client. It contains information such as the HTTP method (GET, POST, etc.), headers, user session,
+    and any data sent in the request. It is used to handle and process the request and generate an
+    appropriate response
+
+    @return a rendered HTML template with the context variables "form", "formset0", and "formset1".
+    """
     # Load the data from the rfsoc XML file
     Update_rfsoc = construct_rfsoc()
     connected = Update_rfsoc.try_connect()
@@ -408,6 +432,17 @@ def rfsoc_page_view(request):
 
 
 def mercury_page_view(request):
+    """
+    The `mercury_page_view` function loads data from an XML file, updates the XML file if connected to a
+    device, and handles form submissions to update the XML file with new values.
+
+    @param request The `request` parameter is an object that represents the HTTP request made by the
+    client. It contains information such as the HTTP method (GET, POST, etc.), headers, user session,
+    and any data sent in the request. It is typically passed to view functions in Django to handle the
+    request and
+
+    @return a rendered HTML template called 'mercury.html' with the context variables.
+    """
     # Load the data from the cryostat XML file
     context = {}
     Update_mercury = construct_itc()
@@ -484,9 +519,6 @@ def mercury_page_view(request):
             'mercury_itc_temperature': mercury_host.get("ITC_temperature", ""),
         })
 
-    # Assign the variables with the initial values
-    # cryostat_host = mercury_host.get("host", "")
-    # cryostat_port = mercury_host.get("port", "")
     context['connected'] = connected
     context['form']=form
     return render(request, 'home/mercury.html', context)
@@ -496,6 +528,17 @@ GLaser = None
 GCaylar = None
 GmercuryITC = None
 def start_experiment(request):
+    """
+    The `start_experiment` function starts an experiment by connecting to selected devices, creating a
+    directory for the experiment, and writing information about the experiment to a file.
+
+    @param request The `request` parameter is an object that represents the HTTP request made by the
+    client. It contains information such as the HTTP method (GET, POST, etc.), headers, and data sent by
+    the client.
+
+    @return a JSON response with a message indicating whether the experiment started successfully or
+    not.
+    """
     global GRFSoC
     global GLaser
     global GCaylar
@@ -552,6 +595,16 @@ def start_experiment(request):
     message = 'Experiment started successfully.'
     return JsonResponse({'message': message})
 def stop_experiment(request):
+    """
+    The function `stop_experiment` disconnects various devices and sets their variables to `None`, and
+    then returns a JSON response with a success message.
+
+    @param request The `request` parameter is an object that represents the HTTP request made by the
+    client. It contains information such as the request method, headers, and body. In this case, it is
+    not used in the function, so you can ignore it.
+
+    @return a JSON response with a message indicating that the experiment has been stopped successfully.
+    """
     global GRFSoC
     global GLaser
     global GCaylar
@@ -566,10 +619,22 @@ def stop_experiment(request):
     GmercuryITC = None
     message = 'Experiment stopped successfully.'
     return JsonResponse({'message': message})
-import json
+
 import csv
 from datetime import datetime
 def append_to_csv(file_path, data,column_headers):
+    """
+    The function appends data to a CSV file, creating the file and adding column headers if it doesn't
+    exist.
+
+    @param file_path The file path is the location of the CSV file where you want to append the data. It
+    should be a string that specifies the file path, including the file name and extension.
+    @param data The "data" parameter is a list of values that you want to append to the CSV file. Each
+    value in the list represents a column in the CSV file.
+    @param column_headers The column_headers parameter is a list of strings that represents the headers
+    for each column in the CSV file. For example, if you have a CSV file with columns "Name", "Age", and
+    "Gender", the column_headers parameter would be ['Name', 'Age', 'Gender'].
+    """
     file_exists = os.path.isfile(file_path)
     with open(file_path, 'a', newline='') as file:
         writer = csv.writer(file)
@@ -577,6 +642,19 @@ def append_to_csv(file_path, data,column_headers):
             writer.writerow(column_headers)
         writer.writerow(data)
 def get_live_data_and_run_rfsoc(request):
+    """
+    The function `get_live_data_and_run_rfsoc` retrieves live data from various devices and saves it to
+    CSV files, then returns the data as a JSON response.
+
+    @param request The `request` parameter is the HTTP request object that contains information about
+    the current request made to the server. It includes details such as the request method, headers, and
+    any data sent with the request. In this code, it is not used directly in the function, but it is
+    required as a
+
+    @return a JSON response containing live data from various devices such as laser, Caylar, and
+    mercuryITC. The data includes the status of each device (ON/OFF) and specific measurements or
+    parameters related to each device.
+    """
     global GRFSoC
     global GLaser
     global GCaylar
@@ -646,7 +724,19 @@ def get_live_data_and_run_rfsoc(request):
 
 
 @login_required(login_url="/login/")
+
 def index(request):
+    """
+    This is a view function in a Django web application that renders the index.html template with a form
+    and a flag indicating that a script has been executed.
+
+    @param request The `request` parameter is an object that represents the HTTP request made by the
+    client. It contains information about the request, such as the HTTP method (GET, POST, etc.),
+    headers, user session, and more.
+
+    @return the rendered HTML template 'home/index.html' along with the form and a boolean value 'run'
+    set to True.
+    """
     form = ExperimentForm()
     if not request.session.get('script_executed', False):
         request.session['script_executed'] = True
@@ -658,6 +748,17 @@ ULaser = None
 UCaylar = None
 UmercuryITC = None
 def update_live_plot(request):
+    """
+    The function `update_live_plot` retrieves data from various sensors and returns it as a JSON
+    response.
+
+    @param request The `request` parameter is the HTTP request object that contains information about
+    the current request made to the server. It includes details such as the request method, headers, and
+    any data sent with the request. In this code, the `request` parameter is not used, so it can be
+    removed if
+
+    @return a JSON response containing the data collected from various sensors and devices.
+    """
     global ULaser
     global UCaylar
     global UmercuryITC
@@ -713,6 +814,15 @@ Dmercury_status = None
 Dcaylar_status = None
 Dtime = None
 def status(request):
+    """
+    The function "status" returns a JSON response containing the status of various components and the
+    current time.
+
+    @param request The `request` parameter is an object that represents the HTTP request made by the
+    client. It contains information such as the request method, headers, and body.
+
+    @return a JSON response containing the status of various variables and their values.
+    """
     global URFSoC
     global ULaser
     global UCaylar
@@ -734,6 +844,16 @@ def status(request):
     return JsonResponse(status)
 
 def statusLaser(request):
+    """
+    The function `statusLaser` checks the status of a laser and returns a JSON response with the laser
+    status.
+
+    @param request The `request` parameter is an object that represents the HTTP request made to the
+    server. It contains information about the request, such as the headers, body, and query parameters.
+    In this code snippet, the `request` parameter is not used, so it can be removed if it is not needed
+
+    @return a JSON response containing the status of the laser.
+    """
     # global URFSoC
     global ULaser
     global Dlaser_status
@@ -757,6 +877,16 @@ def statusLaser(request):
     }
     return JsonResponse(status)
 def statusRFSoC(request):
+    """
+    The function `statusRFSoC` checks the connection status of an RFSoC device and returns a JSON
+    response with the status.
+
+    @param request The `request` parameter is an object that represents the HTTP request made by the
+    client. It contains information such as the request method, headers, and body. In this code snippet,
+    the `request` parameter is not used, so it can be removed if it is not needed elsewhere in the code
+
+    @return a JSON response containing the status of the RFSoC.
+    """
     global URFSoC
     global Drfsoc_status
 
@@ -776,6 +906,16 @@ def statusRFSoC(request):
 
     return JsonResponse(status)
 def statusMercury(request):
+    """
+    The function `statusMercury` checks the status of a Mercury ITC device and returns a JSON response
+    with the status.
+
+    @param request The `request` parameter is an object that represents the HTTP request made by the
+    client. It contains information such as the request method, headers, and body. In this case, it is
+    used to handle the request and return a JSON response.
+
+    @return a JSON response containing the status of the Mercury device.
+    """
     global UmercuryITC
     global Dmercury_status
 
@@ -799,6 +939,16 @@ def statusMercury(request):
     return JsonResponse(status)
 
 def statusCaylar(request):
+    """
+    The function `statusCaylar` checks the status of the Caylar device and returns a JSON response with
+    the status.
+
+    @param request The `request` parameter is an object that represents the HTTP request made by the
+    client. It contains information such as the request method, headers, and body. In this case, it is
+    used to handle the incoming request and generate a response.
+
+    @return a JSON response containing the status of the "caylar" object.
+    """
     global UCaylar
     global Dcaylar_status
     global Dtime
@@ -823,6 +973,17 @@ def statusCaylar(request):
     return JsonResponse(status)
 @login_required(login_url="/login/")
 def pages(request):
+    """
+    The `pages` function in Python is responsible for rendering different HTML templates based on the
+    URL path provided in the request, and handling any errors that may occur during the rendering
+    process.
+
+    @param request The `request` parameter is an object that represents the HTTP request made by the
+    client. It contains information about the request, such as the URL, headers, and any data sent with
+    the request. In this code, the `request` object is used to determine the URL path and to render the
+
+    @return The function `pages` returns an `HttpResponse` object.
+    """
     context = {}
     # All resource paths end in .html.
     # Pick out the html file name from the url. And load that template.

@@ -155,9 +155,19 @@ class ITCController(OphydObject): #On off laser similar to controller
 
     @property
     def connected(self):
+        """
+        The function returns the value of the "_connected" attribute.
+        @returns The method is returning the value of the variable `_connected`.
+        """
         return self._connected
 
     def connect(self):
+        """
+        The function connects to a Mercury ITC device and returns True if the connection is successful,
+        otherwise it returns False.
+        @returns The connect() method returns a boolean value. If the connection to the Mercury ITC is
+        successful, it returns True. If the connection fails, it returns False.
+        """
         print("connecting to Mercury ITC")
         try:
 
@@ -178,12 +188,19 @@ class ITCController(OphydObject): #On off laser similar to controller
 
 
     def off(self):
+        """
+        The function "off" closes the connection to the laser and updates the connection status.
+        """
         """Close the connection to the laser"""
         logger.info("The connection is already closed.")
         self.ITC.disconnect()
         self.connected = False
 
     def get_laser_data(self):
+        """
+        The function `get_laser_data` returns a dictionary of various laser data values.
+        @returns a dictionary called "signals" which contains various laser data values.
+        """
         signals = {
             # "wide scan amplitude":{"value": self.ITC.laser1.wide_scan.amplitude.get()},
             # "wide scan offset":{"value": self.ITC.laser1.wide_scan.offset.get()},
@@ -360,6 +377,12 @@ class MercuryITCDevice(Device):
     def try_connect(self):
         return self.itccontroller.connect()
     def update_all_xml(self, xml):
+        """
+        The function updates the configuration settings of an ITC (Integrated Temperature Controller)
+        using an XML file.
+        @param xml - The `xml` parameter is a string that represents the XML content. It is used as
+        input to update the configuration settings of the object.
+        """
         from .XMLGenerator import xml_config_to_dict
         try:
             self.config = xml_config_to_dict(xml)
@@ -369,15 +392,35 @@ class MercuryITCDevice(Device):
         except:
             print("XML not Found")
     def update_heater_power(self,val):
+        """
+        The function updates the power of a heater in an ITC controller.
+        @param val - The parameter "val" is the value that you want to set for the heater power.
+        """
         self.itccontroller.heater_power_setter(val)
     def update_temperature(self,val):
+        """
+        The function updates the temperature value in the ITC controller.
+        @param val - The parameter "val" is the new temperature value that you want to set.
+        """
         self.itccontroller.temperature_setter(val)
     def report_heater_power(self):
+        """
+        The function returns the value of the heater power.
+        @returns The value of the `heater_power` attribute.
+        """
         return self.heater_power.get()
     def report_temperature(self):
+        """
+        The function returns the value of the scan_start attribute.
+        @returns The value of `self.scan_start.get()` is being returned.
+        """
         return self.scan_start.get()
 
     def stage(self) -> List[object]:
+        """
+        The function returns the result of calling the `stage()` method of the superclass.
+        @returns The method is returning a list of objects.
+        """
         return super().stage()
 
     def unstage(self) -> List[object]:
