@@ -196,6 +196,7 @@
                   <thead>
                     <tr>
                       <th>Time Start</th>
+                      <th>Actual Time (ns)</th>
                       <th>Pulse Frequency</th>
                       <th>Pulse Gain</th>
                     </tr>
@@ -205,6 +206,7 @@
                       <td>
                         <input style="width: 100%" type="number" step="any" name="time0" />
                       </td>
+                      <td class="actual-time-cell"><input style="width: 100%" type="number" step="any" name="acttime0" disabled /></td>
                       <td>
                         <input style="width: 100%" type="number" step="any" name="frequency0" />
                       </td>
@@ -221,6 +223,7 @@
                   <tbody id="formset0-{{ forloop.counter|add:'-1' }}" class="channel0-form">
                     <tr>
                       <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-time0" name="formset0-{{ forloop.counter|add:'-1' }}-time0" value="{{ form0.time0.value }}" /></td>
+                      <td class="actual-time-cell"><input style="width: 100%" type="number" step="any" name="acttime0" disabled /></td>
                       <td><input style="width: 100%" type="number" step="1" id="id_formset0-{{ forloop.counter|add:'-1' }}-frequency0" name="formset0-{{ forloop.counter|add:'-1' }}-frequency0" value="{{ form0.frequency0.value }}" /></td>
                       <td><input style="width: 100%" type="number" step="any" min="0" max="16384" id="id_formset0-{{ forloop.counter|add:'-1' }}-gain0" name="formset0-{{ forloop.counter|add:'-1' }}-gain0" value="{{ form0.gain0.value }}" /></td>
                       <td>
@@ -344,6 +347,25 @@
 </div>
 {% endblock content %} {% block javascripts %}
 <script>
+  // Function to calculate and update the Actual Time column
+  // Function to calculate and update the Actual Time column
+  function updateActualTime() {
+    $("#form0-list tbody").each(function (index, element) {
+      const timeStart = parseFloat($(element).find('input[name$="time0"]').val());
+      if (!isNaN(timeStart)) {
+        const actualTime = (2.6 * timeStart).toFixed(2); // Calculate Actual Time with 2 decimal places
+        $(element).find('input[name$="acttime0"]').val(actualTime); // Update the input field with the calculated value
+      }
+    });
+  }
+
+  // Attach event listener to input fields to trigger the update on change
+  $(document).on("input", 'input[name$="time0"]', function () {
+    updateActualTime();
+  });
+
+  // Initial calculation on page load (in case the input fields have initial values)
+  updateActualTime();
   const addMoreBtn0 = document.getElementById("add-more0");
   const addMoreBtn1 = document.getElementById("add-more1");
   const totalNewForms0 = document.getElementById("id_formset0-TOTAL_FORMS");

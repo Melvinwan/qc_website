@@ -40508,3 +40508,58 @@
 2023-07-17 15:46:54,090 - DEBUG - recv current act
 2023-07-17 15:46:54,100 - DEBUG - recv voltage act
 2023-07-17 15:46:54,121 - INFO - The connection is already closed.
+2023-07-17 17:06:55,223 - INFO - The connection has already been established.
+2023-07-17 17:07:10,965 - DEBUG - recv scan end
+2023-07-17 17:07:10,994 - DEBUG - recv scan start
+2023-07-17 17:07:11,003 - DEBUG - recv scan offset
+2023-07-17 17:07:11,043 - DEBUG - recv scan frequency
+2023-07-17 17:07:11,054 - DEBUG - recv wavelength act
+2023-07-17 17:07:11,063 - DEBUG - recv current act
+2023-07-17 17:07:11,081 - DEBUG - recv voltage act
+2023-07-17 17:07:11,135 - DEBUG - recv emission
+2023-07-17 17:07:11,155 - DEBUG - recv system health
+2023-07-17 17:07:13,001 - DEBUG - recv scan end
+2023-07-17 17:07:13,010 - DEBUG - recv scan start
+2023-07-17 17:07:13,016 - DEBUG - recv scan offset
+2023-07-17 17:07:13,023 - DEBUG - recv scan frequency
+2023-07-17 17:07:13,032 - DEBUG - recv wavelength act
+2023-07-17 17:07:13,041 - DEBUG - recv current act
+2023-07-17 17:07:13,049 - DEBUG - recv voltage act
+2023-07-17 17:07:13,056 - DEBUG - recv emission
+2023-07-17 17:07:13,064 - DEBUG - recv system health
+2023-07-17 17:07:15,255 - DEBUG - recv scan end
+2023-07-17 17:07:15,267 - DEBUG - recv scan start
+2023-07-17 17:07:15,275 - DEBUG - recv scan offset
+2023-07-17 17:07:15,283 - DEBUG - recv scan frequency
+2023-07-17 17:07:15,293 - DEBUG - recv wavelength act
+2023-07-17 17:07:15,301 - DEBUG - recv current act
+2023-07-17 17:07:15,326 - DEBUG - recv voltage act
+2023-07-17 17:07:15,335 - DEBUG - recv emission
+2023-07-17 17:07:15,342 - DEBUG - recv system health
+2023-07-17 17:07:16,954 - DEBUG - recv scan end
+2023-07-17 17:07:16,962 - DEBUG - recv scan start
+2023-07-17 17:07:16,969 - DEBUG - recv scan offset
+2023-07-17 17:07:16,977 - DEBUG - recv scan frequency
+2023-07-17 17:07:16,984 - DEBUG - recv wavelength act
+2023-07-17 17:07:16,994 - DEBUG - recv current act
+2023-07-17 17:07:17,004 - DEBUG - recv voltage act
+2023-07-17 17:07:17,012 - DEBUG - recv emission
+2023-07-17 17:07:17,019 - DEBUG - recv system health
+2023-07-17 17:07:18,944 - DEBUG - recv scan end
+2023-07-17 17:07:18,953 - DEBUG - recv scan start
+2023-07-17 17:07:18,969 - DEBUG - recv scan offset
+2023-07-17 17:07:18,976 - DEBUG - recv scan frequency
+2023-07-17 17:07:18,986 - DEBUG - recv wavelength act
+2023-07-17 17:07:18,994 - DEBUG - recv current act
+2023-07-17 17:07:19,003 - DEBUG - recv voltage act
+2023-07-17 17:07:19,013 - DEBUG - recv emission
+2023-07-17 17:07:19,021 - DEBUG - recv system health
+2023-07-17 17:07:23,449 - DEBUG - recv scan end
+2023-07-17 17:07:24,268 - DEBUG - recv scan start
+2023-07-17 17:07:24,278 - DEBUG - recv scan offset
+2023-07-17 17:07:24,285 - DEBUG - recv scan frequency
+2023-07-17 17:07:24,296 - DEBUG - recv wavelength act
+2023-07-17 17:07:24,305 - DEBUG - recv current act
+2023-07-17 17:07:24,316 - DEBUG - recv voltage act
+2023-07-17 17:07:24,330 - DEBUG - recv emission
+2023-07-17 17:07:24,340 - DEBUG - recv system health
