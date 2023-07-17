@@ -9,6 +9,7 @@ urlpatterns = [
     path('status-mercury/', views.statusMercury, name='statusmercury'),
     path('status-rfsoc/', views.statusRFSoC, name='statusrfsoc'),
     path('plot/', views.update_live_plot, name='plot'),
+    path('logging/', views.update_logging, name='logging'),
     path('laser/', views.laser_page_view, name='laser_page'),
     path('rfsoc/', views.rfsoc_page_view, name='rfsoc_page'),
     path('mercury/', views.mercury_page_view, name='mercury_page'),

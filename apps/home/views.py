@@ -286,31 +286,20 @@ def rfsoc_page_view(request):
             Formset1 = FormsetAOM(request.POST,prefix='formset1')
 
             if all([form.is_valid(),Formset0.is_valid(),Formset1.is_valid()]):
-                channel0=[]
+                rfsoc_config = {"EOM":{},"AOM":{}}
                 frequency0=[]
-                phase0=[]
                 gain0=[]
                 time0 = []
-                length0 = []
                 for form0 in Formset0:
-                    if form0.cleaned_data.get('channel0')!=None:
-                        channel0.append([int(x) for x in form0.cleaned_data.get('channel0')])
                     if form0.cleaned_data.get('time0')!=None:
                         time0.append(form0.cleaned_data.get('time0'))
-                    if form0.cleaned_data.get('length0')!=None:
-                        length0.append(form0.cleaned_data.get('length0'))
                     if form0.cleaned_data.get('frequency0')!=None:
                         frequency0.append(form0.cleaned_data.get('frequency0'))
-                    if form0.cleaned_data.get('phase0')!=None:
-                        phase0.append(form0.cleaned_data.get('phase0'))
                     if form0.cleaned_data.get('gain0')!=None:
                         gain0.append(form0.cleaned_data.get('gain0'))
-                rfsoc_config["EOM"]["channel_seq0"] = channel0
                 rfsoc_config["EOM"]["freq_seq0"] = frequency0
-                rfsoc_config["EOM"]["phase_seq0"] = phase0
                 rfsoc_config["EOM"]["gain_seq0"] = gain0
                 rfsoc_config["EOM"]["time_seq0"] = time0
-                rfsoc_config["EOM"]["lengthseq0"] = length0
                 time1 = [[],[],[],[]]
                 length1 = [[],[],[],[]]
                 pins1 = []
@@ -392,7 +381,7 @@ def rfsoc_page_view(request):
                 dict_to_xml_file(xilinx_host, "staticfiles/xilinx_host.xml")
     else:
         form = RFSoCConfigForm()
-        initial_data0 = [{'time0': t, 'channel0': ''.join(map(str,c)), 'length0': l, 'frequency0':f,'phase0':p,'gain0':g} for t, c, l,f,p,g in zip(rfsoc_config["EOM"]["time_seq0"], rfsoc_config["EOM"]["channel_seq0"], rfsoc_config["EOM"]["lengthseq0"], rfsoc_config["EOM"]["freq_seq0"], rfsoc_config["EOM"]["phase_seq0"], rfsoc_config["EOM"]["gain_seq0"])]
+        initial_data0 = [{'time0': t, 'frequency0':f,'gain0':int(g)} for t, f,g in zip(rfsoc_config["EOM"]["time_seq0"], rfsoc_config["EOM"]["freq_seq0"], rfsoc_config["EOM"]["gain_seq0"])]
         initial_data1 = [{'time1': t, 'aom_pins': p, 'length1': l} for t, p, l in zip(rfsoc_config["AOM"]["timeseqformttl"], rfsoc_config["AOM"]["pinsformttl"], rfsoc_config["AOM"]["lengthseqttl"])]
         if len(initial_data0)!=0:
             Formset0 = FormsetChannel(initial=initial_data0,prefix='formset0')
@@ -451,8 +440,8 @@ def mercury_page_view(request):
     mercury_host = xml_config_to_dict("staticfiles/mercuryITC.xml")
     if connected:
         Update_mercury.update_all_xml("staticfiles/mercuryITC.xml")
-        context["heater_power"] = Update_mercury.report_heater_power()
-        context["temperature"] =  Update_mercury.report_temperature()
+        context["mercury_heater_power"] = Update_mercury.report_heater_power()
+        context["mercury_temperature"] =  Update_mercury.report_temperature()
         mercury_host["time_update"] =  datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         dict_to_xml_file(mercury_host, "staticfiles/mercuryITC.xml")
         mercury_host = xml_config_to_dict("staticfiles/mercuryITC.xml")
@@ -809,6 +798,84 @@ def get_live_data_open_experiment(request):
 
     return JsonResponse(data)
 
+def get_live_data_open_experiment(request):
+    """
+    The function `get_live_data_open_experiment` retrieves live data from various devices, saves it to
+    CSV files, and returns the data as a JSON response.
+    @param request - The `request` parameter is the HTTP request object that contains information about
+    the current request made to the server. It includes details such as the request method, headers, and
+    any data sent with the request. In this code, it is not used directly in the function, but it is
+    required as a
+    @returns The function `get_live_data_open_experiment` returns a JSON response containing live data
+    from various devices such as laser, Caylar, and mercuryITC. The data includes the status of each
+    device (ON/OFF) and specific measurements or parameters related to each device.
+    """
+    global GLaser
+    global GCaylar
+    global GmercuryITC
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    data = {'laser_status' : "OFF",
+    'rfsoc_status' : "OFF",
+    'mercury_status' : "OFF",
+    'caylar_status' : "OFF"}
+    if GLaser != None:
+        data['laser_status'] = "ON"
+        laser_scan_end = GLaser.report_scan_end()
+        laser_scan_start = GLaser.report_scan_start()
+        laser_scan_offset = GLaser.report_scan_offset()
+        laser_scan_frequency = GLaser.report_scan_frequency()
+        laser_wavelength = GLaser.report_ctl_wavelength_act()
+        laser_current = GLaser.report_current_act()
+        laser_voltage = GLaser.report_voltage_act()
+        laser_emission = ULaser.report_emission()
+        laser_system_health = ULaser.report_system_health()
+        laser_column_headers = ['timestamp', 'scan frequency', 'wavelength','current','voltage','emission','system health']
+        laser_data_row = [timestamp, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
+        laser_csv_file_path = os.path.join(request.POST.get('file_name'),'laser.csv') #ADD PARENT DIRECTORY
+        append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
+        data['laser_scan_end']= laser_scan_end,
+        data['laser_scan_start']= laser_scan_start,
+        data['laser_scan_offset']= laser_scan_offset,
+        data['laser_scan_frequency']= laser_scan_frequency,
+        data['laser_wavelength']= laser_wavelength,
+        data['laser_current']= laser_current,
+        data['laser_voltage']= laser_voltage,
+        data['laser_emission']= laser_emission,
+        data['laser_system_health']= laser_system_health,
+    if GCaylar !=None:
+        data['caylar_status'] = "ON"
+        caylar_current = GCaylar.current()
+        caylar_field = GCaylar.field()
+        caylar_ADCDAC_temp = GCaylar.ADCDAC_temp()
+        caylar_box_temp = GCaylar.box_temp()
+        caylar_rack_temp = GCaylar.rack_temp()
+        caylar_water_temp = GCaylar.water_temp()
+        caylar_water_flow = GCaylar.water_flow()
+        caylar_column_headers = ['timestamp', 'current', 'field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
+        caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
+        caylar_csv_file_path = os.path.join(request.POST.get('file_name'),'caylar.csv')
+        append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
+        data['caylar_current']= caylar_current,
+        data['caylar_field']= caylar_field,
+        data['caylar_ADCDAC_temp']= caylar_ADCDAC_temp,
+        data['caylar_box_temp']= caylar_box_temp,
+        data['caylar_rack_temp']= caylar_rack_temp,
+        data['caylar_water_temp']= caylar_water_temp,
+        data['caylar_water_flow']= caylar_water_flow,
+    if GmercuryITC!=None:
+        data['mercury_status'] = "ON"
+        itc_heater_power = GmercuryITC.report_heater_power()
+        itc_temperature = GmercuryITC.report_temperature()
+        itc_data_row = [timestamp,itc_heater_power,itc_temperature]
+        itc_column_headers = ['timestamp', 'Heater Power','temperature']
+        itc_csv_file_path = os.path.join(request.POST.get('file_name'),'itc.csv')
+        append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
+        data['itc_heater_power']= itc_heater_power,
+        data['itc_temperature']= itc_temperature,
+
+    return JsonResponse(data)
+
 
 @login_required(login_url="/login/")
 
@@ -907,6 +974,58 @@ def update_live_plot(request):
         append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
         data['itc_heater_power']= itc_heater_power,
         data['itc_temperature']= itc_temperature,
+
+    return JsonResponse(data)
+
+def update_logging(request):
+    """
+    The function `update_live_plot` retrieves data from various sensors and returns it as a JSON
+    response.
+
+    @param request The `request` parameter is the HTTP request object that contains information about
+    the current request made to the server. It includes details such as the request method, headers, and
+    any data sent with the request. In this code, the `request` parameter is not used, so it can be
+    removed if
+
+    @return a JSON response containing the data collected from various sensors and devices.
+    """
+    global ULaser
+    global UCaylar
+    global UmercuryITC
+
+    data = {'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    if ULaser != None:
+        laser_scan_frequency = ULaser.report_scan_frequency()
+        laser_wavelength = ULaser.report_ctl_wavelength_act()
+        laser_current = ULaser.report_current_act()
+        laser_voltage = ULaser.report_voltage_act()
+        laser_emission = ULaser.report_emission()
+        laser_system_health = ULaser.report_system_health()
+        laser_column_headers = ['timestamp', 'scan frequency', 'wavelength','current','voltage','emission','system health']
+        laser_data_row = [timestamp, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
+        laser_csv_file_path = 'laser.csv'
+        append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
+    if UCaylar !=None:
+        caylar_current = UCaylar.current()
+        caylar_field = UCaylar.field()
+        caylar_ADCDAC_temp = UCaylar.ADCDAC_temp()
+        caylar_box_temp = UCaylar.box_temp()
+        caylar_rack_temp = UCaylar.rack_temp()
+        caylar_water_temp = UCaylar.water_temp()
+        caylar_water_flow = UCaylar.water_flow()
+        caylar_column_headers = ['timestamp', 'current', 'field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
+        caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
+        caylar_csv_file_path = 'caylar.csv'
+        append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
+    if UmercuryITC!=None:
+        itc_heater_power = UmercuryITC.report_heater_power()
+        itc_temperature = UmercuryITC.report_temperature()
+        itc_data_row = [timestamp,itc_heater_power,itc_temperature]
+        itc_column_headers = ['timestamp', 'Heater Power','temperature']
+        itc_csv_file_path = 'itc.csv'
+        append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
 
     return JsonResponse(data)
 Drfsoc_status = None

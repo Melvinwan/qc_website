@@ -241,14 +241,14 @@ class ITCController(OphydObject): #On off laser similar to controller
 
     def heater_power_setter(self,val):
         logger.debug(f"set scan end")
-        self.htr.powr(val)
+        self.htr.powr = val
     def temperature(self):
         logger.debug(f"recv temperature")
         return self.temp.temp[0]
 
     def temperature_setter(self,val):
         logger.debug(f"set temperature")
-        self.temp.temp(val)
+        self.temp.temp = val
 
     def describe(self) -> None:
         t = PrettyTable()

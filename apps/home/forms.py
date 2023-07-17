@@ -202,12 +202,9 @@ class RFSoCConfigFormIP(forms.Form):
     rfsoc_username = forms.CharField(label='Username', required=False)
     rfsoc_password = forms.CharField(label='Password', required=False)
 class RFSoCEOMSequenceForm(forms.Form):
-    channel0 = forms.ChoiceField(choices=[('0', '0'), ('1', '1'),('01','01')])
     frequency0 = forms.FloatField(label='EOM Frequency')
-    phase0 = forms.FloatField(label='EOM Phase')
     gain0 = forms.FloatField(label='EOM Gain')
     time0 = forms.FloatField(label='EOM Time')
-    length0 = forms.FloatField(label='EOM Length 0')
 class RFSoCAOMSequenceForm(forms.Form):
     aom_pins = forms.MultipleChoiceField(
         choices=[('0', '0'), ('1', '1'), ('2', '2'), ('3', '3')],

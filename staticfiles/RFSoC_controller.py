@@ -47,12 +47,9 @@ class RFSoC_controller:
         """
         if not self.get_config():
             if config==None:
-                self.configEOM={"channel_seq0":[0,1],
-                        "freq_seq0": [1,1,2],
-                        "phase_seq0": [1,1,2],
+                self.configEOM={"freq_seq0": [1,1,2],
                         "gain_seq0": [1,1,2],
                         "time_seq0":[50, 190,370,700],
-                        "lengthseq0":[1,1,2], # [Clock ticks]
                         "length0":100, # [Clock ticks]
                         "length1":100, # [Clock ticks]
                         # "pulse_freq":{"freq":1000, "gen_ch":0, "ro_ch":0}, #readout freq
@@ -82,12 +79,9 @@ class RFSoC_controller:
                 }
             else:
                 print("Config Receive")
-                self.configEOM={"channel_seq0":config["EOM"]["channel_seq0"],
-                        "freq_seq0": config["EOM"]["freq_seq0"],
-                        "phase_seq0": config["EOM"]["phase_seq0"],
+                self.configEOM={"freq_seq0": config["EOM"]["freq_seq0"],
                         "gain_seq0": config["EOM"]["gain_seq0"],
                         "time_seq0":config["EOM"]["time_seq0"],
-                        "lengthseq0":config["EOM"]["lengthseq0"],
                         "length0":config["EOM"]["length0"], # [Clock ticks]
                         "length1":config["EOM"]["length1"], # [Clock ticks]
                         "zone0": config["EOM"]["zone0"],
@@ -122,14 +116,11 @@ from qick.parser import load_program
 soc = QickSoc()
 
 soccfg = soc
-configEOM={"channel_seq0":'''+str(self.configEOM["channel_seq0"])+''',
-        "freq_seq0": '''+str(self.configEOM["freq_seq0"])+''',
-        "phase_seq0": '''+str(self.configEOM["phase_seq0"])+''',
+configEOM={"freq_seq0": '''+str(self.configEOM["freq_seq0"])+''',
         "gain_seq0": '''+str(self.configEOM["gain_seq0"])+''',
         "time_seq0":'''+str(self.configEOM["time_seq0"])+''',
         "length0":'''+str(self.configEOM["length0"])+''', # [Clock ticks]
         "length1":'''+str(self.configEOM["length1"])+''', # [Clock ticks]
-        "lengthseq0":'''+str(self.configEOM["lengthseq0"])+''', # [Clock ticks]
         "zone0": '''+str(self.configEOM["zone0"])+''',
         "mode0": "'''+str(self.configEOM["mode0"])+'''",
         "zone1": '''+str(self.configEOM["zone1"])+''',
