@@ -21,6 +21,7 @@ from staticfiles.XMLGenerator import xml_config_to_dict, dict_to_xml_file
 
 from django.contrib import messages
 from datetime import datetime
+import threading
 import subprocess
 import os
 
@@ -640,6 +641,9 @@ def append_to_csv(file_path, data,column_headers):
         if not file_exists:
             writer.writerow(column_headers)
         writer.writerow(data)
+def start_rfsoc_experiment():
+    global GRFSoC
+    GRFSoC.run_code()
 def get_live_data_and_run_rfsoc(request):
     """
     The function `get_live_data_and_run_rfsoc` retrieves live data from various devices and saves it to
@@ -654,7 +658,91 @@ def get_live_data_and_run_rfsoc(request):
     mercuryITC. The data includes the status of each device (ON/OFF) and specific measurements or
     parameters related to each device.
     """
-    global GRFSoC
+
+    global GLaser
+    global GCaylar
+    global GmercuryITC
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    data = {'laser_status' : "OFF",
+    'rfsoc_status' : "OFF",
+    'mercury_status' : "OFF",
+    'caylar_status' : "OFF"}
+    if GLaser != None:
+        data['laser_status'] = "ON"
+        laser_scan_end = GLaser.report_scan_end()
+        laser_scan_start = GLaser.report_scan_start()
+        laser_scan_offset = GLaser.report_scan_offset()
+        laser_scan_frequency = GLaser.report_scan_frequency()
+        laser_wavelength = GLaser.report_ctl_wavelength_act()
+        laser_current = GLaser.report_current_act()
+        laser_voltage = GLaser.report_voltage_act()
+        laser_emission = ULaser.report_emission()
+        laser_system_health = ULaser.report_system_health()
+        laser_column_headers = ['timestamp', 'scan frequency', 'wavelength','current','voltage','emission','system health']
+        laser_data_row = [timestamp, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
+        laser_csv_file_path = os.path.join(request.POST.get('file_name'),'laser.csv') #ADD PARENT DIRECTORY
+        append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
+        data['laser_scan_end']= laser_scan_end,
+        data['laser_scan_start']= laser_scan_start,
+        data['laser_scan_offset']= laser_scan_offset,
+        data['laser_scan_frequency']= laser_scan_frequency,
+        data['laser_wavelength']= laser_wavelength,
+        data['laser_current']= laser_current,
+        data['laser_voltage']= laser_voltage,
+        data['laser_emission']= laser_emission,
+        data['laser_system_health']= laser_system_health,
+    if GCaylar !=None:
+        data['caylar_status'] = "ON"
+        caylar_current = GCaylar.current()
+        caylar_field = GCaylar.field()
+        caylar_ADCDAC_temp = GCaylar.ADCDAC_temp()
+        caylar_box_temp = GCaylar.box_temp()
+        caylar_rack_temp = GCaylar.rack_temp()
+        caylar_water_temp = GCaylar.water_temp()
+        caylar_water_flow = GCaylar.water_flow()
+        caylar_column_headers = ['timestamp', 'current', 'field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
+        caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
+        caylar_csv_file_path = os.path.join(request.POST.get('file_name'),'caylar.csv')
+        append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
+        data['caylar_current']= caylar_current,
+        data['caylar_field']= caylar_field,
+        data['caylar_ADCDAC_temp']= caylar_ADCDAC_temp,
+        data['caylar_box_temp']= caylar_box_temp,
+        data['caylar_rack_temp']= caylar_rack_temp,
+        data['caylar_water_temp']= caylar_water_temp,
+        data['caylar_water_flow']= caylar_water_flow,
+    if GmercuryITC!=None:
+        data['mercury_status'] = "ON"
+        itc_heater_power = GmercuryITC.report_heater_power()
+        itc_temperature = GmercuryITC.report_temperature()
+        itc_data_row = [timestamp,itc_heater_power,itc_temperature]
+        itc_column_headers = ['timestamp', 'Heater Power','temperature']
+        itc_csv_file_path = os.path.join(request.POST.get('file_name'),'itc.csv')
+        append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
+        data['itc_heater_power']= itc_heater_power,
+        data['itc_temperature']= itc_temperature,
+
+    # Create a thread to run the function
+    thread = threading.Thread(target=start_rfsoc_experiment)
+
+    # Start the thread
+    thread.start()
+
+    return JsonResponse(data)
+
+def get_live_data_open_experiment(request):
+    """
+    The function `get_live_data_open_experiment` retrieves live data from various devices, saves it to
+    CSV files, and returns the data as a JSON response.
+    @param request - The `request` parameter is the HTTP request object that contains information about
+    the current request made to the server. It includes details such as the request method, headers, and
+    any data sent with the request. In this code, it is not used directly in the function, but it is
+    required as a
+    @returns The function `get_live_data_open_experiment` returns a JSON response containing live data
+    from various devices such as laser, Caylar, and mercuryITC. The data includes the status of each
+    device (ON/OFF) and specific measurements or parameters related to each device.
+    """
     global GLaser
     global GCaylar
     global GmercuryITC

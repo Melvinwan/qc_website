@@ -156,6 +156,8 @@
       <button type="button" class="btn btn-danger" id="pauseExperimentButton">Pause Experiment</button>
       <button type="button" class="btn btn-danger" id="continueExperimentButton">Continue Experiment</button>
       <button type="button" class="btn btn-danger" id="stopExperimentButton">Stop Experiment</button>
+      <button type="button" class="btn btn-danger" id="resetDashboardButton" style="display: none">Reset Dashboard</button>
+
       <div class="row container-fluid">
         <!-- Placeholder for laser parameters -->
         <div class="card-body">Scan End: <span id="laser_scan_end_number">-</span></div>
@@ -226,7 +228,7 @@
             <input type="hidden" id="experimentCountInput" name="experimentCount" value="{{ experiment_forms|length }}" />
             <div class="form-group px-4 py-4">
               <label for="id_experiment_name">Experiment Name:</label>
-              <input type="text" class="form-control" id="id_experiment_name" name="experiment_name" />
+              <input type="text" class="form-control" id="id_experiment_name" name="experiment_name" required />
             </div>
             <div class="form-group px-4">
               <label for="id_experiment_description">Experiment Description:</label>
@@ -234,7 +236,7 @@
             </div>
             <div class="form-group px-4">
               <label for="id_file_Name">Experiment File:</label>
-              <input type="text" class="form-control" id="id_file_Name" name="file_name" />
+              <input type="text" class="form-control" id="id_file_Name" name="file_name" required />
             </div>
             <div class="form-group px-4">
               <label for="id_selected_devices">Select Devices:</label>
@@ -259,6 +261,9 @@
             </div>
 
             <div class="row px-4">
+              <div class="card-body">
+                <button type="button" class="btn btn-primary" id="openExperimentButton">Open Experiment</button>
+              </div>
               <div class="card-body">
                 <button type="submit" class="btn btn-primary" id="startExperimentButton">Start Experiment</button>
               </div>
@@ -308,7 +313,22 @@
     var div = document.getElementById("livePlotCaylar");
     div.classList.toggle("hidden");
   }
+  function showResetDashboardButton() {
+    var resetDashboardButton = document.getElementById("resetDashboardButton");
+    resetDashboardButton.style.display = "inline-block";
+  }
   function validateDeviceListForm() {
+    var experimentName = document.getElementById("id_experiment_name").value;
+    var experimentFile = document.getElementById("id_file_Name").value;
+
+    if (experimentName === "") {
+      alert("Please type experiment name.");
+      return false; // Prevent form submission
+    }
+    if (experimentFile === "") {
+      alert("Please type experiment file.");
+      return false; // Prevent form submission
+    }
     var checkboxes = document.querySelectorAll('input[name="selected_devices[]"]');
     var checkedCount = 0;
     for (var i = 0; i < checkboxes.length; i++) {
@@ -334,14 +354,27 @@
     $("#continueExperimentButton").on("click", function () {
       continueExperiment();
     });
+    $("#openExperimentButton").on("click", function (event) {
+      openExperiment();
+    });
     $("#experimentForms").on("submit", function (event) {
       event.preventDefault(); // Prevent the default form submission
 
       // Serialize the form data
-      let formData = $(this).serialize();
+
       $("#messageLoadingContainer").html('<div class="alert alert-info" role="alert">Loading...</div>');
       // Make an AJAX POST request only if the form is valid
       if (this.checkValidity() && validateDeviceListForm()) {
+        // Retrieve the CSRF token from the HTML page
+        const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
+
+        // Include the CSRF token in the AJAX request headers
+        $.ajaxSetup({
+          headers: {
+            "X-CSRFToken": csrfToken,
+          },
+        });
+        let formData = $(this).serialize();
         $.ajax({
           url: "{% url 'start_experiment' %}",
           type: "POST",
@@ -376,6 +409,9 @@
             $("#messageLoadingContainer .alert").remove();
           },
         });
+      } else {
+        let messageContainer = $("#messageContainer");
+        messageContainer.html('<div class="alert alert-danger alert-dismissible fade show" role="alert">' + "Please fill the name of experiment and the file path" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
       }
     });
   });
@@ -589,6 +625,7 @@
         // Handle the response if needed
         console.log(response);
         // Stop the plot updates
+        showResetDashboardButton();
       },
       error: function (xhr, status, error) {
         // Handle any error that occurs during the request
@@ -749,7 +786,7 @@
     updateStatusColor(statusRFSoCElement);
     updateStatusColor(statusMercuryElement);
     updateStatusColor(statusCaylarElement);
-    $("#messageUpdateExpContainer").html('<div class="alert alert-info" role="alert">Please Wait Until The Status Loading Finished</div>');
+    $("#messageUpdateExpContainer").html('<div class="alert alert-info" role="alert">Please Wait Until The Status Loading Finished Before Starting the Experiment</div>');
     $.ajax({
       url: "{% url 'statuslaser' %}", // URL mapped to the status view
       type: "GET",
