@@ -364,6 +364,7 @@
       // Enable all input elements inside the container after click
       $(".container-fluid input").prop("disabled", false);
       $(".container-fluid textarea").prop("disabled", false);
+      $("#startLoggingButton").prop("disabled", false);
       isLogging = false;
     });
     $("#startLoggingButton").on("click", function (event) {
@@ -412,9 +413,11 @@
             // Handle any error that occurs during the request
             console.log(error);
             $("#restartLoggingButton").addClass("hidden");
+            $("#messageLoadingContainer .alert").remove();
             // Enable all input elements inside the container after click
             $(".container-fluid input").prop("disabled", false);
             $(".container-fluid textarea").prop("disabled", false);
+            $(this).prop("disabled", false);
             isLogging = false;
             // Update the message dynamically
             let messageContainer = $("#messageContainer");
