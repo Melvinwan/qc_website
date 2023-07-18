@@ -416,7 +416,7 @@
             // Reset the form fields
             isLogging = true;
             file_name_save = response.file_name;
-            updatePlotLogging(1000, response.file_name);
+            updatePlotLogging(1000, document.getElementById("id_file_Name").value);
           },
           error: function (xhr, status, error) {
             // Handle any error that occurs during the request
@@ -704,7 +704,7 @@
       complete: function () {
         // Call the updatePlot function again after the specified interval
         setTimeout(function () {
-          updatePlotLoggging(interval, file_name);
+          updatePlotLogging(interval, file_name);
         }, interval);
       },
     });
