@@ -411,7 +411,11 @@
           error: function (xhr, status, error) {
             // Handle any error that occurs during the request
             console.log(error);
-
+            $("#restartLoggingButton").addClass("hidden");
+            // Enable all input elements inside the container after click
+            $(".container-fluid input").prop("disabled", false);
+            $(".container-fluid textarea").prop("disabled", false);
+            isLogging = false;
             // Update the message dynamically
             let messageContainer = $("#messageContainer");
             messageContainer.html('<div class="alert alert-danger alert-dismissible fade show" role="alert">' + xhr.responseJSON.message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
