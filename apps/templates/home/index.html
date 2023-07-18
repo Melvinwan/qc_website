@@ -392,12 +392,11 @@
         $("input[name='selected_devices[]']:checked").each(function () {
           selectedDevices.push($(this).val());
         });
-        console.log(document.getElementById("id_file_name").value);
         $.ajax({
           url: "{% url 'start_experiment' %}",
           type: "POST",
           data: {
-            file_name: document.getElementById("id_file_name").value,
+            file_name: document.getElementById("id_file_Name").value,
             experiment_name: document.getElementById("id_experiment_name").value,
             description: document.getElementById("id_experiment_description").value,
             selected_devices: selectedDevices,
