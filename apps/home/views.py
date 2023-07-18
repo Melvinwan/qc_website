@@ -533,7 +533,10 @@ def start_experiment(request):
     global GLaser
     global GCaylar
     global GmercuryITC
-    choosed_device = request.POST.getlist('selected_devices[]')
+    if(request.POST.getlist('selected_devices[]')!=None):
+        choosed_device = request.POST.getlist('selected_devices[]')
+    else:
+        choosed_device = request.POST.getlist('selected_devices')
     off_device = ["Laser", "RFSoC", "Mercury", "Caylar"]
     on_device = []
     RFSoC, Laser, Caylar, mercuryITC = construct_object()

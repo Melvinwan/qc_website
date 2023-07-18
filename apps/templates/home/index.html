@@ -386,14 +386,18 @@
             "X-CSRFToken": csrfToken,
           },
         });
-
+        const selectedDevices = [];
+        $("input[name='selected_devices[]']:checked").each(function () {
+          selectedDevices.push($(this).val());
+        });
         $.ajax({
           url: "{% url 'start_experiment' %}",
           type: "POST",
           data: {
-            file_name: $("#id_file_Name").val(),
-            experiment_name: $("#id_experiment_name").val(),
-            description: $("#id_experiment_description").val(),
+            file_name: document.getElementById("id_file_name").value,
+            experiment_name: document.getElementById("id_experiment_name").value,
+            description: document.getElementById("id_experiment_description").value,
+            selected_devices: selectedDevices,
           },
           processData: false, // Prevent jQuery from automatically processing the data
           contentType: false, // Prevent jQuery from automatically setting the content type
