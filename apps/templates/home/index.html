@@ -392,6 +392,7 @@
         $("input[name='selected_devices[]']:checked").each(function () {
           selectedDevices.push($(this).val());
         });
+        console.log(document.getElementById("id_file_name").value);
         $.ajax({
           url: "{% url 'start_experiment' %}",
           type: "POST",
