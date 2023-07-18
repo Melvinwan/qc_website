@@ -1017,6 +1017,9 @@ def update_logging(request):
 
     if GLaser != None:
         data['laser_status'] = "ON"
+        laser_scan_end = GLaser.report_scan_end()
+        laser_scan_start = GLaser.report_scan_start()
+        laser_scan_offset = GLaser.report_scan_offset()
         laser_scan_frequency = GLaser.report_scan_frequency()
         laser_wavelength = GLaser.report_ctl_wavelength_act()
         laser_current = GLaser.report_current_act()
@@ -1027,6 +1030,9 @@ def update_logging(request):
         laser_data_row = [timestamp, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
         laser_csv_file_path = os.path.join(request.POST.get('file_name'),datetime.now().strftime("%d%m%Y%H/")+'laser.csv')
         append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
+        data['laser_scan_end']= laser_scan_end,
+        data['laser_scan_start']= laser_scan_start,
+        data['laser_scan_offset']= laser_scan_offset,
         data['laser_scan_frequency']= laser_scan_frequency,
         data['laser_wavelength']= laser_wavelength,
         data['laser_current']= laser_current,
