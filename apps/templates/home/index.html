@@ -370,16 +370,17 @@
     $("#startLoggingButton").on("click", function (event) {
       event.preventDefault(); // Prevent the default form submission
 
-      // Serialize the form data
+      // Disable the button after click
+      $(this).prop("disabled", true);
+      $(".container-fluid input").prop("disabled", true);
+      $(".container-fluid textarea").prop("disabled", true);
+      $("#restartLoggingButton").removeClass("hidden");
 
-      $("#messageLoadingContainer").html('<div class="alert alert-info" role="alert">Loading...</div>');
+      // Create a new FormData object to store the form data
+      const formData = new FormData($("#experimentForms")[0]);
+
       // Make an AJAX POST request only if the form is valid
-      if (this.checkValidity() && validateDeviceListForm()) {
-        // Disable the button after click
-        $(this).prop("disabled", true);
-        $(".container-fluid input").prop("disabled", true);
-        $(".container-fluid textarea").prop("disabled", true);
-        $("#restartLoggingButton").removeClass("hidden");
+      if (validateDeviceListForm()) {
         // Retrieve the CSRF token from the HTML page
         const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
 
@@ -389,11 +390,13 @@
             "X-CSRFToken": csrfToken,
           },
         });
-        formData = $(this).serialize();
+
         $.ajax({
           url: "{% url 'start_experiment' %}",
           type: "POST",
           data: formData,
+          processData: false, // Prevent jQuery from automatically processing the data
+          contentType: false, // Prevent jQuery from automatically setting the content type
           success: function (response) {
             // Handle the response if needed
             isDashboardUpdating = false;
@@ -417,7 +420,7 @@
             // Enable all input elements inside the container after click
             $(".container-fluid input").prop("disabled", false);
             $(".container-fluid textarea").prop("disabled", false);
-            $(this).prop("disabled", false);
+            $("#startLoggingButton").prop("disabled", false);
             isLogging = false;
             // Update the message dynamically
             let messageContainer = $("#messageContainer");
@@ -433,6 +436,7 @@
         messageContainer.html('<div class="alert alert-danger alert-dismissible fade show" role="alert">' + "Please fill the name of experiment and the file path" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
       }
     });
+
     $("#experimentForms").on("submit", function (event) {
       event.preventDefault(); // Prevent the default form submission
 
@@ -442,6 +446,9 @@
       // Make an AJAX POST request only if the form is valid
       if (this.checkValidity() && validateDeviceListForm()) {
         // Retrieve the CSRF token from the HTML page
+        // Enable all input elements inside the container after click
+        $(".container-fluid input").prop("disabled", true);
+        $(".container-fluid textarea").prop("disabled", true);
         const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
 
         // Include the CSRF token in the AJAX request headers
@@ -475,7 +482,8 @@
           error: function (xhr, status, error) {
             // Handle any error that occurs during the request
             console.log(error);
-
+            $(".container-fluid input").prop("disabled", false);
+            $(".container-fluid textarea").prop("disabled", false);
             // Update the message dynamically
             let messageContainer = $("#messageContainer");
             messageContainer.html('<div class="alert alert-danger alert-dismissible fade show" role="alert">' + xhr.responseJSON.message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
