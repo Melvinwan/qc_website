@@ -438,6 +438,13 @@
           },
         });
       } else {
+        $("#restartLoggingButton").addClass("hidden");
+        $("#messageLoadingContainer .alert").remove();
+        // Enable all input elements inside the container after click
+        $(".container-fluid input").prop("disabled", false);
+        $(".container-fluid textarea").prop("disabled", false);
+        $("#startLoggingButton").prop("disabled", false);
+        isLogging = false;
         let messageContainer = $("#messageContainer");
         messageContainer.html('<div class="alert alert-danger alert-dismissible fade show" role="alert">' + "Please fill the name of experiment and the file path" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
       }

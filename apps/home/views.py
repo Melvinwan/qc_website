@@ -571,7 +571,8 @@ def start_experiment(request):
         GCaylar = None
         GmercuryITC = None
         return JsonResponse({'message': message}, status=400)
-
+    print("REQUEST POST")
+    print(request.POST)
     # All devices are online, continue with starting the experiment
     # Your logic for starting the experiment here
     try:
