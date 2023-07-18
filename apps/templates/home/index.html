@@ -401,8 +401,6 @@
             description: document.getElementById("id_experiment_description").value,
             selected_devices: selectedDevices,
           },
-          processData: false, // Prevent jQuery from automatically processing the data
-          contentType: false, // Prevent jQuery from automatically setting the content type
           success: function (response) {
             // Handle the response if needed
             isDashboardUpdating = false;
