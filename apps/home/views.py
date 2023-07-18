@@ -684,7 +684,7 @@ def get_live_data_and_run_rfsoc(request):
         laser_system_health = ULaser.report_system_health()
         laser_column_headers = ['timestamp', 'scan frequency', 'wavelength','current','voltage','emission','system health']
         laser_data_row = [timestamp, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
-        laser_csv_file_path = os.path.join(request.POST.get('file_name'),'laser_'+datetime.now().strftime("%d/%m/%Y%H%M%S")+'.csv') #ADD PARENT DIRECTORY
+        laser_csv_file_path = os.path.join(request.POST.get('file_name'),'laser_'+datetime.now().strftime("%d%m%Y%H%M%S")+'.csv') #ADD PARENT DIRECTORY
         append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
         data['laser_scan_end']= laser_scan_end,
         data['laser_scan_start']= laser_scan_start,
@@ -706,7 +706,7 @@ def get_live_data_and_run_rfsoc(request):
         caylar_water_flow = GCaylar.water_flow()
         caylar_column_headers = ['timestamp', 'current', 'field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
         caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
-        caylar_csv_file_path = os.path.join(request.POST.get('file_name'),'caylar_'+datetime.now().strftime("%d/%m/%Y%H%M%S")+'.csv')
+        caylar_csv_file_path = os.path.join(request.POST.get('file_name'),'caylar_'+datetime.now().strftime("%d%m%Y%H%M%S")+'.csv')
         append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
         data['caylar_current']= caylar_current,
         data['caylar_field']= caylar_field,
@@ -721,7 +721,7 @@ def get_live_data_and_run_rfsoc(request):
         itc_temperature = GmercuryITC.report_temperature()
         itc_data_row = [timestamp,itc_heater_power,itc_temperature]
         itc_column_headers = ['timestamp', 'Heater Power','temperature']
-        itc_csv_file_path = os.path.join(request.POST.get('file_name'),'itc_'+datetime.now().strftime("%d/%m/%Y%H%M%S")+'.csv')
+        itc_csv_file_path = os.path.join(request.POST.get('file_name'),'itc_'+datetime.now().strftime("%d%m%Y%H%M%S")+'.csv')
         append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
         data['itc_heater_power']= itc_heater_power,
         data['itc_temperature']= itc_temperature,
@@ -768,7 +768,7 @@ def get_live_data_open_experiment(request):
         laser_system_health = ULaser.report_system_health()
         laser_column_headers = ['timestamp', 'scan frequency', 'wavelength','current','voltage','emission','system health']
         laser_data_row = [timestamp, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
-        laser_csv_file_path = os.path.join(request.POST.get('file_name'),'laser_'+datetime.now().strftime("%d/%m/%Y%H%M%S")+'.csv') #ADD PARENT DIRECTORY
+        laser_csv_file_path = os.path.join(request.POST.get('file_name'),'laser_'+datetime.now().strftime("%d%m%Y%H%M%S")+'.csv') #ADD PARENT DIRECTORY
         append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
         data['laser_scan_end']= laser_scan_end,
         data['laser_scan_start']= laser_scan_start,
@@ -790,7 +790,7 @@ def get_live_data_open_experiment(request):
         caylar_water_flow = GCaylar.water_flow()
         caylar_column_headers = ['timestamp', 'current', 'field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
         caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
-        caylar_csv_file_path = os.path.join(request.POST.get('file_name'),'caylar_'+datetime.now().strftime("%d/%m/%Y%H%M%S")+'.csv')
+        caylar_csv_file_path = os.path.join(request.POST.get('file_name'),'caylar_'+datetime.now().strftime("%d%m%Y%H%M%S")+'.csv')
         append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
         data['caylar_current']= caylar_current,
         data['caylar_field']= caylar_field,
@@ -805,7 +805,7 @@ def get_live_data_open_experiment(request):
         itc_temperature = GmercuryITC.report_temperature()
         itc_data_row = [timestamp,itc_heater_power,itc_temperature]
         itc_column_headers = ['timestamp', 'Heater Power','temperature']
-        itc_csv_file_path = os.path.join(request.POST.get('file_name'),'itc_'+datetime.now().strftime("%d/%m/%Y%H%M%S")+'.csv')
+        itc_csv_file_path = os.path.join(request.POST.get('file_name'),'itc_'+datetime.now().strftime("%d%m%Y%H%M%S")+'.csv')
         append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
         data['itc_heater_power']= itc_heater_power,
         data['itc_temperature']= itc_temperature,
@@ -846,7 +846,7 @@ def get_live_data_open_experiment(request):
         laser_system_health = ULaser.report_system_health()
         laser_column_headers = ['timestamp', 'scan frequency', 'wavelength','current','voltage','emission','system health']
         laser_data_row = [timestamp, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
-        laser_csv_file_path = os.path.join(request.POST.get('file_name'),'laser_'+datetime.now().strftime("%d/%m/%Y%H%M%S")+'.csv') #ADD PARENT DIRECTORY
+        laser_csv_file_path = os.path.join(request.POST.get('file_name'),'laser_'+datetime.now().strftime("%d%m%Y%H%M%S")+'.csv') #ADD PARENT DIRECTORY
         append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
         data['laser_scan_end']= laser_scan_end,
         data['laser_scan_start']= laser_scan_start,
@@ -868,7 +868,7 @@ def get_live_data_open_experiment(request):
         caylar_water_flow = GCaylar.water_flow()
         caylar_column_headers = ['timestamp', 'current', 'field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
         caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
-        caylar_csv_file_path = os.path.join(request.POST.get('file_name'),'caylar_'+datetime.now().strftime("%d/%m/%Y%H%M%S")+'.csv')
+        caylar_csv_file_path = os.path.join(request.POST.get('file_name'),'caylar_'+datetime.now().strftime("%d%m%Y%H%M%S")+'.csv')
         append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
         data['caylar_current']= caylar_current,
         data['caylar_field']= caylar_field,
@@ -883,7 +883,7 @@ def get_live_data_open_experiment(request):
         itc_temperature = GmercuryITC.report_temperature()
         itc_data_row = [timestamp,itc_heater_power,itc_temperature]
         itc_column_headers = ['timestamp', 'Heater Power','temperature']
-        itc_csv_file_path = os.path.join(request.POST.get('file_name'),'itc_'+datetime.now().strftime("%d/%m/%Y%H%M%S")+'.csv')
+        itc_csv_file_path = os.path.join(request.POST.get('file_name'),'itc_'+datetime.now().strftime("%d%m%Y%H%M%S")+'.csv')
         append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
         data['itc_heater_power']= itc_heater_power,
         data['itc_temperature']= itc_temperature,
@@ -947,7 +947,7 @@ def update_live_plot(request):
         laser_system_health = ULaser.report_system_health()
         laser_column_headers = ['timestamp', 'scan frequency', 'wavelength','current','voltage','emission','system health']
         laser_data_row = [timestamp, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
-        laser_csv_file_path = 'logging/laser_'+datetime.now().strftime("%d/%m/%Y%H%M%S")+'.csv'
+        laser_csv_file_path = 'logging/laser_'+datetime.now().strftime("%d%m%Y%H%M%S")+'.csv'
         append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
         data['laser_scan_end']= laser_scan_end,
         data['laser_scan_start']= laser_scan_start,
@@ -969,7 +969,7 @@ def update_live_plot(request):
         caylar_water_flow = UCaylar.water_flow()
         caylar_column_headers = ['timestamp', 'current', 'field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
         caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
-        caylar_csv_file_path = 'logging/caylar_'+datetime.now().strftime("%d/%m/%Y%H%M%S")+'.csv'
+        caylar_csv_file_path = 'logging/caylar_'+datetime.now().strftime("%d%m%Y%H%M%S")+'.csv'
         append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
         data['caylar_current']= caylar_current,
         data['caylar_field']= caylar_field,
@@ -984,7 +984,7 @@ def update_live_plot(request):
         itc_temperature = UmercuryITC.report_temperature()
         itc_data_row = [timestamp,itc_heater_power,itc_temperature]
         itc_column_headers = ['timestamp', 'Heater Power','temperature']
-        itc_csv_file_path = 'logging/itc_'+datetime.now().strftime("%d/%m/%Y%H%M%S")+'.csv'
+        itc_csv_file_path = 'logging/itc_'+datetime.now().strftime("%d%m%Y%H%M%S")+'.csv'
         append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
         data['itc_heater_power']= itc_heater_power,
         data['itc_temperature']= itc_temperature,
@@ -1019,7 +1019,7 @@ def update_logging(request):
         laser_system_health = ULaser.report_system_health()
         laser_column_headers = ['timestamp', 'scan frequency', 'wavelength','current','voltage','emission','system health']
         laser_data_row = [timestamp, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
-        laser_csv_file_path = 'logging/laser_'+datetime.now().strftime("%d/%m/%Y%H%M%S")+'.csv'
+        laser_csv_file_path = 'logging/laser_'+datetime.now().strftime("%d%m%Y%H%M%S")+'.csv'
         append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
     if UCaylar !=None:
         caylar_current = UCaylar.current()
@@ -1031,14 +1031,14 @@ def update_logging(request):
         caylar_water_flow = UCaylar.water_flow()
         caylar_column_headers = ['timestamp', 'current', 'field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
         caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
-        caylar_csv_file_path = 'logging/caylar_'+datetime.now().strftime("%d/%m/%Y%H%M%S")+'.csv'
+        caylar_csv_file_path = 'logging/caylar_'+datetime.now().strftime("%d%m%Y%H%M%S")+'.csv'
         append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
     if UmercuryITC!=None:
         itc_heater_power = UmercuryITC.report_heater_power()
         itc_temperature = UmercuryITC.report_temperature()
         itc_data_row = [timestamp,itc_heater_power,itc_temperature]
         itc_column_headers = ['timestamp', 'Heater Power','temperature']
-        itc_csv_file_path = 'logging/itc_'+datetime.now().strftime("%d/%m/%Y%H%M%S")+'.csv'
+        itc_csv_file_path = 'logging/itc_'+datetime.now().strftime("%d%m%Y%H%M%S")+'.csv'
         append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
 
     return JsonResponse(data)
