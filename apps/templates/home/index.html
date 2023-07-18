@@ -289,7 +289,6 @@
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script>
   let file_name_save;
-  let formData;
   function appendToList(listName, element) {
     listName.push(element);
 
@@ -376,9 +375,6 @@
       $(".container-fluid textarea").prop("disabled", true);
       $("#restartLoggingButton").removeClass("hidden");
 
-      // Create a new FormData object to store the form data
-      const formData = new FormData($("#experimentForms")[0]);
-
       // Make an AJAX POST request only if the form is valid
       if (validateDeviceListForm()) {
         // Retrieve the CSRF token from the HTML page
@@ -394,7 +390,11 @@
         $.ajax({
           url: "{% url 'start_experiment' %}",
           type: "POST",
-          data: formData,
+          data: {
+            file_name: $("#id_file_Name").val(),
+            experiment_name: $("#id_experiment_name").val(),
+            description: $("#id_experiment_description").val(),
+          },
           processData: false, // Prevent jQuery from automatically processing the data
           contentType: false, // Prevent jQuery from automatically setting the content type
           success: function (response) {
@@ -457,7 +457,7 @@
             "X-CSRFToken": csrfToken,
           },
         });
-        formData = $(this).serialize();
+        let formData = $(this).serialize();
         $.ajax({
           url: "{% url 'start_experiment' %}",
           type: "POST",
