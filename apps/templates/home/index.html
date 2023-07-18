@@ -377,6 +377,8 @@
 
       // Make an AJAX POST request only if the form is valid
       if (validateDeviceListForm()) {
+        $("#messageContainer .alert").remove();
+        $("#messageLoadingContainer").html('<div class="alert alert-info" role="alert">Loading...</div>');
         // Retrieve the CSRF token from the HTML page
         const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
 

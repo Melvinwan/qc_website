@@ -533,6 +533,7 @@ def start_experiment(request):
     global GLaser
     global GCaylar
     global GmercuryITC
+    print("REQUEST POST")
     print(request.POST)
     if(request.POST.getlist('selected_devices[]')!=None):
         choosed_device = request.POST.getlist('selected_devices[]')
