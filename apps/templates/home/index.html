@@ -424,7 +424,7 @@
             isLogging = false;
             // Update the message dynamically
             let messageContainer = $("#messageContainer");
-            messageContainer.html('<div class="alert alert-danger alert-dismissible fade show" role="alert">' + xhr.responseJSON.message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
+            messageContainer.html('<div class="alert alert-danger alert-dismissible fade show" role="alert">' + error + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
           },
           complete: function () {
             // Remove the loading indicator
