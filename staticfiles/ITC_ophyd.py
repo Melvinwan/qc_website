@@ -194,7 +194,7 @@ class ITCController(OphydObject): #On off laser similar to controller
         """Close the connection to the laser"""
         logger.info("The connection is already closed.")
         self.ITC.disconnect()
-        self.connected = False
+        self.connected(False)
 
     def get_itc_data(self):
         """
