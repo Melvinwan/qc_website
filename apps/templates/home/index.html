@@ -503,6 +503,10 @@
           },
         });
         // let formData = $(this).serialize();
+        const selectedDevices = [];
+        $("input[name='selected_devices[]']:checked").each(function () {
+          selectedDevices.push($(this).val());
+        });
         $.ajax({
           url: "{% url 'start_experiment' %}",
           type: "POST",
