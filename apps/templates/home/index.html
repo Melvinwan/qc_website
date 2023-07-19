@@ -237,8 +237,8 @@
               <textarea class="form-control" id="id_experiment_description" name="description" rows="4"></textarea>
             </div>
             <div class="form-group px-4">
-              <label for="id_file_Name">Experiment Folder Name (Path):</label>
-              <input type="text" class="form-control" id="id_file_Name" name="file_name" required />
+              <label for="N">Experiment Folder Name (Path):</label>
+              <input type="text" class="form-control" id="N" name="file_name" required />
             </div>
             <div class="form-group px-4">
               <label for="id_selected_devices">Select Devices:</label>
@@ -324,7 +324,7 @@
   }
   function validateDeviceListForm() {
     var experimentName = document.getElementById("id_experiment_name").value;
-    var experimentFile = document.getElementById("id_file_Name").value;
+    var experimentFile = document.getElementById("N").value;
 
     if (experimentName === "") {
       alert("Please type experiment name.");
@@ -405,7 +405,7 @@
           url: "{% url 'start_experiment' %}",
           type: "POST",
           data: {
-            file_name: document.getElementById("id_file_Name").value,
+            file_name: document.getElementById("N").value,
             experiment_name: document.getElementById("id_experiment_name").value,
             description: document.getElementById("id_experiment_description").value,
             selected_devices: selectedDevices,
@@ -426,6 +426,9 @@
             isLogging = true;
             file_name_save = response.file_name;
             sessionStorage.setItem("folder_name", response.file_name);
+            sessionStorage.setItem("experiment_name", document.getElementById("id_experiment_name").value);
+            sessionStorage.setItem("description", document.getElementById("id_experiment_description").value);
+            sessionStorage.setItem("selected_devices", selectedDevices);
             updatePlotLogging(1000, (file_name_save = response.file_name));
           },
           error: function (xhr, status, error) {
@@ -1114,7 +1117,9 @@
     let startLogging = sessionStorage.getItem("logging");
     let startExperiment = sessionStorage.getItem("experiment");
     let folder_name = sessionStorage.getItem("folder_name");
-
+    let experiment_name = sessionStorage.getItem("experiment_name");
+    let description = sessionStorage.getItem("description");
+    let selected_devices = sessionStorage.getItem("selected_devices");
     if (!scriptExecuted || scriptExecuted == "false") {
       updateStatusColor(statusLaserElement);
       updateStatusColor(statusCaylarElement);
@@ -1122,7 +1127,14 @@
       updateStatusColor(statusRFSoCElement);
       updateStatusLaser(); // Update the status immediately when the page loads
     } else if (startLogging || startLogging == "true") {
-      console.log("start logging");
+      document.getElementById("id_experiment_name").innerHTML = experiment_name;
+      document.getElementById("id_experiment_description").innerHTML = description;
+      document.getElementById("id_file_Name").innerHTML = folder_name;
+      $("input[name='selected_devices[]']").each(function () {
+        const deviceValue = $(this).val();
+        const isChecked = selected_devices.includes(deviceValue);
+        $(this).prop("checked", isChecked);
+      });
       console.log(folder_name);
       updateStatus((plot = false));
       isLogging = true;
