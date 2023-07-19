@@ -517,6 +517,9 @@ GRFSoC = None
 GLaser = None
 GCaylar = None
 GmercuryITC = None
+def start_rfsoc_experiment():
+    global GRFSoC
+    GRFSoC.run_code()
 def start_experiment(request):
     """
     The `start_experiment` function starts an experiment by connecting to selected devices, creating a
@@ -549,27 +552,32 @@ def start_experiment(request):
         on_device.append(RFSoC)
         off_device.remove("RFSoC")
         GRFSoC = RFSoC
-        if request.POST['startLogging'] or bool(request.POST['startLogging']) == True:
+        if bool(request.POST['startLogging']) == False:
             combinedXML["RFSoC_Host"] = xml_config_to_dict("staticfiles/xilinx_host.xml")
             combinedXML["RFSoC"] = xml_config_to_dict("staticfiles/xilinx.xml")
+            # Create a thread to run the function
+            thread = threading.Thread(target=start_rfsoc_experiment)
+
+            # Start the thread
+            thread.start()
 
     if Laser.try_connect() and "Laser" in choosed_device:
         on_device.append(Laser)
         off_device.remove("Laser")
         GLaser = Laser
-        if request.POST['startLogging'] or bool(request.POST['startLogging']) == True:
+        if bool(request.POST['startLogging']) == False:
             combinedXML["toptica"] = xml_config_to_dict("staticfiles/toptica.xml")
     if mercuryITC.try_connect() and "Mercury" in choosed_device:
         on_device.append(mercuryITC)
         off_device.remove("Mercury")
         GmercuryITC = mercuryITC
-        if request.POST['startLogging'] or bool(request.POST['startLogging']) == True:
+        if bool(request.POST['startLogging']) == False:
             combinedXML["mercury"] = xml_config_to_dict("staticfiles/mercuryITC.xml")
     if Caylar.try_connect() and "Caylar" in choosed_device:
         on_device.append(Caylar)
         off_device.remove("Caylar")
         GCaylar = Caylar
-        if request.POST['startLogging'] or bool(request.POST['startLogging']) == True:
+        if bool(request.POST['startLogging']) == False:
             combinedXML["caylar"] = xml_config_to_dict("staticfiles/caylar.xml")
     common_off_devices = set(off_device).intersection(choosed_device)
     if common_off_devices:
@@ -663,9 +671,7 @@ def append_to_csv(file_path, data,column_headers):
         if not file_exists:
             writer.writerow(column_headers)
         writer.writerow(data)
-def start_rfsoc_experiment():
-    global GRFSoC
-    GRFSoC.run_code()
+
 def get_live_data_and_run_rfsoc(request):
     """
     The function `get_live_data_and_run_rfsoc` retrieves live data from various devices and saves it to
@@ -744,12 +750,6 @@ def get_live_data_and_run_rfsoc(request):
         append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
         data['itc_heater_power']= itc_heater_power,
         data['itc_temperature']= itc_temperature,
-
-    # Create a thread to run the function
-    thread = threading.Thread(target=start_rfsoc_experiment)
-
-    # Start the thread
-    thread.start()
 
     return JsonResponse(data)
 
