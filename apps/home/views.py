@@ -597,7 +597,7 @@ def start_experiment(request):
         print("Directory '%s' can not be created" % request.POST['file_name'])
         message = ("Directory '%s' can not be created" % request.POST['file_name'])
         return JsonResponse({'message': message}, status=400)
-    if request.POST['startLogging'] or bool(request.POST['startLogging']) == True:
+    if bool(request.POST['startLogging']) == True:
         message = 'Logging started successfully.'
     else:
         message = 'Experiment started successfully.'
