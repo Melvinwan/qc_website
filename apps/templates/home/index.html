@@ -982,7 +982,7 @@
       },
     });
   }
-  function updateStatus() {
+  function updateStatus(plot = true) {
     $.ajax({
       url: "{% url 'status' %}", // URL mapped to the status view
       type: "GET",
@@ -1004,8 +1004,10 @@
       complete: function () {
         $("#experimentForms").removeClass("hidden");
         $("#messageUpdateExpContainer .alert").remove();
-        isDashboardUpdating = true;
-        DashboardPlot(1000);
+        if (plot) {
+          isDashboardUpdating = true;
+          DashboardPlot(1000);
+        }
       },
     });
   }
@@ -1122,11 +1124,11 @@
     } else if (startLogging || startLogging == "true") {
       console.log("start logging");
       console.log(folder_name);
-      updateStatus();
+      updateStatus((plot = false));
       isLogging = true;
       updatePlotLogging(1000, folder_name); //if error just sessionstorage
     } else if (startExperiment || startExperiment == "true") {
-      updateStatus();
+      updateStatus((plot = false));
       isUpdating = true;
       updatePlot(1000, folder_name);
     } else {
