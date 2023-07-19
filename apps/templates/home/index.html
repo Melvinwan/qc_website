@@ -502,11 +502,16 @@
             "X-CSRFToken": csrfToken,
           },
         });
-        let formData = $(this).serialize();
+        // let formData = $(this).serialize();
         $.ajax({
           url: "{% url 'start_experiment' %}",
           type: "POST",
-          data: formData,
+          data: {
+            file_name: document.getElementById("id_file_Name").value,
+            experiment_name: document.getElementById("id_experiment_name").value,
+            description: document.getElementById("id_experiment_description").value,
+            selected_devices: selectedDevices,
+          },
           success: function (response) {
             // Handle the response if needed
             isDashboardUpdating = false;
