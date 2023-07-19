@@ -1120,9 +1120,15 @@
       updateStatusColor(statusRFSoCElement);
       updateStatusLaser(); // Update the status immediately when the page loads
     } else if (startLogging || startLogging == "true") {
-      updatePlotLogging(1000, file_name_save); //if error just sessionstorage
+      console.log("start logging");
+      console.log(folder_name);
+      updateStatus();
+      isLogging = true;
+      updatePlotLogging(1000, folder_name); //if error just sessionstorage
     } else if (startExperiment || startExperiment == "true") {
-      updatePlot(1000, file_name_save);
+      updateStatus();
+      isUpdating = true;
+      updatePlot(1000, folder_name);
     } else {
       updateStatusColor(statusLaserElement);
       updateStatusColor(statusCaylarElement);
