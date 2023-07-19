@@ -324,7 +324,7 @@
   }
   function validateDeviceListForm() {
     var experimentName = document.getElementById("id_experiment_name").value;
-    var experimentFile = document.getElementById("N").value;
+    var experimentFile = document.getElementById("id_file_Name").value;
 
     if (experimentName === "") {
       alert("Please type experiment name.");
@@ -405,7 +405,7 @@
           url: "{% url 'start_experiment' %}",
           type: "POST",
           data: {
-            file_name: document.getElementById("N").value,
+            file_name: document.getElementById("id_file_Name").value,
             experiment_name: document.getElementById("id_experiment_name").value,
             description: document.getElementById("id_experiment_description").value,
             selected_devices: selectedDevices,
@@ -1139,6 +1139,10 @@
       updateStatus((plot = false));
       isLogging = true;
       updatePlotLogging(1000, folder_name); //if error just sessionstorage
+      $(".container-fluid input").prop("disabled", true);
+      $(".container-fluid textarea").prop("disabled", true);
+      $("#restartLoggingButton").removeClass("hidden");
+      $("#startLoggingButton").prop("disabled", true);
     } else if (startExperiment || startExperiment == "true") {
       updateStatus((plot = false));
       isUpdating = true;
