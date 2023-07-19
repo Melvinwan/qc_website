@@ -319,7 +319,7 @@
     div.classList.toggle("hidden");
   }
   function showResetDashboardButton() {
-    var resetDashboardButton = document.getElementById("resetDashboardButton");
+    let resetDashboardButton = document.getElementById("resetDashboardButton");
     resetDashboardButton.style.display = "inline-block";
   }
   function validateDeviceListForm() {
@@ -352,6 +352,9 @@
     // Attach a submit event handler to the form
     // Add a click event handler to the "Stop Experiment" button
     $("#stopExperimentButton").on("click", function () {
+      $("#pauseExperimentButton").prop("disabled", false);
+      $("#continueExperimentButton").prop("disabled", false);
+      $("#stopExperimentButton").prop("disabled", false);
       stopExperiment();
     });
     $("#pauseExperimentButton").on("click", function () {
@@ -874,7 +877,7 @@
       type: "GET",
       success: function (response) {
         // Handle the response if needed
-        console.log(response);
+        console.log("STOPPED");
         // Stop the plot updates
         showResetDashboardButton();
 
