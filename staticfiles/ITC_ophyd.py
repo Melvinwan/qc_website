@@ -369,6 +369,13 @@ class MercuryITCDevice(Device):
         )
         self.name = name
         self.tolerance = kwargs.pop("tolerance", 0.5)
+    def disconnect(self):
+        """
+        The `disconnect` function turns off the controller by calling the `off` method on the
+        `controller` object.
+        @returns The result of calling the `off` method on the `controller` object.
+        """
+        return self.itccontroller.off()
     def try_connect(self):
         return self.itccontroller.connect()
     def update_all_xml(self, xml):

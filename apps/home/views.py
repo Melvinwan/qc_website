@@ -627,10 +627,14 @@ def stop_experiment(request):
     global GLaser
     global GCaylar
     global GmercuryITC
-    GRFSoC.disconnect()
-    GLaser.disconnect()
-    GCaylar.disconnect()
-    GmercuryITC.disconnect()
+    if GRFSoC!=None:
+        GRFSoC.disconnect()
+    if GLaser!=None:
+        GLaser.disconnect()
+    if GCaylar!=None:
+        GCaylar.disconnect()
+    if GmercuryITC !=None:
+        GmercuryITC.disconnect()
     GRFSoC = None
     GLaser = None
     GCaylar = None

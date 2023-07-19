@@ -425,7 +425,13 @@ class CaylarMagnet(Device):
         )
         self._update_connection_state()
         # self.readback.subscribe(self._forward_readback, event_type=self.readback.SUB_VALUE)
-
+    def disconnect(self):
+        """
+        The function disconnect turns off the controller.
+        @returns The method `disconnect` is returning the result of calling the `off` method on the
+        `controller` object.
+        """
+        return self.controller.off()
     def try_connect(self):
         """
         The function `try_connect` attempts to turn on the controller.
