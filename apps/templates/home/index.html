@@ -1127,9 +1127,9 @@
       updateStatusColor(statusRFSoCElement);
       updateStatusLaser(); // Update the status immediately when the page loads
     } else if (startLogging || startLogging == "true") {
-      document.getElementById("id_experiment_name").innerHTML = experiment_name;
-      document.getElementById("id_experiment_description").innerHTML = description;
-      document.getElementById("id_file_Name").innerHTML = folder_name;
+      document.getElementById("id_experiment_name").value = experiment_name;
+      document.getElementById("id_experiment_description").value = description;
+      document.getElementById("id_file_Name").value = folder_name;
       $("input[name='selected_devices[]']").each(function () {
         const deviceValue = $(this).val();
         const isChecked = selected_devices.includes(deviceValue);
