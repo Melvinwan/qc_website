@@ -548,6 +548,7 @@ def start_experiment(request):
     on_device = []
     RFSoC, Laser, Caylar, mercuryITC = construct_object()
     rfsoc_status = "OFF"
+    print(bool(request.POST['startLogging']))
     if RFSoC.try_connect() and "RFSoC" in choosed_device:
         on_device.append(RFSoC)
         off_device.remove("RFSoC")
