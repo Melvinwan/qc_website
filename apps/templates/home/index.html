@@ -122,6 +122,13 @@
   </div>
 </div>
 <div class="container-fluid">
+  <div id="buttonExperiment">
+    <button type="button" class="btn btn-danger" id="pauseExperimentButton">Pause Experiment</button>
+    <button type="button" class="btn btn-danger" id="continueExperimentButton">Continue Experiment</button>
+    <button type="button" class="btn btn-danger" id="stopExperimentButton">Stop Experiment</button>
+    <button type="button" class="btn btn-danger" id="resetDashboardButton" style="display: none">Reset Dashboard</button>
+  </div>
+
   <div id="messageLaserOff"></div>
   <div id="TopticaCurrentPlot" class="hidden">
     <div class="row">
@@ -153,11 +160,6 @@
       </div>
     </div>
     <div id="livePlotWavelength">
-      <button type="button" class="btn btn-danger" id="pauseExperimentButton">Pause Experiment</button>
-      <button type="button" class="btn btn-danger" id="continueExperimentButton">Continue Experiment</button>
-      <button type="button" class="btn btn-danger" id="stopExperimentButton">Stop Experiment</button>
-      <button type="button" class="btn btn-danger" id="resetDashboardButton" style="display: none">Reset Dashboard</button>
-
       <div class="row container-fluid">
         <!-- Placeholder for laser parameters -->
         <div class="card-body">Scan End: <span id="laser_scan_end_number">-</span></div>
@@ -358,6 +360,9 @@
     $("#continueExperimentButton").on("click", function () {
       continueExperiment();
     });
+    $("#resetDashboardButton").on("click", function () {
+      resetExperiment();
+    });
     $("#restartLoggingButton").on("click", function () {
       $("#restartLoggingButton").addClass("hidden");
       // Enable all input elements inside the container after click
@@ -365,6 +370,9 @@
       $(".container-fluid textarea").prop("disabled", false);
       $("#startLoggingButton").prop("disabled", false);
       isLogging = false;
+      isDashboardUpdating = true;
+      sessionStorage.setItem("logging", false);
+      DashboardPlot(1000);
     });
     $("#startLoggingButton").on("click", function (event) {
       event.preventDefault(); // Prevent the default form submission
@@ -377,6 +385,7 @@
 
       // Make an AJAX POST request only if the form is valid
       if (validateDeviceListForm()) {
+        isDashboardUpdating = false;
         $("#messageContainer .alert").remove();
         $("#messageLoadingContainer").html('<div class="alert alert-info" role="alert">Loading...</div>');
         // Retrieve the CSRF token from the HTML page
@@ -400,12 +409,14 @@
             experiment_name: document.getElementById("id_experiment_name").value,
             description: document.getElementById("id_experiment_description").value,
             selected_devices: selectedDevices,
+            startLogging: true,
           },
           success: function (response) {
             // Handle the response if needed
             isDashboardUpdating = false;
             $("#messageLoadingContainer .alert").remove();
             console.log(response);
+            sessionStorage.setItem("logging", true);
 
             // Update the message dynamically from the response
             let messageContainer = $("#messageContainer");
@@ -414,7 +425,8 @@
             // Reset the form fields
             isLogging = true;
             file_name_save = response.file_name;
-            updatePlotLogging(1000, document.getElementById("id_file_Name").value);
+            sessionStorage.setItem("folder_name", response.file_name);
+            updatePlotLogging(1000, (file_name_save = response.file_name));
           },
           error: function (xhr, status, error) {
             // Handle any error that occurs during the request
@@ -447,7 +459,26 @@
         messageContainer.html('<div class="alert alert-danger alert-dismissible fade show" role="alert">' + "Please fill the name of experiment and the file path" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
       }
     });
+    // Get the form element
+    const form = document.getElementById("experimentForms");
 
+    // Add an event listener to the form
+    form.addEventListener("keydown", function (event) {
+      // Check if the pressed key is "Enter" (keyCode for Enter is 13)
+      if (event.keyCode === 13 || event.key === "Enter") {
+        // Prevent the default form submission
+        event.preventDefault();
+      }
+    });
+    function resetExperiment() {
+      $("#experimentForms").removeClass("hidden");
+      $("#messageUpdateExpContainer .alert").remove();
+      $("#messageITCOff .alert").remove();
+      $("#messageCaylarOff .alert").remove();
+      $("#messageLaserOff .alert").remove();
+      isDashboardUpdating = true;
+      DashboardPlot(1000);
+    }
     $("#experimentForms").on("submit", function (event) {
       event.preventDefault(); // Prevent the default form submission
 
@@ -479,6 +510,8 @@
             $("#messageLoadingContainer .alert").remove();
             console.log(response);
 
+            sessionStorage.setItem("experiment", true);
+
             // Update the message dynamically from the response
             let messageContainer = $("#messageContainer");
             messageContainer.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
@@ -488,6 +521,7 @@
             $("#experimentForms").addClass("hidden");
             isUpdating = true;
             file_name_save = response.file_name;
+            sessionStorage.setItem("folder_name", response.file_name);
             updatePlot(1000, response.file_name);
           },
           error: function (xhr, status, error) {
@@ -827,6 +861,8 @@
         console.log(response);
         // Stop the plot updates
         showResetDashboardButton();
+
+        sessionStorage.setItem("experiment", false);
       },
       error: function (xhr, status, error) {
         // Handle any error that occurs during the request
@@ -1077,6 +1113,9 @@
   document.addEventListener("DOMContentLoaded", function () {
     // Check if the script has already been executed
     let scriptExecuted = sessionStorage.getItem("script_executed");
+    let startLogging = sessionStorage.getItem("logging");
+    let startExperiment = sessionStorage.getItem("experiment");
+    let folder_name = sessionStorage.getItem("folder_name");
 
     if (!scriptExecuted || scriptExecuted == "false") {
       updateStatusColor(statusLaserElement);
@@ -1084,8 +1123,11 @@
       updateStatusColor(statusMercuryElement);
       updateStatusColor(statusRFSoCElement);
       updateStatusLaser(); // Update the status immediately when the page loads
+    } else if (startLogging || startLogging == "true") {
+      updatePlotLogging(1000, file_name_save); //if error just sessionstorage
+    } else if (startExperiment || startExperiment == "true") {
+      updatePlot(1000, file_name_save);
     } else {
-      console.log("RUN YANG INI 2");
       updateStatusColor(statusLaserElement);
       updateStatusColor(statusCaylarElement);
       updateStatusColor(statusMercuryElement);

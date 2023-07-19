@@ -34,7 +34,7 @@
           </div>
           {% endif %} {% endfor %} {% endif %}
 
-          <form method="post" action="{% url 'caylar_page' %}">
+          <form method="post" id="caylar_form" action="{% url 'caylar_page' %}">
             <div class="col-12">
               <div class="row">
                 <div class="row ml-1">
@@ -167,4 +167,18 @@
     </div>
   </div>
 </div>
-{% endblock content %}
+{% endblock content %} {% block javascripts %}
+<script>
+  // Get the form element
+  const form = document.getElementById("caylar_form");
+
+  // Add an event listener to the form
+  form.addEventListener("keydown", function (event) {
+    // Check if the pressed key is "Enter" (keyCode for Enter is 13)
+    if (event.keyCode === 13 || event.key === "Enter") {
+      // Prevent the default form submission
+      event.preventDefault();
+    }
+  });
+</script>
+{% endblock javascripts %}

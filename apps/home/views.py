@@ -535,6 +535,8 @@ def start_experiment(request):
     global GmercuryITC
     print("REQUEST POST")
     print(request.POST)
+    # All devices are online, continue with starting the experiment
+    combinedXML = {}
     if(request.POST.getlist('selected_devices[]')!=None):
         choosed_device = request.POST.getlist('selected_devices[]')
     else:
@@ -547,19 +549,28 @@ def start_experiment(request):
         on_device.append(RFSoC)
         off_device.remove("RFSoC")
         GRFSoC = RFSoC
+        if request.POST['startLogging'] or bool(request.POST['startLogging']) == True:
+            combinedXML["RFSoC_Host"] = xml_config_to_dict("staticfiles/xilinx_host.xml")
+            combinedXML["RFSoC"] = xml_config_to_dict("staticfiles/xilinx.xml")
+
     if Laser.try_connect() and "Laser" in choosed_device:
         on_device.append(Laser)
         off_device.remove("Laser")
         GLaser = Laser
+        if request.POST['startLogging'] or bool(request.POST['startLogging']) == True:
+            combinedXML["toptica"] = xml_config_to_dict("staticfiles/toptica.xml")
     if mercuryITC.try_connect() and "Mercury" in choosed_device:
         on_device.append(mercuryITC)
         off_device.remove("Mercury")
         GmercuryITC = mercuryITC
+        if request.POST['startLogging'] or bool(request.POST['startLogging']) == True:
+            combinedXML["mercury"] = xml_config_to_dict("staticfiles/mercuryITC.xml")
     if Caylar.try_connect() and "Caylar" in choosed_device:
         on_device.append(Caylar)
         off_device.remove("Caylar")
         GCaylar = Caylar
-
+        if request.POST['startLogging'] or bool(request.POST['startLogging']) == True:
+            combinedXML["caylar"] = xml_config_to_dict("staticfiles/caylar.xml")
     common_off_devices = set(off_device).intersection(choosed_device)
     if common_off_devices:
         off_device_names = ", ".join(common_off_devices)
@@ -572,8 +583,6 @@ def start_experiment(request):
         GmercuryITC = None
         return JsonResponse({'message': message}, status=400)
 
-    # All devices are online, continue with starting the experiment
-    # Your logic for starting the experiment here
     try:
         os.makedirs(request.POST['file_name'], exist_ok = True)
         print("Directory '%s' created successfully" % request.POST['file_name'])
@@ -582,11 +591,16 @@ def start_experiment(request):
         with open(file_path, 'w') as file:
             file.write(f"Experiment Name: {request.POST['experiment_name']}\n")
             file.write(f"Description: {request.POST['description']}\n")
+        if request.POST['startLogging'] or bool(request.POST['startLogging']) == True:
+            dict_to_xml_file(combinedXML, os.path.join(request.POST['file_name'], 'configurations.xml'))
     except OSError as error:
         print("Directory '%s' can not be created" % request.POST['file_name'])
         message = ("Directory '%s' can not be created" % request.POST['file_name'])
         return JsonResponse({'message': message}, status=400)
-    message = 'Experiment started successfully.'
+    if request.POST['startLogging'] or bool(request.POST['startLogging']) == True:
+        message = 'Logging started successfully.'
+    else:
+        message = 'Experiment started successfully.'
     return JsonResponse({'message': message,'file_name':request.POST['file_name']})
 
 def stop_experiment(request):

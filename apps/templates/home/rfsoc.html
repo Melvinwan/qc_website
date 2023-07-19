@@ -33,7 +33,7 @@
           </div>
           {% endif %} {% endfor %} {% endif %}
 
-          <form method="post" action="{% url 'rfsoc_page' %}">
+          <form method="post" id="rfsoc_form" action="{% url 'rfsoc_page' %}">
             {% csrf_token %}
             <!-- RFSoC information -->
             <div class="col-12">
@@ -516,6 +516,17 @@
 
     // Trigger the change event to show or hide the time and length inputs and their labels initially based on the checkbox's checked state
     checkbox.dispatchEvent(new Event("change"));
+  });
+  // Get the form element
+  const form = document.getElementById("rfsoc_form");
+
+  // Add an event listener to the form
+  form.addEventListener("keydown", function (event) {
+    // Check if the pressed key is "Enter" (keyCode for Enter is 13)
+    if (event.keyCode === 13 || event.key === "Enter") {
+      // Prevent the default form submission
+      event.preventDefault();
+    }
   });
 </script>
 
