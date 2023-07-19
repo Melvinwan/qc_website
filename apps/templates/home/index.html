@@ -122,7 +122,7 @@
   </div>
 </div>
 <div class="container-fluid">
-  <div id="buttonExperiment">
+  <div id="buttonExperiment hidden">
     <button type="button" class="btn btn-danger" id="pauseExperimentButton">Pause Experiment</button>
     <button type="button" class="btn btn-danger" id="continueExperimentButton">Continue Experiment</button>
     <button type="button" class="btn btn-danger" id="stopExperimentButton">Stop Experiment</button>
@@ -744,9 +744,7 @@
   // Function to update the plot with new data
   function updatePlot(interval, file_name) {
     if (!isUpdating) return;
-    $("#pauseExperimentButton").removeClass("hidden");
-    $("#continueExperimentButton").removeClass("hidden");
-    $("#stopExperimentButton").removeClass("hidden");
+    $("#buttonExperiment").removeClass("hidden");
     const currentDate = new Date();
     // Retrieve the CSRF token from the HTML page
     const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
@@ -896,9 +894,7 @@
   }
   let isDashboardUpdating = false;
   function DashboardPlot(interval) {
-    $("#pauseExperimentButton").addClass("hidden");
-    $("#continueExperimentButton").addClass("hidden");
-    $("#stopExperimentButton").addClass("hidden");
+    $("#buttonExperiment").addClass("hidden");
     if (!isDashboardUpdating) return;
     $.ajax({
       url: "{% url 'plot' %}", // URL mapped to the status view
