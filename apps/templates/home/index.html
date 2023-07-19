@@ -370,6 +370,7 @@
       $(".container-fluid textarea").prop("disabled", false);
       $("#startLoggingButton").prop("disabled", false);
       isLogging = false;
+      isUpdating = false;
       isDashboardUpdating = true;
       sessionStorage.setItem("logging", false);
       DashboardPlot(1000);
@@ -480,6 +481,8 @@
       $("#messageCaylarOff .alert").remove();
       $("#messageLaserOff .alert").remove();
       isDashboardUpdating = true;
+      isUpdating = false;
+      isLogging = false;
       DashboardPlot(1000);
     }
     $("#experimentForms").on("submit", function (event) {
@@ -533,6 +536,8 @@
             $("#experimentForms")[0].reset();
             $("#experimentForms").addClass("hidden");
             isUpdating = true;
+            isLogging = false;
+            isDashboardUpdating = false;
             file_name_save = response.file_name;
             sessionStorage.setItem("folder_name", response.file_name);
             updatePlot(1000, response.file_name);
