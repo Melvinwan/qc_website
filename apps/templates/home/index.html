@@ -486,7 +486,7 @@
       isDashboardUpdating = true;
       isUpdating = false;
       isLogging = false;
-      DashboardPlot(1000);
+      updateStatusLaser();
     }
     $("#experimentForms").on("submit", function (event) {
       event.preventDefault(); // Prevent the default form submission
@@ -1144,7 +1144,7 @@
       updateStatusColor(statusMercuryElement);
       updateStatusColor(statusRFSoCElement);
       updateStatusLaser(); // Update the status immediately when the page loads
-    } else if (startLogging || startLogging == "true") {
+    } else if (startLogging == "true") {
       document.getElementById("id_experiment_name").value = experiment_name;
       document.getElementById("id_experiment_description").value = description;
       document.getElementById("id_file_Name").value = folder_name;
@@ -1161,7 +1161,7 @@
       $(".container-fluid textarea").prop("disabled", true);
       $("#restartLoggingButton").removeClass("hidden");
       $("#startLoggingButton").prop("disabled", true);
-    } else if (startExperiment || startExperiment == "true") {
+    } else if (startExperiment == "true") {
       updateStatus((plot = false));
       isUpdating = true;
       updatePlot(1000, folder_name);
