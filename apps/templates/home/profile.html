@@ -129,4 +129,89 @@
 {% endblock content %}
 
 <!-- Specific JS goes HERE -->
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+<script>
+  let startLogging = sessionStorage.getItem("logging");
+  let startExperiment = sessionStorage.getItem("experiment");
+  let folder_name = sessionStorage.getItem("folder_name");
+  function LoggingFile(interval) {
+    $.ajax({
+      url: "{% url 'plot' %}", // URL mapped to the status view
+      type: "GET",
+      dataType: "json",
+      success: function (response) {},
+      error: function (xhr, status, error) {
+        console.log(xhr.responseText);
+      },
+      complete: function () {
+        // Call the updatePlot function again after the specified interval
+        setTimeout(function () {
+          LoggingFile(interval);
+        }, interval);
+      },
+    });
+  }
+  function updatePlotLogging(interval, file_name) {
+    const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
+    // Include the CSRF token in the AJAX request headers
+    $.ajaxSetup({
+      headers: {
+        "X-CSRFToken": csrfToken,
+      },
+    });
+    $.ajax({
+      url: "{% url 'logging' %}", // Replace with your Django view URL
+      type: "POST",
+      data: {
+        file_name: file_name,
+      },
+      dataType: "json",
+      success: function (response) {},
+      error: function (xhr, status, error) {
+        console.log(xhr.responseText);
+      },
+      complete: function () {
+        // Call the updatePlot function again after the specified interval
+        setTimeout(function () {
+          updatePlotLogging(interval, file_name);
+        }, interval);
+      },
+    });
+  }
+  function updatePlot(interval, file_name) {
+    // Retrieve the CSRF token from the HTML page
+    const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
+    // Include the CSRF token in the AJAX request headers
+    $.ajaxSetup({
+      headers: {
+        "X-CSRFToken": csrfToken,
+      },
+    });
+    $.ajax({
+      url: "{% url 'live_data_rfsoc' %}", // Replace with your Django view URL
+      type: "POST",
+      data: {
+        file_name: file_name,
+      },
+      dataType: "json",
+      success: function (response) {},
+      error: function (xhr, status, error) {
+        console.log(xhr.responseText);
+      },
+      complete: function () {
+        // Call the updatePlot function again after the specified interval
+        setTimeout(function () {
+          updatePlot(interval, file_name);
+        }, interval);
+      },
+    });
+  }
+  if (startLogging == "true") {
+    updatePlotLogging(1000, folder_name);
+  } else if (startExperiment == "true") {
+    updatePlot(1000, folder_name);
+  } else {
+    LoggingFile(1000);
+  }
+</script>
+{% endblock javascripts %}

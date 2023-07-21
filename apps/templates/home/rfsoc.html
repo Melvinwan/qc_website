@@ -195,7 +195,7 @@
                 <table id="form0-list">
                   <thead>
                     <tr>
-                      <th>Time Start</th>
+                      <th>Pulse Start (clock ticks)</th>
                       <th>Actual Time (ns)</th>
                       <th>Pulse Frequency</th>
                       <th>Pulse Gain</th>
@@ -211,7 +211,7 @@
                         <input style="width: 100%" type="number" step="any" name="frequency0" />
                       </td>
                       <td>
-                        <input style="width: 100%" type="number" step="1" min="0" max="16384" name="gain0" />
+                        <input style="width: 100%" type="number" step="1" min="-32768" max="32768" name="gain0" />
                       </td>
 
                       <td>
@@ -225,7 +225,7 @@
                       <td><input style="width: 100%" type="number" step="any" id="id_formset0-{{ forloop.counter|add:'-1' }}-time0" name="formset0-{{ forloop.counter|add:'-1' }}-time0" value="{{ form0.time0.value }}" /></td>
                       <td class="actual-time-cell"><input style="width: 100%" type="number" step="any" name="acttime0" disabled /></td>
                       <td><input style="width: 100%" type="number" step="1" id="id_formset0-{{ forloop.counter|add:'-1' }}-frequency0" name="formset0-{{ forloop.counter|add:'-1' }}-frequency0" value="{{ form0.frequency0.value }}" /></td>
-                      <td><input style="width: 100%" type="number" step="any" min="0" max="16384" id="id_formset0-{{ forloop.counter|add:'-1' }}-gain0" name="formset0-{{ forloop.counter|add:'-1' }}-gain0" value="{{ form0.gain0.value }}" /></td>
+                      <td><input style="width: 100%" type="number" step="any" min="-32786" max="32768" id="id_formset0-{{ forloop.counter|add:'-1' }}-gain0" name="formset0-{{ forloop.counter|add:'-1' }}-gain0" value="{{ form0.gain0.value }}" /></td>
                       <td>
                         <button type="button" class="btn btn-sm btn-danger delete-btn0">Delete</button>
                       </td>
@@ -250,8 +250,9 @@
               <thead>
                 <tr>
                   <th>TTL Pins</th>
-                  <th>Time Start</th>
-                  <th>TTL Length</th>
+                  <th>TTL Start (clock ticks)</th>
+                  <th>Actual Time (ns)</th>
+                  <th>TTL Length (clock ticks)</th>
                 </tr>
               </thead>
               <tbody id="empty-form1" class="hidden">
@@ -280,6 +281,7 @@
                   <td>
                     <input type="number" step="any" name="time1" />
                   </td>
+                  <td class="actual-time-cell"><input style="width: 100%" type="number" step="any" name="acttime1" disabled /></td>
                   <td>
                     <input type="number" step="any" name="length1" />
                   </td>
@@ -312,6 +314,7 @@
                     </div>
                   </td>
                   <td>{{ form1.time1 }}</td>
+                  <td class="actual-time-cell"><input style="width: 100%" type="number" step="any" name="acttime1" disabled /></td>
                   <td>{{ form1.length1 }}</td>
                   <td>
                     <button type="button" class="btn btn-sm btn-danger delete-btn1">Delete</button>
@@ -358,14 +361,26 @@
       }
     });
   }
-
+  function updateActualTime1() {
+    $("#form1-list tbody").each(function (index, element) {
+      const timeStart = parseFloat($(element).find('input[name$="time1"]').val());
+      if (!isNaN(timeStart)) {
+        const actualTime = (2.6 * timeStart).toFixed(2); // Calculate Actual Time with 2 decimal places
+        $(element).find('input[name$="acttime1"]').val(actualTime); // Update the input field with the calculated value
+      }
+    });
+  }
   // Attach event listener to input fields to trigger the update on change
   $(document).on("input", 'input[name$="time0"]', function () {
     updateActualTime();
   });
+  $(document).on("input", 'input[name$="time1"]', function () {
+    updateActualTime1();
+  });
 
   // Initial calculation on page load (in case the input fields have initial values)
   updateActualTime();
+  updateActualTime1();
   const addMoreBtn0 = document.getElementById("add-more0");
   const addMoreBtn1 = document.getElementById("add-more1");
   const totalNewForms0 = document.getElementById("id_formset0-TOTAL_FORMS");
@@ -528,6 +543,88 @@
       event.preventDefault();
     }
   });
+  let startLogging = sessionStorage.getItem("logging");
+  let startExperiment = sessionStorage.getItem("experiment");
+  let folder_name = sessionStorage.getItem("folder_name");
+  function LoggingFile(interval) {
+    $.ajax({
+      url: "{% url 'plot' %}", // URL mapped to the status view
+      type: "GET",
+      dataType: "json",
+      success: function (response) {},
+      error: function (xhr, status, error) {
+        console.log(xhr.responseText);
+      },
+      complete: function () {
+        // Call the updatePlot function again after the specified interval
+        setTimeout(function () {
+          LoggingFile(interval);
+        }, interval);
+      },
+    });
+  }
+  function updatePlotLogging(interval, file_name) {
+    const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
+    // Include the CSRF token in the AJAX request headers
+    $.ajaxSetup({
+      headers: {
+        "X-CSRFToken": csrfToken,
+      },
+    });
+    $.ajax({
+      url: "{% url 'logging' %}", // Replace with your Django view URL
+      type: "POST",
+      data: {
+        file_name: file_name,
+      },
+      dataType: "json",
+      success: function (response) {},
+      error: function (xhr, status, error) {
+        console.log(xhr.responseText);
+      },
+      complete: function () {
+        // Call the updatePlot function again after the specified interval
+        setTimeout(function () {
+          updatePlotLogging(interval, file_name);
+        }, interval);
+      },
+    });
+  }
+  function updatePlot(interval, file_name) {
+    // Retrieve the CSRF token from the HTML page
+    const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
+    // Include the CSRF token in the AJAX request headers
+    $.ajaxSetup({
+      headers: {
+        "X-CSRFToken": csrfToken,
+      },
+    });
+    $.ajax({
+      url: "{% url 'live_data_rfsoc' %}", // Replace with your Django view URL
+      type: "POST",
+      data: {
+        file_name: file_name,
+      },
+      dataType: "json",
+      success: function (response) {},
+      error: function (xhr, status, error) {
+        console.log(xhr.responseText);
+      },
+      complete: function () {
+        // Call the updatePlot function again after the specified interval
+        setTimeout(function () {
+          updatePlot(interval, file_name);
+        }, interval);
+      },
+    });
+  }
+  if (startLogging == "true") {
+    updatePlotLogging(1000, folder_name);
+  } else if (startExperiment == "true") {
+    updatePlot(1000, folder_name);
+  } else {
+    LoggingFile(1000);
+  }
 </script>
 
 {% endblock javascripts %}

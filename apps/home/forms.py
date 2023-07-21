@@ -141,6 +141,8 @@ class LaserForm(forms.Form):
     scan_start = forms.FloatField(label='Scan Start')
     scan_freq = forms.FloatField(label='Scan Frequency')
     scan_offset = forms.FloatField(label='Scan Offset')
+    voltage_act = forms.FloatField(label='Voltage')
+    current_act = forms.FloatField(label='Current')
 
 class LaserFormIP(forms.Form):
     laser_host = forms.CharField(label='IP Address', max_length=100)

@@ -217,6 +217,7 @@ class LaserController(OphydObject): #On off laser similar to controller
             "current act":{"value":self.dlc.laser1.dl.cc.current_act.get()},
             "emission":{"value":self.dlc.emission.get()},
             "system health":{"value":self.dlc.system_health.get()},
+            "standby":{"value":self.dlc.standby.state.get()},
         }
         return signals
     def emission(self):
@@ -227,6 +228,14 @@ class LaserController(OphydObject): #On off laser similar to controller
         """
         logger.debug(f"recv emission")
         return self.dlc.emission.get()
+    def standby(self):
+        """
+        The function `standby` logs a debug message and returns the state of the standby mode.
+        @returns The code is returning the value of `self.dlc.standby.state.get()`.
+        """
+
+        logger.debug(f"recv standby")
+        return self.dlc.standby.state.get()
     def system_health(self):
         """
         The function retrieves the system health information from the dlc object.
@@ -249,6 +258,22 @@ class LaserController(OphydObject): #On off laser similar to controller
         """
         logger.debug(f"recv voltage act")
         return self.dlc.laser1.dl.pc.voltage_act.get()
+    def current_act_setter(self,val):
+        """
+        The function sets the current value for a laser.
+        @param val - The parameter "val" is the value that will be set for the current act.
+        """
+
+        logger.debug(f"recv current act")
+        self.dlc.laser1.dl.cc.current_set.set(val)
+    def voltage_act_setter(self,val):
+        """
+        The function sets the voltage of a laser.
+        @param val - The parameter "val" is the value that will be set for the voltage act.
+        """
+
+        logger.debug(f"recv voltage act")
+        self.dlc.laser1.dl.pc.voltage_set.set(val)
     def scan_end(self):
         """
         The function `scan_end` retrieves the value of the `end` attribute from the `scan` object of the
@@ -428,18 +453,28 @@ class LaserEmission(LaserSignalRO):
     # @threadlocked
     def _get(self):
         return self.dlc.emission()
+class LaserStandby(LaserSignalRO):
+    # @threadlocked
+    def _get(self):
+        return self.dlc.standby()
 class LaserSystemHealth(LaserSignalRO):
     # @threadlocked
     def _get(self):
         return self.dlc.system_health()
-class LaserVoltageAct(LaserSignalRO):
+class LaserVoltageAct(LaserSignalBase):
     # @threadlocked
     def _get(self):
         return self.dlc.voltage_act()
-class LaserCurrentAct(LaserSignalRO):
+    def _set(self, val):
+        logger.info("Voltage is set to "+str(val))
+        self.dlc.voltage_act_setter(val)
+class LaserCurrentAct(LaserSignalBase):
     # @threadlocked
     def _get(self):
         return self.dlc.current_act()
+    def _set(self, val):
+        logger.info("Current is set to "+str(val))
+        self.dlc.current_act_setter(val)
 class LaserMainScanEnd(LaserSignalBase):
     # @threadlocked
     def _get(self):
@@ -497,6 +532,7 @@ class LaserToptica(Device):
     current_act = Cpt(LaserCurrentAct, signal_name="current_act", kind="hinted")
     voltage_act = Cpt(LaserVoltageAct, signal_name="voltage_act", kind="hinted")
     emission = Cpt(LaserEmission, signal_name="emission", kind="hinted")
+    standby = Cpt(LaserStandby, signal_name="standby", kind="hinted")
     system_health = Cpt(LaserSystemHealth, signal_name="system_health", kind="hinted")
     scan_end = Cpt(LaserMainScanEnd, signal_name="scan_end")
     scan_start = Cpt(LaserMainScanStart, signal_name="scan_start")
@@ -556,6 +592,9 @@ class LaserToptica(Device):
             self.update_scan_end(self.config["scan_end"])
             self.update_scan_start(self.config["scan_start"])
             self.update_scan_offset(self.config["scan_offset"])
+            self.update_current(self.config["current_act"])
+            self.update_voltage(self.config["voltage_act"])
+            self.update_scan_frequency(self.config["scan_freq"])
             print("Laser Updated")
         except:
             print("XML not Found")
@@ -572,6 +611,18 @@ class LaserToptica(Device):
         with.
         """
         self.scan_end.put(val)
+    def update_voltage(self,val):
+        """
+        The function updates the voltage value with the given input.
+        @param val - The parameter "val" is the value of the voltage that you want to update.
+        """
+        self.voltage_act.put(val)
+    def update_current(self,val):
+        """
+        The function updates the current activity with a new value.
+        @param val - The parameter "val" is the value that you want to update the current_act with.
+        """
+        self.current_act.put(val)
     def update_scan_start(self,val):
         """
         The function updates the value of the "scan_start" attribute with the given input value.
@@ -585,7 +636,7 @@ class LaserToptica(Device):
         @param val - The parameter "val" is the value that you want to update the scan offset with.
         """
         self.scan_offset.put(val)
-    def update_scan_offset(self,val):
+    def update_scan_frequency(self,val):
         """
         The function updates the scan offset value with the given input.
         @param val - The parameter "val" is the value that you want to update the scan offset with.
@@ -604,6 +655,13 @@ class LaserToptica(Device):
         @returns The method `report_emission` is returning the value of `self.emission`.
         """
         return self.emission.get()
+
+    def report_standby(self):
+        """
+        The function "report_standby" returns the value of the "standby" attribute.
+        @returns The method is returning the value of the "standby" attribute.
+        """
+        return self.standby.get()
     def report_system_health(self):
         """
         The function "report_system_health" returns the system health.
