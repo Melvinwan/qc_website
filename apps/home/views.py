@@ -231,14 +231,14 @@ def caylar_page_view(request):
     caylar_host = xml_config_to_dict("staticfiles/caylar.xml")
     if connected:
         Update_caylar.update_all_xml("staticfiles/caylar.xml")
-        context["caylar_current"] = two_decimal(Update_caylar.current())
-        context["caylar_field"] =  two_decimal(Update_caylar.field())
-        context["caylar_voltage"] =  two_decimal(Update_caylar.voltage())
-        context["caylar_ADCDAC_temp"] = two_decimal(Update_caylar.ADCDAC_temp())
-        context["caylar_box_temp"] = two_decimal(Update_caylar.box_temp())
-        context["caylar_rack_temp"] = two_decimal(Update_caylar.rack_temp())
-        context["caylar_water_temp"] = two_decimal(Update_caylar.water_temp())
-        context["caylar_water_flow"] = two_decimal(Update_caylar.water_flow())
+        context["caylar_current"] = two_decimal(Update_caylar.current)
+        context["caylar_field"] =  two_decimal(Update_caylar.field)
+        context["caylar_voltage"] =  two_decimal(Update_caylar.voltage)
+        context["caylar_ADCDAC_temp"] = two_decimal(Update_caylar.ADCDAC_temp)
+        context["caylar_box_temp"] = two_decimal(Update_caylar.box_temp)
+        context["caylar_rack_temp"] = two_decimal(Update_caylar.rack_temp)
+        context["caylar_water_temp"] = two_decimal(Update_caylar.water_temp)
+        context["caylar_water_flow"] = two_decimal(Update_caylar.water_flow)
         caylar_host["time_update"] =  datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         dict_to_xml_file(caylar_host, "staticfiles/caylar.xml")
         caylar_host = xml_config_to_dict("staticfiles/caylar.xml")
@@ -642,6 +642,7 @@ def start_experiment(request):
         with open(file_path, 'w') as file:
             file.write(f"Experiment Name: {request.POST['experiment_name']}\n")
             file.write(f"Description: {request.POST['description']}\n")
+            file.write(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
         if request.POST['startLogging'] or bool(request.POST['startLogging']) == True:
             dict_to_xml_file(combinedXML, os.path.join(request.POST['file_name'], 'configurations.xml'))
     except OSError as error:
@@ -776,33 +777,49 @@ def update_live_plot(request):
         data['laser_scan_start']= laser_scan_start,
         data['laser_scan_offset']= laser_scan_offset,
         data['laser_scan_frequency']= laser_scan_frequency,
-        data['laser_wavelength']= find_csv(laser_csv_file_path,'wavelength'),
-        data['laser_current']= find_csv(laser_csv_file_path,'current'),
-        data['laser_voltage']= find_csv(laser_csv_file_path,'voltage'),
-        data['timestampT']= find_csv(laser_csv_file_path,'timestamp'),
+        if bool(request.POST['changePage']):
+            data['laser_wavelength']= find_csv(laser_csv_file_path,'wavelength'),
+            data['laser_current']= find_csv(laser_csv_file_path,'current'),
+            data['laser_voltage']= find_csv(laser_csv_file_path,'voltage'),
+            data['timestampT']= find_csv(laser_csv_file_path,'timestamp'),
+        else:
+            data['laser_wavelength']= laser_wavelength,
+            data['laser_current']= laser_current,
+            data['laser_voltage']= laser_voltage,
+            data['timestampT']= timestamp,
         data['laser_emission']= laser_emission,
         data['laser_system_health']= laser_system_health,
     if UCaylar !=None:
         data['caylar_status'] = "ON"
-        caylar_current = UCaylar.current()
-        caylar_field = UCaylar.field()
-        caylar_ADCDAC_temp = UCaylar.ADCDAC_temp()
-        caylar_box_temp = UCaylar.box_temp()
-        caylar_rack_temp = UCaylar.rack_temp()
-        caylar_water_temp = UCaylar.water_temp()
-        caylar_water_flow = UCaylar.water_flow()
+        caylar_current = UCaylar.current
+        caylar_field = UCaylar.field
+        caylar_ADCDAC_temp = UCaylar.ADCDAC_temp
+        caylar_box_temp = UCaylar.box_temp
+        caylar_rack_temp = UCaylar.rack_temp
+        caylar_water_temp = UCaylar.water_temp
+        caylar_water_flow = UCaylar.water_flow
         caylar_column_headers = ['timestamp', 'current', 'field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
         caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
         caylar_csv_file_path = 'logging/'+datetime.now().strftime("%Y%m%d/")+'caylar.csv'
         append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
-        data['caylar_current']= find_csv(caylar_csv_file_path,'current'),
-        data['caylar_field']= find_csv(caylar_csv_file_path,'field'),
-        data['caylar_ADCDAC_temp']= find_csv(caylar_csv_file_path,'ADCDAC temp'),
-        data['caylar_box_temp']= find_csv(caylar_csv_file_path,'box temp'),
-        data['caylar_rack_temp']= find_csv(caylar_csv_file_path,'rack temp'),
-        data['caylar_water_temp']= find_csv(caylar_csv_file_path,'water temp'),
-        data['caylar_water_flow']= find_csv(caylar_csv_file_path,'water flow'),
-        data['timestampC']= find_csv(caylar_csv_file_path,'timestamp'),
+        if not bool(request.POST['changePage']):
+            data['caylar_current']= caylar_current,
+            data['caylar_field']= caylar_field,
+            data['caylar_ADCDAC_temp']= caylar_ADCDAC_temp,
+            data['caylar_box_temp']= caylar_box_temp,
+            data['caylar_rack_temp']= caylar_rack_temp,
+            data['caylar_water_temp']= caylar_water_temp,
+            data['caylar_water_flow']= caylar_water_flow,
+            data['timestampC']= timestamp,
+        else:
+            data['caylar_current']= find_csv(caylar_csv_file_path,'current'),
+            data['caylar_field']= find_csv(caylar_csv_file_path,'field'),
+            data['caylar_ADCDAC_temp']= find_csv(caylar_csv_file_path,'ADCDAC temp'),
+            data['caylar_box_temp']= find_csv(caylar_csv_file_path,'box temp'),
+            data['caylar_rack_temp']= find_csv(caylar_csv_file_path,'rack temp'),
+            data['caylar_water_temp']= find_csv(caylar_csv_file_path,'water temp'),
+            data['caylar_water_flow']= find_csv(caylar_csv_file_path,'water flow'),
+            data['timestampC']= find_csv(caylar_csv_file_path,'timestamp'),
     if UmercuryITC!=None:
         data['mercury_status'] = "ON"
         itc_heater_power = UmercuryITC.report_heater_power()
@@ -811,9 +828,14 @@ def update_live_plot(request):
         itc_column_headers = ['timestamp', 'Heater Power','temperature']
         itc_csv_file_path = 'logging/'+datetime.now().strftime("%Y%m%d/")+'itc.csv'
         append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
-        data['itc_heater_power']= find_csv(itc_csv_file_path,'Heater Power'),
-        data['itc_temperature']= find_csv(itc_csv_file_path,'temperature'),
-        data['timestampM']= find_csv(itc_csv_file_path,'timestamp'),
+        if not bool(request.POST['changePage']):
+            data['itc_heater_power']= itc_heater_power,
+            data['itc_temperature']= itc_temperature,
+            data['timestampM']= timestamp,
+        else:
+            data['itc_heater_power']= find_csv(itc_csv_file_path,'Heater Power'),
+            data['itc_temperature']= find_csv(itc_csv_file_path,'temperature'),
+            data['timestampM']= find_csv(itc_csv_file_path,'timestamp'),
 
     return JsonResponse(data)
 Drfsoc_status = None

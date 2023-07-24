@@ -245,6 +245,11 @@
             <!-- Add more configuration fields as necessary -->
             {% if formset1 %}
             <h6 class="heading-small text-muted mb-4">TTL Sequence</h6>
+
+            <h6>Pin 1: TTL</h6>
+            <h6>Pin 2: TTL</h6>
+            <h6>Pin 3: TTL</h6>
+            <h6>Pin 4: TTL</h6>
             {{formset1.management_form}}
             <table id="form1-list">
               <thead>
@@ -547,9 +552,18 @@
   let startExperiment = sessionStorage.getItem("experiment");
   let folder_name = sessionStorage.getItem("folder_name");
   function LoggingFile(interval) {
+    const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
+
+    // Include the CSRF token in the AJAX request headers
+    $.ajaxSetup({
+      headers: {
+        "X-CSRFToken": csrfToken,
+      },
+    });
     $.ajax({
       url: "{% url 'plot' %}", // URL mapped to the status view
-      type: "GET",
+      type: "POST",
+      data: { changePage: false },
       dataType: "json",
       success: function (response) {},
       error: function (xhr, status, error) {

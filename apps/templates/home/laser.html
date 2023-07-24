@@ -214,9 +214,18 @@
   let startExperiment = sessionStorage.getItem("experiment");
   let folder_name = sessionStorage.getItem("folder_name");
   function LoggingFile(interval) {
+    const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
+
+    // Include the CSRF token in the AJAX request headers
+    $.ajaxSetup({
+      headers: {
+        "X-CSRFToken": csrfToken,
+      },
+    });
     $.ajax({
       url: "{% url 'plot' %}", // URL mapped to the status view
-      type: "GET",
+      type: "POST",
+      data: { changePage: false },
       dataType: "json",
       success: function (response) {},
       error: function (xhr, status, error) {

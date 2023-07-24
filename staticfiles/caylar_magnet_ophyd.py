@@ -324,8 +324,10 @@ class MagneticSignalRO(MagneticSignalBase):
 # The MagneticField class is a subclass of MagneticSignalBase.
 class MagneticField(MagneticSignalBase):
     def _socket_get(self) -> float:
-        return float(self.controller.get_field()[1])
-
+        try:
+            return float(self.controller.get_field()[1])
+        except:
+            return float(self.controller.get_field()[1][1:-1])
     @retry_once
     @threadlocked
     def _socket_set(self, val: float) -> None:
@@ -333,7 +335,10 @@ class MagneticField(MagneticSignalBase):
 
 class MagneticCurrent(MagneticSignalBase):
     def _socket_get(self) -> float:
-        return float(self.controller.get_current()[1])
+        try:
+            return float(self.controller.get_current()[1])
+        except:
+            return float(self.controller.get_current()[1][1:-1])
 
     @retry_once
     @threadlocked
@@ -343,7 +348,10 @@ class MagneticCurrent(MagneticSignalBase):
 class MagneticVoltage(MagneticSignalRO):
     @threadlocked
     def _socket_get(self):
-        return float(self.controller.get_voltage()[1])
+        try:
+            return float(self.controller.get_voltage()[1])
+        except:
+            return float(self.controller.get_voltage()[1][1:-1])
 
 class MagneticADCDACTemp(MagneticSignalRO):
     @threadlocked

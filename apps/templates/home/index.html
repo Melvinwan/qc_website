@@ -296,10 +296,9 @@
       // If the element is a single value, append it to the existing list
       listName.push(element);
     }
-
-    while (listName.length > 100) {
-      listName.shift();
-    }
+    // while (listName.length > 100) {
+    //   listName.shift();
+    // }
   }
 
   function toggleVisibilityTopticaCurrent() {
@@ -384,6 +383,7 @@
     });
     function resetExperiment() {
       // $("#experimentForms").removeClass("hidden");
+      $("#buttonExperiment").addClass("hidden");
       $("#messageUpdateExpContainer .alert").remove();
       $("#TopticaWavelengthPlot").addClass("hidden");
       $("#TopticaCurrentPlot").addClass("hidden");
@@ -449,6 +449,7 @@
             isDashboardUpdating = false;
             file_name_save = response.file_name;
             sessionStorage.setItem("folder_name", response.file_name);
+            $("#buttonExperiment").removeClass("hidden");
             DashboardPlot(1000, selectedDevices);
           },
           error: function (xhr, status, error) {
@@ -512,7 +513,8 @@
     yaxis: {
       title: "Wavelength (nm)",
     },
-    autosize: false, // Disable automatic resizing
+    autosize: true, // Disable automatic resizing
+    height: window.innerHeight * 0.3,
   };
   let layoutCurrent = {
     title: "Toptica Current (mA)",
@@ -523,7 +525,8 @@
     yaxis: {
       title: "Current (mA)",
     },
-    autosize: false, // Disable automatic resizing
+    autosize: true, // Disable automatic resizing
+    height: window.innerHeight * 0.3,
   };
   let layoutVoltage = {
     title: "Toptica Voltage (V)",
@@ -534,7 +537,8 @@
     yaxis: {
       title: "Voltage (v)",
     },
-    autosize: false, // Disable automatic resizing
+    autosize: true, // Disable automatic resizing
+    height: window.innerHeight * 0.3,
   };
   let layoutCaylar = {
     title: "Live Plot Caylar",
@@ -545,7 +549,8 @@
     yaxis: {
       title: "Y-axis",
     },
-    autosize: false, // Disable automatic resizing
+    autosize: true, // Disable automatic resizing
+    height: window.innerHeight * 0.3,
   };
 
   let layoutITC = {
@@ -557,7 +562,8 @@
     yaxis: {
       title: "Y-axis",
     },
-    autosize: false, // Disable automatic resizing
+    autosize: true, // Disable automatic resizing
+    height: window.innerHeight * 0.3,
   };
 
   // Create a plotly object with the laser_data and layout
@@ -602,21 +608,33 @@
       statusElement.css("color", "#adb5bd"); // Set text color to #adb5bd (gray)
     }
   }
-  function DashboardPlot(interval, device = ["Caylar", "Mercury", "Laser"]) {
+  function DashboardPlot(interval, device = ["Caylar", "Mercury", "Laser"], changePage = false) {
+    if (typeof device === "boolean") {
+      device = ["Caylar", "Mercury", "Laser"];
+    }
     devices = device;
-    $("#buttonExperiment").addClass("hidden");
+
+    const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
+
+    // Include the CSRF token in the AJAX request headers
+    $.ajaxSetup({
+      headers: {
+        "X-CSRFToken": csrfToken,
+      },
+    });
     $.ajax({
       url: "{% url 'plot' %}", // URL mapped to the status view
-      type: "GET",
+      type: "POST",
+      data: { changePage: changePage },
       dataType: "json",
       success: function (response) {
         // appendToList(xDate, getCurrentDateTime());
-        // console.log(data);
+        console.log(devices);
         if (response.caylar_status == "ON" && device.includes("Caylar")) {
           $("#CaylarPlot").removeClass("hidden");
           $("#caylar_current_number").text(response.caylar_current[0][response.caylar_current.length - 1]);
           $("#caylar_field_number").text(response.caylar_field[0][response.caylar_field.length - 1]);
-          $("#caylar_adcdac_temp_number").text(response.caylar_adcdac_temp[0][response.caylar_adcdac_temp.length - 1]);
+          $("#caylar_adcdac_temp_number").text(response.caylar_ADCDAC_temp[0][response.caylar_ADCDAC_temp.length - 1]);
           $("#caylar_box_temp_number").text(response.caylar_box_temp[0][response.caylar_box_temp.length - 1]);
           $("#caylar_rack_temp_number").text(response.caylar_rack_temp[0][response.caylar_rack_temp.length - 1]);
           $("#caylar_water_temp_number").text(response.caylar_water_temp[0][response.caylar_water_temp.length - 1]);
@@ -624,7 +642,7 @@
           // Update Caylar data
           appendToList(caylar_current["y"], response.caylar_current[0]);
           appendToList(caylar_field["y"], response.caylar_field[0]);
-          appendToList(caylar_adcdac_temp["y"], response.caylar_adcdac_temp[0]);
+          appendToList(caylar_adcdac_temp["y"], response.caylar_ADCDAC_temp[0]);
           appendToList(caylar_box_temp["y"], response.caylar_box_temp[0]);
           appendToList(caylar_rack_temp["y"], response.caylar_rack_temp[0]);
           appendToList(caylar_water_temp["y"], response.caylar_water_temp[0]);
@@ -717,7 +735,7 @@
         $("#messageUpdateExpContainer .alert").remove();
         if (plot) {
           isDashboardUpdating = true;
-          DashboardPlot(1000);
+          DashboardPlot(1000, (changePage = true));
         }
       },
     });
@@ -801,7 +819,7 @@
         isDashboardUpdating = true;
         // Set the flag indicating that the script has been executed
         sessionStorage.setItem("script_executed", true);
-        DashboardPlot(1000);
+        DashboardPlot(1000, (changePage = true));
       },
     });
   }
