@@ -210,9 +210,7 @@
       event.preventDefault();
     }
   });
-  let startLogging = sessionStorage.getItem("logging");
-  let startExperiment = sessionStorage.getItem("experiment");
-  let folder_name = sessionStorage.getItem("folder_name");
+
   function LoggingFile(interval) {
     const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
 
