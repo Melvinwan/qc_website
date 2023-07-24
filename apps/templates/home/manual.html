@@ -11,12 +11,21 @@
           <h3 class="mb-0">Manual</h3>
         </div>
         <div class="card-body">
+          <h4>Problem connection or error on Dashboard</h4>
+          <p>Click update status button it will refresh every connection or if it cannot resolve your problem please restart the server.</p>
+          <hr />
+        </div>
+        <div class="card-body">
           <h4>Toptica Manual</h4>
           <h5>System Health</h5>
           <p>
             Returns 0 if the system has no problems.
             <br />bit 0 - main FPGA fault <br />bit 1 - power supply fault <br />bit 2 - laser 1 problem <br />bit 3 - laser 2 problem <br />bit 8 - problem with module in M-slot 1 <br />bit 9 - problem with module in M-slot 2 <br />bit 10 - problem with module in M-slot 3 <br />bit 11 - problem with module in M-slot 4 <br />bit 12 - problem with module in S-slot 1 <br />bit 13 - problem with module in S-slot 2 <br />bit 14 - problem with module in S-slot 3 <br />bit 15 - problem with module in S-slot 4 <br />bit 16 - problem with IO board
           </p>
+          <h5>PDF Manual</h5>
+          <a href="#" onclick="window.open('DLCpro-Command-Reference.pdf', '_blank', 'fullscreen=yes'); return false;">DLCpro-Command-Reference.pdf</a>
+
+          <hr />
         </div>
       </div>
     </div>
@@ -52,67 +61,7 @@
       },
     });
   }
-  function updatePlotLogging(interval, file_name) {
-    const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
-    // Include the CSRF token in the AJAX request headers
-    $.ajaxSetup({
-      headers: {
-        "X-CSRFToken": csrfToken,
-      },
-    });
-    $.ajax({
-      url: "{% url 'logging' %}", // Replace with your Django view URL
-      type: "POST",
-      data: {
-        file_name: file_name,
-      },
-      dataType: "json",
-      success: function (response) {},
-      error: function (xhr, status, error) {
-        console.log(xhr.responseText);
-      },
-      complete: function () {
-        // Call the updatePlot function again after the specified interval
-        setTimeout(function () {
-          updatePlotLogging(interval, file_name);
-        }, interval);
-      },
-    });
-  }
-  function updatePlot(interval, file_name) {
-    // Retrieve the CSRF token from the HTML page
-    const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
-    // Include the CSRF token in the AJAX request headers
-    $.ajaxSetup({
-      headers: {
-        "X-CSRFToken": csrfToken,
-      },
-    });
-    $.ajax({
-      url: "{% url 'live_data_rfsoc' %}", // Replace with your Django view URL
-      type: "POST",
-      data: {
-        file_name: file_name,
-      },
-      dataType: "json",
-      success: function (response) {},
-      error: function (xhr, status, error) {
-        console.log(xhr.responseText);
-      },
-      complete: function () {
-        // Call the updatePlot function again after the specified interval
-        setTimeout(function () {
-          updatePlot(interval, file_name);
-        }, interval);
-      },
-    });
-  }
-  if (startLogging == "true") {
-    updatePlotLogging(1000, folder_name);
-  } else if (startExperiment == "true") {
-    updatePlot(1000, folder_name);
-  } else {
-    LoggingFile(1000);
-  }
+
+  LoggingFile(1000);
 </script>
 {% endblock javascripts %}

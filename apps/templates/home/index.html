@@ -267,12 +267,6 @@
 
             <div class="row px-4">
               <div class="card-body">
-                <button type="button" class="btn btn-primary" id="startLoggingButton">Start Logging</button>
-              </div>
-              <div class="card-body">
-                <button type="button" class="btn btn-primary hidden" id="restartLoggingButton">Restart Logging</button>
-              </div>
-              <div class="card-body">
                 <button type="submit" class="btn btn-primary" id="startExperimentButton">Start Experiment</button>
               </div>
             </div>
@@ -376,106 +370,7 @@
     $("#resetDashboardButton").on("click", function () {
       resetExperiment();
     });
-    $("#restartLoggingButton").on("click", function () {
-      $("#restartLoggingButton").addClass("hidden");
-      // Enable all input elements inside the container after click
-      $(".container-fluid input").prop("disabled", false);
-      $(".container-fluid textarea").prop("disabled", false);
-      $("#startLoggingButton").prop("disabled", false);
-      isLogging = false;
-      isUpdating = false;
-      isDashboardUpdating = true;
-      sessionStorage.setItem("logging", false);
-      DashboardPlot(1000);
-    });
-    $("#startLoggingButton").on("click", function (event) {
-      event.preventDefault(); // Prevent the default form submission
 
-      // Disable the button after click
-      $(this).prop("disabled", true);
-      $(".container-fluid input").prop("disabled", true);
-      $(".container-fluid textarea").prop("disabled", true);
-      $("#restartLoggingButton").removeClass("hidden");
-
-      // Make an AJAX POST request only if the form is valid
-      if (validateDeviceListForm()) {
-        isDashboardUpdating = false;
-        $("#messageContainer .alert").remove();
-        $("#messageLoadingContainer").html('<div class="alert alert-info" role="alert">Loading...</div>');
-        // Retrieve the CSRF token from the HTML page
-        const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
-
-        // Include the CSRF token in the AJAX request headers
-        $.ajaxSetup({
-          headers: {
-            "X-CSRFToken": csrfToken,
-          },
-        });
-        const selectedDevices = [];
-        $("input[name='selected_devices[]']:checked").each(function () {
-          selectedDevices.push($(this).val());
-        });
-        $.ajax({
-          url: "{% url 'start_experiment' %}",
-          type: "POST",
-          data: {
-            file_name: document.getElementById("id_file_Name").value,
-            experiment_name: document.getElementById("id_experiment_name").value,
-            description: document.getElementById("id_experiment_description").value,
-            selected_devices: selectedDevices,
-            startLogging: true,
-          },
-          success: function (response) {
-            // Handle the response if needed
-            isDashboardUpdating = false;
-            $("#messageLoadingContainer .alert").remove();
-            console.log(response);
-            sessionStorage.setItem("logging", true);
-
-            // Update the message dynamically from the response
-            let messageContainer = $("#messageContainer");
-            messageContainer.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
-
-            // Reset the form fields
-            isLogging = true;
-            file_name_save = response.file_name;
-            sessionStorage.setItem("folder_name", response.file_name);
-            sessionStorage.setItem("experiment_name", document.getElementById("id_experiment_name").value);
-            sessionStorage.setItem("description", document.getElementById("id_experiment_description").value);
-            sessionStorage.setItem("selected_devices", selectedDevices);
-            updatePlotLogging(1000, (file_name_save = response.file_name));
-          },
-          error: function (xhr, status, error) {
-            // Handle any error that occurs during the request
-            console.log(error);
-            $("#restartLoggingButton").addClass("hidden");
-            $("#messageLoadingContainer .alert").remove();
-            // Enable all input elements inside the container after click
-            $(".container-fluid input").prop("disabled", false);
-            $(".container-fluid textarea").prop("disabled", false);
-            $("#startLoggingButton").prop("disabled", false);
-            isLogging = false;
-            // Update the message dynamically
-            let messageContainer = $("#messageContainer");
-            messageContainer.html('<div class="alert alert-danger alert-dismissible fade show" role="alert">' + error + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
-          },
-          complete: function () {
-            // Remove the loading indicator
-            $("#messageLoadingContainer .alert").remove();
-          },
-        });
-      } else {
-        $("#restartLoggingButton").addClass("hidden");
-        $("#messageLoadingContainer .alert").remove();
-        // Enable all input elements inside the container after click
-        $(".container-fluid input").prop("disabled", false);
-        $(".container-fluid textarea").prop("disabled", false);
-        $("#startLoggingButton").prop("disabled", false);
-        isLogging = false;
-        let messageContainer = $("#messageContainer");
-        messageContainer.html('<div class="alert alert-danger alert-dismissible fade show" role="alert">' + "Please fill the name of experiment and the file path" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
-      }
-    });
     // Get the form element
     const form = document.getElementById("experimentForms");
 
@@ -488,14 +383,16 @@
       }
     });
     function resetExperiment() {
-      $("#experimentForms").removeClass("hidden");
+      // $("#experimentForms").removeClass("hidden");
       $("#messageUpdateExpContainer .alert").remove();
+      $("#TopticaWavelengthPlot").addClass("hidden");
+      $("#TopticaCurrentPlot").addClass("hidden");
+      $("#TopticaVoltagePlot").addClass("hidden");
+      $("#CaylarPlot").addClass("hidden");
+      $("#ITCPlot").addClass("hidden");
       $("#messageITCOff .alert").remove();
       $("#messageCaylarOff .alert").remove();
       $("#messageLaserOff .alert").remove();
-      isDashboardUpdating = true;
-      isUpdating = false;
-      isLogging = false;
       updateStatusLaser();
     }
     $("#experimentForms").on("submit", function (event) {
@@ -523,6 +420,7 @@
         $("input[name='selected_devices[]']:checked").each(function () {
           selectedDevices.push($(this).val());
         });
+        sessionStorage.setItem("selected_devices", selectedDevices);
         $.ajax({
           url: "{% url 'start_experiment' %}",
           type: "POST",
@@ -539,8 +437,6 @@
             $("#messageLoadingContainer .alert").remove();
             console.log(response);
 
-            sessionStorage.setItem("experiment", true);
-
             // Update the message dynamically from the response
             let messageContainer = $("#messageContainer");
             messageContainer.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
@@ -553,7 +449,7 @@
             isDashboardUpdating = false;
             file_name_save = response.file_name;
             sessionStorage.setItem("folder_name", response.file_name);
-            updatePlot(1000, response.file_name);
+            DashboardPlot(1000, selectedDevices);
           },
           error: function (xhr, status, error) {
             // Handle any error that occurs during the request
@@ -666,242 +562,15 @@
 
   // Create a plotly object with the laser_data and layout
   // let livePlot = Plotly.newPlot("livePlot", laser_data, layout);
-  let isUpdating = false;
-  let isLogging = false;
-  function updatePlotLogging(interval, file_name) {
-    if (!isLogging) return;
-    const currentDate = new Date();
-    // Retrieve the CSRF token from the HTML page
-    const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
-
-    // Include the CSRF token in the AJAX request headers
-    $.ajaxSetup({
-      headers: {
-        "X-CSRFToken": csrfToken,
-      },
-    });
-    $.ajax({
-      url: "{% url 'logging' %}", // Replace with your Django view URL
-      type: "POST",
-      data: {
-        file_name: file_name,
-      },
-      dataType: "json",
-      success: function (response) {
-        console.log(response);
-        // Update the data array with new data points
-        // appendToList(xDate, getCurrentDateTime());
-        // console.log(data);
-        if (response.caylar_status == "ON") {
-          $("#CaylarPlot").removeClass("hidden");
-          $("#caylar_current_number").text(response.caylar_current[0][response.caylar_current.length - 1]);
-          $("#caylar_field_number").text(response.caylar_field[0][response.caylar_field.length - 1]);
-          $("#caylar_adcdac_temp_number").text(response.caylar_adcdac_temp[0][response.caylar_adcdac_temp.length - 1]);
-          $("#caylar_box_temp_number").text(response.caylar_box_temp[0][response.caylar_box_temp.length - 1]);
-          $("#caylar_rack_temp_number").text(response.caylar_rack_temp[0][response.caylar_rack_temp.length - 1]);
-          $("#caylar_water_temp_number").text(response.caylar_water_temp[0][response.caylar_water_temp.length - 1]);
-          $("#caylar_water_flow_number").text(response.caylar_water_flow[0][response.caylar_water_flow.length - 1]);
-          // Update Caylar data
-          appendToList(caylar_current["y"], response.caylar_current[0]);
-          appendToList(caylar_field["y"], response.caylar_field[0]);
-          appendToList(caylar_adcdac_temp["y"], response.caylar_adcdac_temp[0]);
-          appendToList(caylar_box_temp["y"], response.caylar_box_temp[0]);
-          appendToList(caylar_rack_temp["y"], response.caylar_rack_temp[0]);
-          appendToList(caylar_water_temp["y"], response.caylar_water_temp[0]);
-          appendToList(caylar_water_flow["y"], response.caylar_water_flow[0]);
-          appendToList(xDateC, response.timestampC);
-          // Update the Caylar plot with the new data
-          caylar_data = [caylar_current, caylar_field, caylar_adcdac_temp, caylar_box_temp, caylar_rack_temp, caylar_water_temp, caylar_water_flow];
-          let livePlotCaylar = Plotly.newPlot("livePlotCaylar", caylar_data, layoutCaylar);
-        } else {
-          let messageCaylarOff = $("#messageCaylarOff");
-          messageCaylarOff.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + "Caylar is not connected" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
-          $("#CaylarPlot").addClass("hidden");
-        }
-        if (response.mercury_status == "ON") {
-          $("#ITCPlot").removeClass("hidden");
-          $("#itc_heater_power_number").text(response.itc_heater_power[0][response.itc_heater_power.length - 1]);
-          $("#itc_heater_power_number1").text(response.itc_heater_power[0][response.itc_heater_power.length - 1]);
-          $("#itc_temperature_number").text(response.itc_temperature[0][response.itc_temperature.length - 1]);
-          $("#itc_temperature_number1").text(response.itc_temperature[0][response.itc_temperature.length - 1]);
-          // Update ITC data
-          appendToList(itc_heater_power["y"], response.itc_heater_power[0]);
-          appendToList(itc_temperature["y"], response.itc_temperature[0]);
-          appendToList(xDateM, response.timestampM);
-          // Update the ITC plot with the new data
-          itc_data = [itc_heater_power, itc_temperature];
-          let livePlotITC = Plotly.newPlot("livePlotITC", itc_data, layoutITC);
-        } else {
-          let messageITCOff = $("#messageITCOff");
-          messageITCOff.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + "ITC is not connected" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
-          $("#ITCPlot").addClass("hidden");
-        }
-        if (response.laser_status == "ON") {
-          $("#TopticaWavelengthPlot").removeClass("hidden");
-          $("#TopticaCurrentPlot").removeClass("hidden");
-          $("#TopticaVoltagePlot").removeClass("hidden");
-          $("#laser_scan_end_number").text(response.laser_scan_end[0]);
-          $("#laser_scan_start_number").text(response.laser_scan_start[0]);
-          $("#laser_scan_offset_number").text(response.laser_scan_offset[0]);
-          $("#laser_scan_frequency_number").text(response.laser_scan_frequency[0]);
-          $("#laser_scan_wavelength_number").text(response.laser_wavelength[0][response.laser_wavelength.length - 1]);
-          $("#laser_scan_wavelength_number1").text(response.laser_wavelength[0][response.laser_wavelength.length - 1]);
-          $("#laser_current_number").text(response.laser_current[0][response.laser_current.length - 1]);
-          $("#laser_voltage_number").text(response.laser_voltage[0][response.laser_voltage.length - 1]);
-          appendToList(laser_wavelength["y"], response.laser_wavelength[0]);
-          appendToList(laser_current["y"], response.laser_current[0]);
-          appendToList(laser_voltage["y"], response.laser_voltage[0]);
-          appendToList(xDateT, response.timestampT);
-          // Update the plot with the new data
-          laser_wavelength_data = [laser_wavelength];
-          laser_current_data = [laser_current];
-          laser_voltage_data = [laser_voltage];
-          let livePlotWavelength = Plotly.newPlot("livePlotWavelength", laser_wavelength_data, layoutWavelength);
-          let livePlotCurrent = Plotly.newPlot("livePlotCurrent", laser_current_data, layoutCurrent);
-          let livePlotVoltage = Plotly.newPlot("livePlotVoltage", laser_voltage_data, layoutVoltage);
-        } else {
-          let messageLaserOff = $("#messageLaserOff");
-          messageLaserOff.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + "Toptica is not connected" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
-          $("#TopticaWavelengthPlot").addClass("hidden");
-          $("#TopticaCurrentPlot").addClass("hidden");
-          $("#TopticaVoltagePlot").addClass("hidden");
-        }
-      },
-      error: function (xhr, status, error) {
-        console.log(xhr.responseText);
-      },
-      complete: function () {
-        // Call the updatePlot function again after the specified interval
-        setTimeout(function () {
-          updatePlotLogging(interval, file_name);
-        }, interval);
-      },
-    });
-  }
-  // Function to update the plot with new data
-  function updatePlot(interval, file_name) {
-    if (!isUpdating) return;
-    $("#buttonExperiment").removeClass("hidden");
-    const currentDate = new Date();
-    // Retrieve the CSRF token from the HTML page
-    const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
-
-    // Include the CSRF token in the AJAX request headers
-    $.ajaxSetup({
-      headers: {
-        "X-CSRFToken": csrfToken,
-      },
-    });
-    $.ajax({
-      url: "{% url 'live_data_rfsoc' %}", // Replace with your Django view URL
-      type: "POST",
-      data: {
-        file_name: file_name,
-      },
-      dataType: "json",
-      success: function (response) {
-        console.log(response);
-        // Update the data array with new data points
-        // appendToList(xDate, getCurrentDateTime());
-        // console.log(data);
-        if (response.caylar_status == "ON") {
-          $("#CaylarPlot").removeClass("hidden");
-          $("#caylar_current_number").text(response.caylar_current[0][response.caylar_current.length - 1]);
-          $("#caylar_field_number").text(response.caylar_field[0][response.caylar_field.length - 1]);
-          $("#caylar_adcdac_temp_number").text(response.caylar_adcdac_temp[0][response.caylar_adcdac_temp.length - 1]);
-          $("#caylar_box_temp_number").text(response.caylar_box_temp[0][response.caylar_box_temp.length - 1]);
-          $("#caylar_rack_temp_number").text(response.caylar_rack_temp[0][response.caylar_rack_temp.length - 1]);
-          $("#caylar_water_temp_number").text(response.caylar_water_temp[0][response.caylar_water_temp.length - 1]);
-          $("#caylar_water_flow_number").text(response.caylar_water_flow[0][response.caylar_water_flow.length - 1]);
-          // Update Caylar data
-          appendToList(caylar_current["y"], response.caylar_current[0]);
-          appendToList(caylar_field["y"], response.caylar_field[0]);
-          appendToList(caylar_adcdac_temp["y"], response.caylar_adcdac_temp[0]);
-          appendToList(caylar_box_temp["y"], response.caylar_box_temp[0]);
-          appendToList(caylar_rack_temp["y"], response.caylar_rack_temp[0]);
-          appendToList(caylar_water_temp["y"], response.caylar_water_temp[0]);
-          appendToList(caylar_water_flow["y"], response.caylar_water_flow[0]);
-          appendToList(xDateC, response.timestampC[0]);
-          // Update the Caylar plot with the new data
-          caylar_data = [caylar_current, caylar_field, caylar_adcdac_temp, caylar_box_temp, caylar_rack_temp, caylar_water_temp, caylar_water_flow];
-          let livePlotCaylar = Plotly.newPlot("livePlotCaylar", caylar_data, layoutCaylar);
-        } else {
-          let messageCaylarOff = $("#messageCaylarOff");
-          messageCaylarOff.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + "Caylar is not connected" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
-          $("#CaylarPlot").addClass("hidden");
-        }
-        if (response.mercury_status == "ON") {
-          $("#ITCPlot").removeClass("hidden");
-          $("#itc_heater_power_number").text(response.itc_heater_power[0][response.itc_heater_power.length - 1]);
-          $("#itc_heater_power_number1").text(response.itc_heater_power[0][response.itc_heater_power.length - 1]);
-          $("#itc_temperature_number").text(response.itc_temperature[0][response.itc_temperature.length - 1]);
-          $("#itc_temperature_number1").text(response.itc_temperature[0][response.itc_temperature.length - 1]);
-          // Update ITC data
-          appendToList(itc_heater_power["y"], response.itc_heater_power[0]);
-          appendToList(itc_temperature["y"], response.itc_temperature[0]);
-          appendToList(xDateM, response.timestampM[0]);
-          // Update the ITC plot with the new data
-          itc_data = [itc_heater_power, itc_temperature];
-          let livePlotITC = Plotly.newPlot("livePlotITC", itc_data, layoutITC);
-        } else {
-          let messageITCOff = $("#messageITCOff");
-          messageITCOff.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + "ITC is not connected" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
-          $("#ITCPlot").addClass("hidden");
-        }
-        if (response.laser_status == "ON") {
-          $("#TopticaWavelengthPlot").removeClass("hidden");
-          $("#TopticaCurrentPlot").removeClass("hidden");
-          $("#TopticaVoltagePlot").removeClass("hidden");
-          $("#laser_scan_end_number").text(response.laser_scan_end[0]);
-          $("#laser_scan_start_number").text(response.laser_scan_start[0]);
-          $("#laser_scan_offset_number").text(response.laser_scan_offset[0]);
-          $("#laser_scan_frequency_number").text(response.laser_scan_frequency[0]);
-          $("#laser_scan_wavelength_number").text(response.laser_wavelength[0][response.laser_wavelength.length - 1]);
-          $("#laser_scan_wavelength_number1").text(response.laser_wavelength[0][response.laser_wavelength.length - 1]);
-          $("#laser_current_number").text(response.laser_current[0][response.laser_current.length - 1]);
-          $("#laser_voltage_number").text(response.laser_voltage[0][response.laser_voltage.length - 1]);
-          appendToList(laser_wavelength["y"], response.laser_wavelength[0]);
-          appendToList(laser_current["y"], response.laser_current[0]);
-          appendToList(laser_voltage["y"], response.laser_voltage[0]);
-          appendToList(xDateT, response.timestampT[0]);
-          // Update the plot with the new data
-          laser_wavelength_data = [laser_wavelength];
-          laser_current_data = [laser_current];
-          laser_voltage_data = [laser_voltage];
-          let livePlotWavelength = Plotly.newPlot("livePlotWavelength", laser_wavelength_data, layoutWavelength);
-          let livePlotCurrent = Plotly.newPlot("livePlotCurrent", laser_current_data, layoutCurrent);
-          let livePlotVoltage = Plotly.newPlot("livePlotVoltage", laser_voltage_data, layoutVoltage);
-        } else {
-          let messageLaserOff = $("#messageLaserOff");
-          messageLaserOff.html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + "Toptica is not connected" + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + "</button>" + "</div>");
-          $("#TopticaWavelengthPlot").addClass("hidden");
-          $("#TopticaCurrentPlot").addClass("hidden");
-          $("#TopticaVoltagePlot").addClass("hidden");
-        }
-      },
-      error: function (xhr, status, error) {
-        console.log(xhr.responseText);
-      },
-      complete: function () {
-        // Call the updatePlot function again after the specified interval
-        setTimeout(function () {
-          updatePlot(interval, file_name);
-        }, interval);
-      },
-    });
-  }
   function stopExperiment() {
     isUpdating = false;
     $.ajax({
       url: "{% url 'stop_experiment' %}", // Replace with your Django view URL
       type: "GET",
       success: function (response) {
-        // Handle the response if needed
-        console.log("STOPPED");
         // Stop the plot updates
         showResetDashboardButton();
-
-        sessionStorage.setItem("experiment", false);
+        DashboardPlot(1000);
       },
       error: function (xhr, status, error) {
         // Handle any error that occurs during the request
@@ -933,10 +602,9 @@
       statusElement.css("color", "#adb5bd"); // Set text color to #adb5bd (gray)
     }
   }
-  let isDashboardUpdating = false;
-  function DashboardPlot(interval) {
+  function DashboardPlot(interval, device = ["Caylar", "Mercury", "Laser"]) {
+    devices = device;
     $("#buttonExperiment").addClass("hidden");
-    if (!isDashboardUpdating) return;
     $.ajax({
       url: "{% url 'plot' %}", // URL mapped to the status view
       type: "GET",
@@ -944,7 +612,7 @@
       success: function (response) {
         // appendToList(xDate, getCurrentDateTime());
         // console.log(data);
-        if (response.caylar_status == "ON") {
+        if (response.caylar_status == "ON" && device.includes("Caylar")) {
           $("#CaylarPlot").removeClass("hidden");
           $("#caylar_current_number").text(response.caylar_current[0][response.caylar_current.length - 1]);
           $("#caylar_field_number").text(response.caylar_field[0][response.caylar_field.length - 1]);
@@ -968,7 +636,7 @@
         } else {
           $("#CaylarPlot").addClass("hidden");
         }
-        if (response.mercury_status == "ON") {
+        if (response.mercury_status == "ON" && device.includes("Mercury")) {
           $("#ITCPlot").removeClass("hidden");
           $("#itc_heater_power_number").text(response.itc_heater_power[0][response.itc_heater_power.length - 1]);
           $("#itc_heater_power_number1").text(response.itc_heater_power[0][response.itc_heater_power.length - 1]);
@@ -984,7 +652,7 @@
         } else {
           $("#ITCPlot").addClass("hidden");
         }
-        if (response.laser_status == "ON") {
+        if (response.laser_status == "ON" && device.includes("Laser")) {
           $("#TopticaWavelengthPlot").removeClass("hidden");
           $("#TopticaCurrentPlot").removeClass("hidden");
           $("#TopticaVoltagePlot").removeClass("hidden");
@@ -1019,9 +687,8 @@
         console.log(xhr.responseText);
       },
       complete: function () {
-        // Call the updatePlot function again after the specified interval
         setTimeout(function () {
-          DashboardPlot(interval);
+          DashboardPlot(interval, devices);
         }, interval);
       },
     });
@@ -1155,8 +822,6 @@
   document.addEventListener("DOMContentLoaded", function () {
     // Check if the script has already been executed
     let scriptExecuted = sessionStorage.getItem("script_executed");
-    let startLogging = sessionStorage.getItem("logging");
-    let startExperiment = sessionStorage.getItem("experiment");
     let folder_name = sessionStorage.getItem("folder_name");
     let experiment_name = sessionStorage.getItem("experiment_name");
     let description = sessionStorage.getItem("description");
@@ -1167,27 +832,6 @@
       updateStatusColor(statusMercuryElement);
       updateStatusColor(statusRFSoCElement);
       updateStatusLaser(); // Update the status immediately when the page loads
-    } else if (startLogging == "true") {
-      document.getElementById("id_experiment_name").value = experiment_name;
-      document.getElementById("id_experiment_description").value = description;
-      document.getElementById("id_file_Name").value = folder_name;
-      $("input[name='selected_devices[]']").each(function () {
-        const deviceValue = $(this).val();
-        const isChecked = selected_devices.includes(deviceValue);
-        $(this).prop("checked", isChecked);
-      });
-      console.log(folder_name);
-      updateStatus((plot = false));
-      isLogging = true;
-      updatePlotLogging(1000, folder_name); //if error just sessionstorage
-      $(".container-fluid input").prop("disabled", true);
-      $(".container-fluid textarea").prop("disabled", true);
-      $("#restartLoggingButton").removeClass("hidden");
-      $("#startLoggingButton").prop("disabled", true);
-    } else if (startExperiment == "true") {
-      updateStatus((plot = false));
-      isUpdating = true;
-      updatePlot(1000, folder_name);
     } else {
       updateStatusColor(statusLaserElement);
       updateStatusColor(statusCaylarElement);

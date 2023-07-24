@@ -578,13 +578,9 @@ def mercury_page_view(request):
     context['form']=form
     return render(request, 'home/mercury.html', context)
 
-GRFSoC = None
-GLaser = None
-GCaylar = None
-GmercuryITC = None
 def start_rfsoc_experiment():
-    global GRFSoC
-    GRFSoC.run_code()
+    RRFSoC = construct_rfsoc()
+    RRFSoC.run_code()
 def start_experiment(request):
     """
     The `start_experiment` function starts an experiment by connecting to selected devices, creating a
@@ -597,12 +593,6 @@ def start_experiment(request):
     @return a JSON response with a message indicating whether the experiment started successfully or
     not.
     """
-    global GRFSoC
-    global GLaser
-    global GCaylar
-    global GmercuryITC
-    print("REQUEST POST")
-    print(request.POST)
     # All devices are online, continue with starting the experiment
     combinedXML = {}
     if(request.POST.getlist('selected_devices[]')!=None):
@@ -613,48 +603,35 @@ def start_experiment(request):
     on_device = []
     RFSoC, Laser, Caylar, mercuryITC = construct_object()
     rfsoc_status = "OFF"
-    print(bool(request.POST['startLogging']))
     if RFSoC.try_connect() and "RFSoC" in choosed_device:
         on_device.append(RFSoC)
         off_device.remove("RFSoC")
-        GRFSoC = RFSoC
-        if bool(request.POST['startLogging']) == False:
-            combinedXML["RFSoC_Host"] = xml_config_to_dict("staticfiles/xilinx_host.xml")
-            combinedXML["RFSoC"] = xml_config_to_dict("staticfiles/xilinx.xml")
-            # Create a thread to run the function
-            thread = threading.Thread(target=start_rfsoc_experiment)
+        combinedXML["RFSoC_Host"] = xml_config_to_dict("staticfiles/xilinx_host.xml")
+        combinedXML["RFSoC"] = xml_config_to_dict("staticfiles/xilinx.xml")
+        # Create a thread to run the function
+        thread = threading.Thread(target=start_rfsoc_experiment)
 
-            # Start the thread
-            thread.start()
+        # Start the thread
+        thread.start()
 
     if Laser.try_connect() and "Laser" in choosed_device:
         on_device.append(Laser)
         off_device.remove("Laser")
-        GLaser = Laser
-        if bool(request.POST['startLogging']) == False:
-            combinedXML["toptica"] = xml_config_to_dict("staticfiles/toptica.xml")
+        combinedXML["toptica"] = xml_config_to_dict("staticfiles/toptica.xml")
     if mercuryITC.try_connect() and "Mercury" in choosed_device:
         on_device.append(mercuryITC)
         off_device.remove("Mercury")
-        GmercuryITC = mercuryITC
-        if bool(request.POST['startLogging']) == False:
-            combinedXML["mercury"] = xml_config_to_dict("staticfiles/mercuryITC.xml")
+        combinedXML["mercury"] = xml_config_to_dict("staticfiles/mercuryITC.xml")
     if Caylar.try_connect() and "Caylar" in choosed_device:
         on_device.append(Caylar)
         off_device.remove("Caylar")
-        GCaylar = Caylar
-        if bool(request.POST['startLogging']) == False:
-            combinedXML["caylar"] = xml_config_to_dict("staticfiles/caylar.xml")
+        combinedXML["caylar"] = xml_config_to_dict("staticfiles/caylar.xml")
     common_off_devices = set(off_device).intersection(choosed_device)
     if common_off_devices:
         off_device_names = ", ".join(common_off_devices)
         message = f"Experiment cannot be started because {off_device_names} are offline."
         for i in on_device:
             i.disconnect()
-        GRFSoC = None
-        GLaser = None
-        GCaylar = None
-        GmercuryITC = None
         return JsonResponse({'message': message}, status=400)
 
     try:
@@ -671,10 +648,7 @@ def start_experiment(request):
         print("Directory '%s' can not be created" % request.POST['file_name'])
         message = ("Directory '%s' can not be created" % request.POST['file_name'])
         return JsonResponse({'message': message}, status=400)
-    if bool(request.POST['startLogging']) == True:
-        message = 'Logging started successfully.'
-    else:
-        message = 'Experiment started successfully.'
+    message = 'Experiment started successfully.'
     return JsonResponse({'message': message,'file_name':request.POST['file_name']})
 
 def stop_experiment(request):
@@ -740,253 +714,6 @@ def append_to_csv(file_path, data,column_headers):
             writer.writerow(column_headers)
         writer.writerow(data)
 
-def get_live_data_and_run_rfsoc(request):
-    """
-    The function `get_live_data_and_run_rfsoc` retrieves live data from various devices and saves it to
-    CSV files, then returns the data as a JSON response.
-
-    @param request The `request` parameter is the HTTP request object that contains information about
-    the current request made to the server. It includes details such as the request method, headers, and
-    any data sent with the request. In this code, it is not used directly in the function, but it is
-    required as a
-
-    @return a JSON response containing live data from various devices such as laser, Caylar, and
-    mercuryITC. The data includes the status of each device (ON/OFF) and specific measurements or
-    parameters related to each device.
-    """
-
-    global GLaser
-    global GCaylar
-    global GmercuryITC
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-    data = {'laser_status' : "OFF",
-    'rfsoc_status' : "OFF",
-    'mercury_status' : "OFF",
-    'caylar_status' : "OFF"}
-    if GLaser != None:
-        data['laser_status'] = "ON"
-        laser_scan_end = GLaser.report_scan_end()
-        laser_scan_start = GLaser.report_scan_start()
-        laser_scan_offset = GLaser.report_scan_offset()
-        laser_scan_frequency = GLaser.report_scan_frequency()
-        laser_wavelength = GLaser.report_ctl_wavelength_act()
-        laser_current = GLaser.report_current_act()
-        laser_voltage = GLaser.report_voltage_act()
-        laser_emission = ULaser.report_emission()
-        laser_system_health = ULaser.report_system_health()
-        laser_column_headers = ['timestamp', 'scan frequency', 'wavelength','current','voltage','emission','system health']
-        laser_data_row = [timestamp, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
-        laser_csv_file_path = os.path.join(request.POST.get('file_name'),datetime.now().strftime("%d%m%Y%H/")+'laser_.csv') #ADD PARENT DIRECTORY
-        append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
-        data['laser_scan_end']= laser_scan_end,
-        data['laser_scan_start']= laser_scan_start,
-        data['laser_scan_offset']= laser_scan_offset,
-        data['laser_scan_frequency']= laser_scan_frequency,
-        data['laser_wavelength']= find_csv(laser_csv_file_path,'wavelength'),
-        data['laser_current']= find_csv(laser_csv_file_path,'current'),
-        data['laser_voltage']= find_csv(laser_csv_file_path,'voltage'),
-        data['laser_emission']= laser_emission,
-        data['laser_system_health']= laser_system_health,
-        data['timestampT']= find_csv(laser_csv_file_path,'timestamp').append(timestamp),
-    if GCaylar !=None:
-        data['caylar_status'] = "ON"
-        caylar_current = GCaylar.current()
-        caylar_field = GCaylar.field()
-        caylar_ADCDAC_temp = GCaylar.ADCDAC_temp()
-        caylar_box_temp = GCaylar.box_temp()
-        caylar_rack_temp = GCaylar.rack_temp()
-        caylar_water_temp = GCaylar.water_temp()
-        caylar_water_flow = GCaylar.water_flow()
-        caylar_column_headers = ['timestamp', 'current', 'field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
-        caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
-        caylar_csv_file_path = os.path.join(request.POST.get('file_name'),datetime.now().strftime("%d%m%Y%H/")+'caylar.csv')
-        append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
-        data['caylar_current']= find_csv(caylar_csv_file_path,'current'),
-        data['caylar_field']= find_csv(caylar_csv_file_path,'field'),
-        data['caylar_ADCDAC_temp']= find_csv(caylar_csv_file_path,'ADCDAC temp'),
-        data['caylar_box_temp']= find_csv(caylar_csv_file_path,'box temp'),
-        data['caylar_rack_temp']= find_csv(caylar_csv_file_path,'rack temp'),
-        data['caylar_water_temp']= find_csv(caylar_csv_file_path,'water temp'),
-        data['caylar_water_flow']= find_csv(caylar_csv_file_path,'water flow'),
-        data['timestampC']= find_csv(caylar_csv_file_path,'timestamp'),
-    if GmercuryITC!=None:
-        data['mercury_status'] = "ON"
-        itc_heater_power = GmercuryITC.report_heater_power()
-        itc_temperature = GmercuryITC.report_temperature()
-        itc_data_row = [timestamp,itc_heater_power,itc_temperature]
-        itc_column_headers = ['timestamp', 'Heater Power','temperature']
-        itc_csv_file_path = os.path.join(request.POST.get('file_name'),datetime.now().strftime("%d%m%Y%H/")+'itc.csv')
-        append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
-        data['itc_heater_power']= find_csv(itc_csv_file_path,'Heater Power'),
-        data['itc_temperature']= find_csv(itc_csv_file_path,'temperature'),
-        data['timestampM']= find_csv(itc_csv_file_path,'timestamp'),
-    return JsonResponse(data)
-
-def get_live_data_open_experiment(request):
-    """
-    The function `get_live_data_open_experiment` retrieves live data from various devices, saves it to
-    CSV files, and returns the data as a JSON response.
-    @param request - The `request` parameter is the HTTP request object that contains information about
-    the current request made to the server. It includes details such as the request method, headers, and
-    any data sent with the request. In this code, it is not used directly in the function, but it is
-    required as a
-    @returns The function `get_live_data_open_experiment` returns a JSON response containing live data
-    from various devices such as laser, Caylar, and mercuryITC. The data includes the status of each
-    device (ON/OFF) and specific measurements or parameters related to each device.
-    """
-    global GLaser
-    global GCaylar
-    global GmercuryITC
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-    data = {'laser_status' : "OFF",
-    'rfsoc_status' : "OFF",
-    'mercury_status' : "OFF",
-    'caylar_status' : "OFF"}
-    if GLaser != None:
-        data['laser_status'] = "ON"
-        laser_scan_end = GLaser.report_scan_end()
-        laser_scan_start = GLaser.report_scan_start()
-        laser_scan_offset = GLaser.report_scan_offset()
-        laser_scan_frequency = GLaser.report_scan_frequency()
-        laser_wavelength = GLaser.report_ctl_wavelength_act()
-        laser_current = GLaser.report_current_act()
-        laser_voltage = GLaser.report_voltage_act()
-        laser_emission = ULaser.report_emission()
-        laser_system_health = ULaser.report_system_health()
-        laser_column_headers = ['timestamp', 'scan frequency', 'wavelength','current','voltage','emission','system health']
-        laser_data_row = [timestamp, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
-        laser_csv_file_path = os.path.join(request.POST.get('file_name'),datetime.now().strftime("%d%m%Y%H/")+'laser.csv') #ADD PARENT DIRECTORY
-        append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
-        data['laser_scan_end']= laser_scan_end,
-        data['laser_scan_start']= laser_scan_start,
-        data['laser_scan_offset']= laser_scan_offset,
-        data['laser_scan_frequency']= laser_scan_frequency,
-        data['laser_wavelength']= find_csv(laser_csv_file_path,'wavelength'),
-        print(data['laser_wavelength'])
-        data['laser_current']= find_csv(laser_csv_file_path,'current'),
-        data['laser_voltage']= find_csv(laser_csv_file_path,'voltage'),
-        data['laser_emission']= laser_emission,
-        data['laser_system_health']= laser_system_health,
-        data['timestampT']= find_csv(laser_csv_file_path,'timestamp').append(timestamp),
-    if GCaylar !=None:
-        data['caylar_status'] = "ON"
-        caylar_current = GCaylar.current()
-        caylar_field = GCaylar.field()
-        caylar_ADCDAC_temp = GCaylar.ADCDAC_temp()
-        caylar_box_temp = GCaylar.box_temp()
-        caylar_rack_temp = GCaylar.rack_temp()
-        caylar_water_temp = GCaylar.water_temp()
-        caylar_water_flow = GCaylar.water_flow()
-        caylar_column_headers = ['timestamp', 'current', 'field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
-        caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
-        caylar_csv_file_path = os.path.join(request.POST.get('file_name'),datetime.now().strftime("%d%m%Y%H/")+'caylar.csv')
-        append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
-        data['caylar_current']= find_csv(caylar_csv_file_path,'current'),
-        data['caylar_field']= find_csv(caylar_csv_file_path,'field'),
-        data['caylar_ADCDAC_temp']= find_csv(caylar_csv_file_path,'ADCDAC temp'),
-        data['caylar_box_temp']= find_csv(caylar_csv_file_path,'box temp'),
-        data['caylar_rack_temp']= find_csv(caylar_csv_file_path,'rack temp'),
-        data['caylar_water_temp']= find_csv(caylar_csv_file_path,'water temp'),
-        data['caylar_water_flow']= find_csv(caylar_csv_file_path,'water flow'),
-        data['timestampC']= find_csv(caylar_csv_file_path,'timestamp'),
-    if GmercuryITC!=None:
-        data['mercury_status'] = "ON"
-        itc_heater_power = GmercuryITC.report_heater_power()
-        itc_temperature = GmercuryITC.report_temperature()
-        itc_data_row = [timestamp,itc_heater_power,itc_temperature]
-        itc_column_headers = ['timestamp', 'Heater Power','temperature']
-        itc_csv_file_path = os.path.join(request.POST.get('file_name'),datetime.now().strftime("%d%m%Y%H/")+'itc.csv')
-        append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
-        data['itc_heater_power']= find_csv(itc_csv_file_path,'Heater Power'),
-        data['itc_temperature']= find_csv(itc_csv_file_path,'temperature'),
-        data['timestampM']= find_csv(itc_csv_file_path,'timestamp'),
-
-    return JsonResponse(data)
-
-def get_live_data_open_experiment(request):
-    """
-    The function `get_live_data_open_experiment` retrieves live data from various devices, saves it to
-    CSV files, and returns the data as a JSON response.
-    @param request - The `request` parameter is the HTTP request object that contains information about
-    the current request made to the server. It includes details such as the request method, headers, and
-    any data sent with the request. In this code, it is not used directly in the function, but it is
-    required as a
-    @returns The function `get_live_data_open_experiment` returns a JSON response containing live data
-    from various devices such as laser, Caylar, and mercuryITC. The data includes the status of each
-    device (ON/OFF) and specific measurements or parameters related to each device.
-    """
-    global GLaser
-    global GCaylar
-    global GmercuryITC
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-    data = {'laser_status' : "OFF",
-    'rfsoc_status' : "OFF",
-    'mercury_status' : "OFF",
-    'caylar_status' : "OFF"}
-    if GLaser != None:
-        data['laser_status'] = "ON"
-        laser_scan_end = GLaser.report_scan_end()
-        laser_scan_start = GLaser.report_scan_start()
-        laser_scan_offset = GLaser.report_scan_offset()
-        laser_scan_frequency = GLaser.report_scan_frequency()
-        laser_wavelength = GLaser.report_ctl_wavelength_act()
-        laser_current = GLaser.report_current_act()
-        laser_voltage = GLaser.report_voltage_act()
-        laser_emission = ULaser.report_emission()
-        laser_system_health = ULaser.report_system_health()
-        laser_column_headers = ['timestamp', 'scan frequency', 'wavelength','current','voltage','emission','system health']
-        laser_data_row = [timestamp, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
-        laser_csv_file_path = os.path.join(request.POST.get('file_name'),datetime.now().strftime("%d%m%Y%H/")+'laser.csv') #ADD PARENT DIRECTORY
-        append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
-        data['laser_scan_end']= laser_scan_end,
-        data['laser_scan_start']= laser_scan_start,
-        data['laser_scan_offset']= laser_scan_offset,
-        data['laser_scan_frequency']= laser_scan_frequency,
-        data['laser_wavelength']= find_csv(laser_csv_file_path,'wavelength'),
-        data['laser_current']= find_csv(laser_csv_file_path,'current'),
-        data['laser_voltage']= find_csv(laser_csv_file_path,'voltage'),
-        data['laser_emission']= laser_emission,
-        data['laser_system_health']= laser_system_health,
-        data['timestampT']= find_csv(laser_csv_file_path,'timestamp').append(timestamp),
-    if GCaylar !=None:
-        data['caylar_status'] = "ON"
-        caylar_current = GCaylar.current()
-        caylar_field = GCaylar.field()
-        caylar_ADCDAC_temp = GCaylar.ADCDAC_temp()
-        caylar_box_temp = GCaylar.box_temp()
-        caylar_rack_temp = GCaylar.rack_temp()
-        caylar_water_temp = GCaylar.water_temp()
-        caylar_water_flow = GCaylar.water_flow()
-        caylar_column_headers = ['timestamp', 'current', 'field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
-        caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
-        caylar_csv_file_path = os.path.join(request.POST.get('file_name'),datetime.now().strftime("%d%m%Y%H/")+'caylar.csv')
-        append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
-        data['caylar_current']= find_csv(caylar_csv_file_path,'current'),
-        data['caylar_field']= find_csv(caylar_csv_file_path,'field'),
-        data['caylar_ADCDAC_temp']= find_csv(caylar_csv_file_path,'ADCDAC temp'),
-        data['caylar_box_temp']= find_csv(caylar_csv_file_path,'box temp'),
-        data['caylar_rack_temp']= find_csv(caylar_csv_file_path,'rack temp'),
-        data['caylar_water_temp']= find_csv(caylar_csv_file_path,'water temp'),
-        data['caylar_water_flow']= find_csv(caylar_csv_file_path,'water flow'),
-        data['timestampC']= find_csv(caylar_csv_file_path,'timestamp'),
-    if GmercuryITC!=None:
-        data['mercury_status'] = "ON"
-        itc_heater_power = GmercuryITC.report_heater_power()
-        itc_temperature = GmercuryITC.report_temperature()
-        itc_data_row = [timestamp,itc_heater_power,itc_temperature]
-        itc_column_headers = ['timestamp', 'Heater Power','temperature']
-        itc_csv_file_path = os.path.join(request.POST.get('file_name'),datetime.now().strftime("%d%m%Y%H/")+'itc.csv')
-        append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
-        data['itc_heater_power']= find_csv(itc_csv_file_path,'Heater Power'),
-        data['itc_temperature']= find_csv(itc_csv_file_path,'temperature'),
-        data['timestampM']= find_csv(itc_csv_file_path,'timestamp'),
-
-    return JsonResponse(data)
-
-
 @login_required(login_url="/login/")
 
 def index(request):
@@ -1043,7 +770,7 @@ def update_live_plot(request):
         laser_system_health = ULaser.report_system_health()
         laser_column_headers = ['timestamp', 'scan frequency', 'wavelength','current','voltage','emission','system health']
         laser_data_row = [timestamp, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
-        laser_csv_file_path = 'logging/'+datetime.now().strftime("%d%m%Y%H/")+'laser.csv'
+        laser_csv_file_path = 'logging/'+datetime.now().strftime("%Y%m%d/")+'laser.csv'
         append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
         data['laser_scan_end']= laser_scan_end,
         data['laser_scan_start']= laser_scan_start,
@@ -1066,7 +793,7 @@ def update_live_plot(request):
         caylar_water_flow = UCaylar.water_flow()
         caylar_column_headers = ['timestamp', 'current', 'field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
         caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
-        caylar_csv_file_path = 'logging/'+datetime.now().strftime("%d%m%Y%H/")+'caylar.csv'
+        caylar_csv_file_path = 'logging/'+datetime.now().strftime("%Y%m%d/")+'caylar.csv'
         append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
         data['caylar_current']= find_csv(caylar_csv_file_path,'current'),
         data['caylar_field']= find_csv(caylar_csv_file_path,'field'),
@@ -1082,90 +809,12 @@ def update_live_plot(request):
         itc_temperature = UmercuryITC.report_temperature()
         itc_data_row = [timestamp,itc_heater_power,itc_temperature]
         itc_column_headers = ['timestamp', 'Heater Power','temperature']
-        itc_csv_file_path = 'logging/'+datetime.now().strftime("%d%m%Y%H/")+'itc.csv'
+        itc_csv_file_path = 'logging/'+datetime.now().strftime("%Y%m%d/")+'itc.csv'
         append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
         data['itc_heater_power']= find_csv(itc_csv_file_path,'Heater Power'),
         data['itc_temperature']= find_csv(itc_csv_file_path,'temperature'),
         data['timestampM']= find_csv(itc_csv_file_path,'timestamp'),
 
-    return JsonResponse(data)
-
-def update_logging(request):
-    """
-    The function `update_live_plot` retrieves data from various sensors and returns it as a JSON
-    response.
-
-    @param request The `request` parameter is the HTTP request object that contains information about
-    the current request made to the server. It includes details such as the request method, headers, and
-    any data sent with the request. In this code, the `request` parameter is not used, so it can be
-    removed if
-
-    @return a JSON response containing the data collected from various sensors and devices.
-    """
-    global GLaser
-    global GCaylar
-    global GmercuryITC
-
-    data = {'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-    if GLaser != None:
-        data['laser_status'] = "ON"
-        laser_scan_end = GLaser.report_scan_end()
-        laser_scan_start = GLaser.report_scan_start()
-        laser_scan_offset = GLaser.report_scan_offset()
-        laser_scan_frequency = GLaser.report_scan_frequency()
-        laser_wavelength = GLaser.report_ctl_wavelength_act()
-        laser_current = GLaser.report_current_act()
-        laser_voltage = GLaser.report_voltage_act()
-        laser_emission = GLaser.report_emission()
-        laser_system_health = GLaser.report_system_health()
-        laser_column_headers = ['timestamp', 'scan frequency', 'wavelength','current','voltage','emission','system health']
-        laser_data_row = [timestamp, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
-        laser_csv_file_path = os.path.join(request.POST.get('file_name'),datetime.now().strftime("%d%m%Y%H/")+'laser.csv')
-        append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
-        data['laser_scan_end']= laser_scan_end,
-        data['laser_scan_start']= laser_scan_start,
-        data['laser_scan_offset']= laser_scan_offset,
-        data['laser_scan_frequency']= laser_scan_frequency,
-        data['laser_wavelength']= find_csv(laser_csv_file_path,'wavelength'),
-        data['laser_current']= find_csv(laser_csv_file_path,'current'),
-        data['laser_voltage']= find_csv(laser_csv_file_path,'voltage'),
-        data['laser_emission']= laser_emission,
-        data['laser_system_health']= laser_system_health,
-        data['timestampT']= find_csv(laser_csv_file_path,'timestamp').append(timestamp),
-    if GCaylar !=None:
-        data['caylar_status'] = "ON"
-        caylar_current = GCaylar.current()
-        caylar_field = GCaylar.field()
-        caylar_ADCDAC_temp = GCaylar.ADCDAC_temp()
-        caylar_box_temp = GCaylar.box_temp()
-        caylar_rack_temp = GCaylar.rack_temp()
-        caylar_water_temp = GCaylar.water_temp()
-        caylar_water_flow = GCaylar.water_flow()
-        caylar_column_headers = ['timestamp', 'current', 'field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
-        caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
-        caylar_csv_file_path = os.path.join(request.POST.get('file_name'),datetime.now().strftime("%d%m%Y%H/")+'caylar.csv')
-        append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
-        data['caylar_current']= find_csv(caylar_csv_file_path,'current'),
-        data['caylar_field']= find_csv(caylar_csv_file_path,'field'),
-        data['caylar_ADCDAC_temp']= find_csv(caylar_csv_file_path,'ADCDAC temp'),
-        data['caylar_box_temp']= find_csv(caylar_csv_file_path,'box temp'),
-        data['caylar_rack_temp']= find_csv(caylar_csv_file_path,'rack temp'),
-        data['caylar_water_temp']= find_csv(caylar_csv_file_path,'water temp'),
-        data['caylar_water_flow']= find_csv(caylar_csv_file_path,'water flow'),
-        data['timestampC']= find_csv(caylar_csv_file_path,'timestamp'),
-    if GmercuryITC!=None:
-        data['mercury_status'] = "ON"
-        itc_heater_power = GmercuryITC.report_heater_power()
-        itc_temperature = GmercuryITC.report_temperature()
-        itc_data_row = [timestamp,itc_heater_power,itc_temperature]
-        itc_column_headers = ['timestamp', 'Heater Power','temperature']
-        itc_csv_file_path = os.path.join(request.POST.get('file_name'),datetime.now().strftime("%d%m%Y%H/")+'itc.csv')
-        append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
-        data['itc_heater_power']= find_csv(itc_csv_file_path,'Heater Power'),
-        data['itc_temperature']= find_csv(itc_csv_file_path,'temperature'),
-        data['timestampM']= find_csv(itc_csv_file_path,'timestamp'),
     return JsonResponse(data)
 Drfsoc_status = None
 Dlaser_status = None
