@@ -3,7 +3,7 @@ from qick import *
 from qick.parser import load_program
 from sequence import sequence_TTL
 import numpy as np
-
+from math import asin
 from create_json import import_json_file, save_list_to_json_file
 from XMLGenerator import xml_config_to_dict
 # config = import_json_file("config.json")
@@ -32,6 +32,9 @@ def divide_nested_list(nested_list, divisor):
             divided_sublist.append(round(number / divisor))
         result.append(divided_sublist)
     return result
+
+def phase_generator(freq):
+    return asin(freq/1000)
 
 # The class MultiSequenceProgram is a subclass of AveragerProgram.
 class MultiSequenceProgram(AveragerProgram):
@@ -76,9 +79,9 @@ class MultiSequenceProgram(AveragerProgram):
 
         #EOM
         self.trigger(adcs=[0,1],adc_trig_offset=cfg["adc_trig_offset"])  # trigger the adc acquisition
-        for ii, chseq in enumerate(cfg["EOM"]['channel_seq0']):
-            for kk, ch in enumerate(chseq):
-                self.set_pulse_registers(ch=ch, freq=soccfg.freq2reg(cfg["EOM"]["freq_seq0"][ii]), phase=soccfg.deg2reg(cfg["EOM"]["phase_seq0"][ii]), gain=cfg["EOM"]["gain_seq0"][ii])
+        for ii, freqseq in enumerate(cfg["EOM"]['freq_seq0']):
+            for kk, ch in [0,1]:
+                self.set_pulse_registers(ch=ch, freq=soccfg.freq2reg(freqseq), phase=soccfg.deg2reg(phase_generator(freqseq)), gain=cfg["EOM"]["gain_seq0"][ii])
                 #PULSE AT CHANNEL 0 and 1
                 self.pulse(ch=ch, t=cfg["EOM"]["time_seq"][ii]) # play readout pulse
 

@@ -26,6 +26,8 @@ import subprocess
 import os
 import csv
 from datetime import datetime
+import matplotlib.pyplot as plt
+from django.views.decorators.csrf import csrf_exempt
 def two_decimal(number):
     return round(number, 2)
 def find_csv(name_file, header):
@@ -78,6 +80,38 @@ def format_timestamps(timestamps):
         formatted_timestamps.append(formatted_timestamp)
 
     return formatted_timestamps
+
+@csrf_exempt
+def plot_view(request):
+    if request.method == "POST" and request.FILES.get("file"):
+        file = request.FILES["file"]
+
+        # Read the data from the file
+        data = np.loadtxt(file, delimiter='\t', skiprows=1)  # Assuming the data is tab-separated
+
+        # Separate the columns
+        x = data[:, 0]
+        y = data[:, 1]
+
+        # Create the plot
+        plt.plot(x, y)
+        plt.xlabel("X-axis")
+        plt.ylabel("Y-axis")
+
+        # Save the plot to a file with the specified name and path
+        today = date.today().strftime("%Y-%m-%d")
+        plot_directory = f"results/{today}"
+        os.makedirs(plot_directory, exist_ok=True)
+        plot_count = len(os.listdir(plot_directory))
+        plot_path = f"{plot_directory}/plot{plot_count + 1}.png"
+        plt.savefig(plot_path)
+        plt.close()
+
+        # Return the plot URL to the frontend
+        plot_url = f"/{plot_path}"  # Assuming the static files are served from the root
+        return JsonResponse({"plotresult": plot_url})
+
+    return render(request, "plot_template.html")
 def laser_page_view(request):
     """
     The `laser_page_view` function is a Django view that loads data from an XML file, updates the XML
@@ -578,9 +612,13 @@ def mercury_page_view(request):
     context['form']=form
     return render(request, 'home/mercury.html', context)
 
-def start_rfsoc_experiment():
+def start_rfsoc_experiment(done_event):
     RRFSoC = construct_rfsoc()
     RRFSoC.run_code()
+    done_event.set()
+
+done_event = threading.Event()
+running_rfsoc = False
 def start_experiment(request):
     """
     The `start_experiment` function starts an experiment by connecting to selected devices, creating a
@@ -609,7 +647,10 @@ def start_experiment(request):
         combinedXML["RFSoC_Host"] = xml_config_to_dict("staticfiles/xilinx_host.xml")
         combinedXML["RFSoC"] = xml_config_to_dict("staticfiles/xilinx.xml")
         # Create a thread to run the function
-        thread = threading.Thread(target=start_rfsoc_experiment)
+        global done_event
+        global running_rfsoc
+        running_rfsoc = True
+        thread = threading.Thread(target=start_rfsoc_experiment,args=(done_event,))
 
         # Start the thread
         thread.start()
@@ -754,10 +795,16 @@ def update_live_plot(request):
     global ULaser
     global UCaylar
     global UmercuryITC
-
+    global done_event
+    global running_rfsoc
     data = {'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
+    if done_event.is_set() and running_rfsoc:
+        data["message"]="The RFSoC has finished its execution."
+        done_event.clear()
+        running_rfsoc = False
+    elif running_rfsoc:
+        data["message"]="The RFSoC is still running or not started yet."
     if ULaser != None:
         data['laser_status'] = "ON"
         laser_scan_end = ULaser.report_scan_end()
@@ -777,7 +824,7 @@ def update_live_plot(request):
         data['laser_scan_start']= laser_scan_start,
         data['laser_scan_offset']= laser_scan_offset,
         data['laser_scan_frequency']= laser_scan_frequency,
-        if bool(request.POST['changePage']):
+        if (request.POST['changePage']=="true"):
             data['laser_wavelength']= find_csv(laser_csv_file_path,'wavelength'),
             data['laser_current']= find_csv(laser_csv_file_path,'current'),
             data['laser_voltage']= find_csv(laser_csv_file_path,'voltage'),
@@ -802,7 +849,7 @@ def update_live_plot(request):
         caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
         caylar_csv_file_path = 'logging/'+datetime.now().strftime("%Y%m%d/")+'caylar.csv'
         append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
-        if not bool(request.POST['changePage']):
+        if not (request.POST['changePage']=="true"):
             data['caylar_current']= caylar_current,
             data['caylar_field']= caylar_field,
             data['caylar_ADCDAC_temp']= caylar_ADCDAC_temp,
@@ -828,7 +875,7 @@ def update_live_plot(request):
         itc_column_headers = ['timestamp', 'Heater Power','temperature']
         itc_csv_file_path = 'logging/'+datetime.now().strftime("%Y%m%d/")+'itc.csv'
         append_to_csv(itc_csv_file_path, itc_data_row,itc_column_headers)
-        if not bool(request.POST['changePage']):
+        if not (request.POST['changePage']=="true"):
             data['itc_heater_power']= itc_heater_power,
             data['itc_temperature']= itc_temperature,
             data['timestampM']= timestamp,

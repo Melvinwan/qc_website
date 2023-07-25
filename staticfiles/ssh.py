@@ -27,19 +27,21 @@ class SSH:
         shell.send('sudo -i\n')
 
         # Wait for the login process to complete
-        import time
-        time.sleep(1)  # Adjust the delay as needed
+        while not shell.recv_ready():
+            pass
         output = shell.recv(65535).decode('utf-8')
         while 'password' in output.lower():
             password = 'xilinx\n'
             shell.send(password)
-            time.sleep(1)  # Adjust the delay as needed
+            while not shell.recv_ready():
+                pass
             output = shell.recv(65535).decode('utf-8')
 
         shell.send(f'source /etc/profile.d/pynq_venv.sh\n')
 
         # Wait for the command execution to complete
-        time.sleep(1)  # Adjust the delay as needed
+        while not shell.recv_ready():
+            pass
         output = shell.recv(65535).decode('utf-8')
 
         # Print the command output
@@ -48,7 +50,8 @@ class SSH:
         shell.send("cd /home/xilinx/jupyter_notebooks/qick/qick_demos/ssh_control\n")
 
         # Wait for the command execution to complete
-        time.sleep(1)  # Adjust the delay as needed
+        while not shell.recv_ready():
+            pass
         output = shell.recv(65535).decode('utf-8')
 
         # Print the command output
@@ -59,7 +62,8 @@ class SSH:
         shell.send(f'{command}\n')
 
         # Wait for the command execution to complete
-        time.sleep(10)  # Adjust the delay as needed
+        while not shell.recv_ready():
+            pass
         output = shell.recv(65535).decode('utf-8')
 
         # Print the command output

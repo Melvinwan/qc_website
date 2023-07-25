@@ -11,15 +11,13 @@
           <h3 class="mb-0">Plot Result</h3>
         </div>
         <div class="card-body">
-          <div class="row icon-examples">
-            <div class="col-lg-3 col-md-6">
-              <button type="button" class="btn-icon-clipboard" data-clipboard-text="active-40" title="Copy to clipboard">
-                <div>
-                  <i class="ni ni-active-40"></i>
-                  <span>active-40</span>
-                </div>
-              </button>
-            </div>
+          <form id="fileUploadForm" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="file" id="fileInput" class="form-control" />
+            <button type="submit" class="btn btn-primary mt-2">Upload and Plot</button>
+          </form>
+          <div id="plotContainer" class="mt-4">
+            <!-- This is where the plot will be displayed -->
           </div>
         </div>
       </div>
@@ -33,36 +31,44 @@
 
 <!-- Specific JS goes HERE -->
 {% block javascripts %}
+<script src="/static/assets/vendor/clipboard/dist/clipboard.min.js"></script>
 <script>
-  function LoggingFile(interval) {
-    const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
+  // Function to handle file upload and plot
+  function handleFileUpload() {
+    const fileInput = document.getElementById("fileInput");
+    const file = fileInput.files[0];
 
-    // Include the CSRF token in the AJAX request headers
-    $.ajaxSetup({
+    // Create a FormData object to send the file to the server
+    const formData = new FormData();
+    formData.append("file", file);
+
+    // Use Fetch API to send the file to the server for processing
+    fetch("{% url 'plot' %}", {
+      method: "POST",
+      body: formData,
       headers: {
-        "X-CSRFToken": csrfToken,
+        "X-CSRFToken": "{% csrf_token %}",
       },
-    });
-    $.ajax({
-      url: "{% url 'plot' %}", // URL mapped to the status view
-      type: "POST",
-      data: { changePage: false },
-      dataType: "json",
-      success: function (response) {},
-      error: function (xhr, status, error) {
-        console.log(xhr.responseText);
-      },
-      complete: function () {
-        // Call the updatePlot function again after the specified interval
-        setTimeout(function () {
-          LoggingFile(interval);
-        }, interval);
-      },
-    });
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Process the data received from the server and display the plot
+        // Assuming data contains the necessary information for plotting the result
+        // For example, if data is a URL to the generated plot image, you can do:
+        const plotContainer = document.getElementById("plotContainer");
+        plotContainer.innerHTML = `<img src="${data.plot_url}" alt="Plot">`;
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   }
 
-  LoggingFile(1000);
+  // Attach an event listener to the form submit event
+  const fileUploadForm = document.getElementById("fileUploadForm");
+  fileUploadForm.addEventListener("submit", function (event) {
+    event.preventDefault(); // Prevent default form submission
+    handleFileUpload();
+  });
 </script>
-<script src="/static/assets/vendor/clipboard/dist/clipboard.min.js"></script>
 
 {% endblock javascripts %}
