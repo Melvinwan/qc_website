@@ -614,6 +614,7 @@ def mercury_page_view(request):
 
 def start_rfsoc_experiment(done_event):
     RRFSoC = construct_rfsoc()
+    RRFSoC.try_connect()
     RRFSoC.run_code()
     done_event.set()
 
