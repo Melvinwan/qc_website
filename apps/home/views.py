@@ -16,7 +16,7 @@ from django.urls import reverse
 from django.shortcuts import render, redirect
 from .construct_object import construct_object, construct_caylar,construct_itc,construct_rfsoc,construct_toptica
 from django.forms.formsets import formset_factory
-from .forms import LaserForm, RFSoCConfigForm,RFSoCConfigFormIP, CaylarForm, MercuryForm, ExperimentForm, LaserFormConfig, LaserFormIP, RFSoCEOMSequenceForm, RFSoCAOMSequenceForm, CaylarFormIP,CaylarFormConfig,MercuryFormConfig,MercuryFormIP
+from .forms import LaserForm, RFSoCConfigForm,RFSoCConfigFormIP, CaylarForm,CaylarFormCurrent, CaylarFormField, MercuryForm, ExperimentForm, LaserFormConfig, LaserFormIP, RFSoCEOMSequenceForm, RFSoCAOMSequenceForm, CaylarFormIP,MercuryFormConfig,MercuryFormIP
 from staticfiles.XMLGenerator import xml_config_to_dict, dict_to_xml_file
 
 from django.contrib import messages
@@ -136,7 +136,6 @@ def laser_page_view(request):
         context["scan_end"] =  two_decimal(Update_Laser.report_scan_end())
         context["scan_start"] =  two_decimal(Update_Laser.report_scan_start())
         context["scan_freq"] =  two_decimal(Update_Laser.report_scan_frequency())
-        context["scan_offset"] =  two_decimal(Update_Laser.report_scan_offset())
         context["current_act"] =  two_decimal(Update_Laser.report_current_act())
         context["voltage_act"] =  two_decimal(Update_Laser.report_voltage_act())
         if Update_Laser.report_standby() == 0:
@@ -164,7 +163,6 @@ def laser_page_view(request):
                 toptica_host["scan_end"] = form.cleaned_data['scan_end']
                 toptica_host["scan_start"] = form.cleaned_data['scan_start']
                 toptica_host["scan_freq"] = form.cleaned_data['scan_freq']
-                toptica_host["scan_offset"] = form.cleaned_data['scan_offset']
                 toptica_host["voltage_act"] = form.cleaned_data['voltage_act']
                 toptica_host["current_act"] = form.cleaned_data['current_act']
                 dict_to_xml_file(toptica_host, "staticfiles/toptica.xml")
@@ -203,7 +201,6 @@ def laser_page_view(request):
                 toptica_host["scan_end"] = form.cleaned_data['scan_end']
                 toptica_host["scan_start"] = form.cleaned_data['scan_start']
                 toptica_host["scan_freq"] = form.cleaned_data['scan_freq']
-                toptica_host["scan_offset"] = form.cleaned_data['scan_offset']
                 toptica_host["voltage_act"] = form.cleaned_data['voltage_act']
                 toptica_host["current_act"] = form.cleaned_data['current_act']
                 dict_to_xml_file(toptica_host, "staticfiles/toptica.xml")
@@ -232,7 +229,6 @@ def laser_page_view(request):
             'scan_end': toptica_host["scan_end"] if toptica_host["scan_end"] is not None else '',
             'scan_start': toptica_host["scan_start"] if toptica_host["scan_start"] is not None else '',
             'scan_freq': toptica_host["scan_freq"] if toptica_host["scan_freq"] is not None else '',
-            'scan_offset': toptica_host["scan_offset"] if toptica_host["scan_offset"] is not None else '',
             'voltage_act': toptica_host["voltage_act"] if toptica_host["voltage_act"] is not None else '',
             'current_act': toptica_host["current_act"] if toptica_host["current_act"] is not None else '',
         })
@@ -281,17 +277,14 @@ def caylar_page_view(request):
         messages.info(request, info)
 
     if request.method == 'POST':
-        if "updateall" in request.POST:
-            form = CaylarForm(request.POST)
+        if "updatecurrent" in request.POST:
+            form = CaylarFormCurrent(request.POST)
             if form.is_valid():
-                caylar_host["host"] = form.cleaned_data['caylar_host']
-                caylar_host["port"] = form.cleaned_data['caylar_port']
                 caylar_host["current"] = form.cleaned_data['caylar_current']
-                caylar_host["field"] = form.cleaned_data['caylar_field']
                 dict_to_xml_file(caylar_host, "staticfiles/caylar.xml")
 
                 if connected:
-                    Update_caylar.update_all_xml("staticfiles/caylar.xml")
+                    Update_caylar.current_setter(caylar_host["current"])
                     messages.success(request, 'Changes saved successfully in Caylar!')
                 else:
                     # Add success message to the Django messages framework
@@ -315,14 +308,13 @@ def caylar_page_view(request):
                 messages.warning(request, 'Cannot be updated!')
                 return redirect('caylar_page')
         elif "updateconfig" in request.POST:
-            form = CaylarFormConfig(request.POST)
+            form = CaylarFormField(request.POST)
             if form.is_valid():
-                caylar_host["current"] = form.cleaned_data['caylar_current']
                 caylar_host["field"] = form.cleaned_data['caylar_field']
                 dict_to_xml_file(caylar_host, "staticfiles/caylar.xml")
 
                 if connected:
-                    Update_caylar.update_all_xml("staticfiles/caylar.xml")
+                    Update_caylar.field_setter(caylar_host["field"])
                     messages.success(request, 'Changes saved successfully in Caylar!')
                 else:
                     # Add success message to the Django messages framework
@@ -810,7 +802,6 @@ def update_live_plot(request):
         data['laser_status'] = "ON"
         laser_scan_end = ULaser.report_scan_end()
         laser_scan_start = ULaser.report_scan_start()
-        laser_scan_offset = ULaser.report_scan_offset()
         laser_scan_frequency = ULaser.report_scan_frequency()
         laser_wavelength = ULaser.report_ctl_wavelength_act()
         laser_current = ULaser.report_current_act()
@@ -823,7 +814,6 @@ def update_live_plot(request):
         append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
         data['laser_scan_end']= laser_scan_end,
         data['laser_scan_start']= laser_scan_start,
-        data['laser_scan_offset']= laser_scan_offset,
         data['laser_scan_frequency']= laser_scan_frequency,
         if (request.POST['changePage']=="true"):
             data['laser_wavelength']= find_csv(laser_csv_file_path,'wavelength'),
@@ -840,18 +830,20 @@ def update_live_plot(request):
     if UCaylar !=None:
         data['caylar_status'] = "ON"
         caylar_current = UCaylar.current
+        caylar_voltage = UCaylar.voltage
         caylar_field = UCaylar.field
         caylar_ADCDAC_temp = UCaylar.ADCDAC_temp
         caylar_box_temp = UCaylar.box_temp
         caylar_rack_temp = UCaylar.rack_temp
         caylar_water_temp = UCaylar.water_temp
         caylar_water_flow = UCaylar.water_flow
-        caylar_column_headers = ['timestamp', 'current', 'field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
-        caylar_data_row = [timestamp,caylar_current,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
+        caylar_column_headers = ['timestamp', 'current', 'voltage','field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
+        caylar_data_row = [timestamp,caylar_current,caylar_voltage,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
         caylar_csv_file_path = 'logging/'+datetime.now().strftime("%Y%m%d/")+'caylar.csv'
         append_to_csv(caylar_csv_file_path, caylar_data_row,caylar_column_headers)
         if not (request.POST['changePage']=="true"):
             data['caylar_current']= caylar_current,
+            data['caylar_voltage']= caylar_voltage,
             data['caylar_field']= caylar_field,
             data['caylar_ADCDAC_temp']= caylar_ADCDAC_temp,
             data['caylar_box_temp']= caylar_box_temp,
@@ -861,6 +853,7 @@ def update_live_plot(request):
             data['timestampC']= timestamp,
         else:
             data['caylar_current']= find_csv(caylar_csv_file_path,'current'),
+            data['caylar_voltage']= find_csv(caylar_csv_file_path,'voltage'),
             data['caylar_field']= find_csv(caylar_csv_file_path,'field'),
             data['caylar_ADCDAC_temp']= find_csv(caylar_csv_file_path,'ADCDAC temp'),
             data['caylar_box_temp']= find_csv(caylar_csv_file_path,'box temp'),

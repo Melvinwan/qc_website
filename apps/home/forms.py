@@ -140,7 +140,6 @@ class LaserForm(forms.Form):
     scan_end = forms.FloatField(label='Scan End')
     scan_start = forms.FloatField(label='Scan Start')
     scan_freq = forms.FloatField(label='Scan Frequency')
-    scan_offset = forms.FloatField(label='Scan Offset')
     voltage_act = forms.FloatField(label='Voltage')
     current_act = forms.FloatField(label='Current')
 
@@ -153,21 +152,22 @@ class LaserFormConfig(forms.Form):
     scan_end = forms.FloatField(label='Scan End')
     scan_start = forms.FloatField(label='Scan Start')
     scan_freq = forms.FloatField(label='Scan Frequency')
-    scan_offset = forms.FloatField(label='Scan Offset')
+    voltage_act = forms.FloatField(label='Voltage')
+    current_act = forms.FloatField(label='Current')
 
 
-# forms.py
 class CaylarForm(forms.Form):
     caylar_host = forms.CharField(label='IP Address', max_length=100)
     caylar_port = forms.IntegerField(label='Port', required=False)
     caylar_current = forms.FloatField(label='Current', required=False)
     caylar_field = forms.FloatField(label='Field', required=False)
+class CaylarFormCurrent(forms.Form):
+    caylar_current = forms.FloatField(label='Current')
 class CaylarFormIP(forms.Form):
     caylar_host = forms.CharField(label='IP Address', max_length=100)
     caylar_port = forms.IntegerField(label='Port', required=False)
-class CaylarFormConfig(forms.Form):
-    caylar_current = forms.FloatField(label='Current', required=False)
-    caylar_field = forms.FloatField(label='Field', required=False)
+class CaylarFormField(forms.Form):
+    caylar_field = forms.FloatField(label='Field')
 
 class MercuryForm(forms.Form):
     mercury_host = forms.CharField(label='IP Address', max_length=100)

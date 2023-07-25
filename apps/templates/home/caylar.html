@@ -38,9 +38,7 @@
             <div class="col-12">
               <div class="row">
                 <div class="row ml-1">
-                  <button type="submit" class="btn btn-sm btn-primary" name="updateall">Update All</button>
                   <button type="submit" class="btn btn-sm btn-primary" name="updateip">Update IP</button>
-                  <button type="submit" class="btn btn-sm btn-primary" name="updateconfig">Update Config</button>
                 </div>
                 <div class="col-6 text-right">
                   <a href="{% url 'home' %}" class="btn btn-sm btn-secondary">Back</a>
@@ -77,6 +75,7 @@
                   <div class="form-group">
                     <label class="form-control-label" for="input-current">Current (A)</label>
                     <input id="input-current" class="form-control" name="caylar_current" placeholder="Caylar Current" type="number" step="any" value="{{ form.caylar_current.value }}" />
+                    <button type="submit" class="btn btn-sm btn-primary" name="updatecurrent">Update Current</button>
                   </div>
                 </div>
               </div>
@@ -85,6 +84,7 @@
                   <div class="form-group">
                     <label class="form-control-label" for="input-field">Field (G)</label>
                     <input id="input-field" class="form-control" name="caylar_field" placeholder="Caylar Field" type="number" step="any" value="{{ form.caylar_field.value }}" />
+                    <button type="submit" class="btn btn-sm btn-primary" name="updatefield">Update Field</button>
                   </div>
                 </div>
               </div>
@@ -144,20 +144,6 @@
                     {% if connected %}
                     <input id="input-water_flow" class="form-control" name="caylar_water_flow" placeholder="Caylar water_flow" type="number" step="any" value="{{caylar_water_flow}}" disabled />{% else %} <input id="input-water_flow" class="form-control" name="caylar_water_flow" placeholder="Caylar water_flow" type="number" step="any" value="NA" disabled />{% endif %}
                   </div>
-                </div>
-              </div>
-            </div>
-
-            <hr class="my-4" />
-            <div class="col-12">
-              <div class="row">
-                <div class="row ml-1">
-                  <button type="submit" class="btn btn-sm btn-primary" name="updateall">Update All</button>
-                  <button type="submit" class="btn btn-sm btn-primary" name="updateip">Update IP</button>
-                  <button type="submit" class="btn btn-sm btn-primary" name="updateconfig">Update Config</button>
-                </div>
-                <div class="col-6 text-right">
-                  <a href="{% url 'home' %}" class="btn btn-sm btn-secondary">Back</a>
                 </div>
               </div>
             </div>

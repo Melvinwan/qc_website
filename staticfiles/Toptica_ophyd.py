@@ -526,9 +526,6 @@ class LaserMainCtlWavelengthAct(LaserSignalBase):
 
 
 class LaserToptica(Device):
-    # widescan_amplitude = Cpt(LaserWideScanAmplitude, signal_name="widescan_amplitude")
-    # widescan_offset = Cpt(LaserWideScanOffset, signal_name="widescan_offset")
-    # widescan_time = Cpt(LaserWideScanRemainingTime, signal_name="widescan_remaining_time")
     current_act = Cpt(LaserCurrentAct, signal_name="current_act", kind="hinted")
     voltage_act = Cpt(LaserVoltageAct, signal_name="voltage_act", kind="hinted")
     emission = Cpt(LaserEmission, signal_name="emission", kind="hinted")
@@ -591,7 +588,6 @@ class LaserToptica(Device):
             self.update_ctl_wavelength_act(self.config["wavelength_act"])
             self.update_scan_end(self.config["scan_end"])
             self.update_scan_start(self.config["scan_start"])
-            self.update_scan_offset(self.config["scan_offset"])
             self.update_current(self.config["current_act"])
             self.update_voltage(self.config["voltage_act"])
             self.update_scan_frequency(self.config["scan_freq"])
