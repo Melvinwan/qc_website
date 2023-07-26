@@ -119,7 +119,14 @@
           </div>
         </div>
       </div>
-      <button type="submit" class="btn btn-secondary my-4" id="update_button">Update Status</button>
+      <div class="row">
+        <button type="submit" class="btn btn-secondary my-4" id="update_button">Update Status</button>
+        <!-- Add this label and input element below the JavaScript block -->
+        <div class="form-group">
+          <label for="freqUpdateInput">Logging Frequency:</label>
+          <input type="number" id="freqUpdateInput" value="2000" />
+        </div>
+      </div>
     </div>
     <div id="messageUpdateExpContainer"></div>
   </div>
@@ -869,6 +876,31 @@
       updateStatus();
     }
   });
+  // Get the initial value from sessionStorage or set the default value
+  let freqUpdate = sessionStorage.getItem("freqUpdate") || 2000;
+  document.getElementById("freqUpdateInput").value = freqUpdate;
+
+  // Function to update sessionStorage and freqUpdate variable
+  function updateFreqUpdateValue() {
+    const inputElement = document.getElementById("freqUpdateInput");
+    const newValue = parseInt(inputElement.value);
+
+    // If the input is a valid number, update sessionStorage and freqUpdate
+    if (!isNaN(newValue)) {
+      freqUpdate = newValue;
+      sessionStorage.setItem("freqUpdate", freqUpdate);
+    } else {
+      // If the input is invalid or empty, set it to the default value
+      freqUpdate = 2000;
+      sessionStorage.removeItem("freqUpdate");
+    }
+
+    // Update the input value to match freqUpdate
+    inputElement.value = freqUpdate;
+  }
+
+  // Listen for changes in the input element
+  document.getElementById("freqUpdateInput").addEventListener("change", updateFreqUpdateValue);
 </script>
 
 <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
