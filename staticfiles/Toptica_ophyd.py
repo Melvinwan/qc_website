@@ -542,7 +542,7 @@ class LaserToptica(Device):
         if config_host==None:
             self.lasercontroller = LaserController(host=host,port=port)
         else:
-            self.lasercontroller = LaserController(host=config_host["host"],port=config_host["port"])
+            self.lasercontroller = LaserController(host=config_host["host"])
 
         super().__init__(
             prefix=prefix,

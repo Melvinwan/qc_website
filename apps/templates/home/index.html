@@ -122,9 +122,11 @@
       <div class="row">
         <button type="submit" class="btn btn-secondary my-4" id="update_button">Update Status</button>
         <!-- Add this label and input element below the JavaScript block -->
-        <div class="form-group">
-          <label for="freqUpdateInput">Logging Frequency:</label>
-          <input type="number" id="freqUpdateInput" value="2000" />
+        <div class="card card-stats">
+          <div class="card-body">
+            Logging Frequency (ms):
+            <input type="number" id="freqUpdateInput" value="2000" />
+          </div>
         </div>
       </div>
     </div>
@@ -456,7 +458,7 @@
             file_name_save = response.file_name;
             sessionStorage.setItem("folder_name", response.file_name);
             // $("#buttonExperiment").removeClass("hidden");
-            DashboardPlot(3000, false, selectedDevices);
+            DashboardPlot(freqUpdate, false, selectedDevices);
           },
           error: function (xhr, status, error) {
             // Handle any error that occurs during the request
@@ -520,7 +522,7 @@
       title: "Wavelength (nm)",
     },
     autosize: true, // Disable automatic resizing
-    height: window.innerHeight * 0.3,
+    height: 400,
   };
   let layoutCurrent = {
     title: "Toptica Current (mA)",
@@ -532,7 +534,7 @@
       title: "Current (mA)",
     },
     autosize: true, // Disable automatic resizing
-    height: window.innerHeight * 0.3,
+    height: 400,
   };
   let layoutVoltage = {
     title: "Toptica Voltage (V)",
@@ -544,7 +546,7 @@
       title: "Voltage (v)",
     },
     autosize: true, // Disable automatic resizing
-    height: window.innerHeight * 0.3,
+    height: 400,
   };
   let layoutCaylar = {
     title: "Live Plot Caylar",
@@ -556,7 +558,7 @@
       title: "Y-axis",
     },
     autosize: true, // Disable automatic resizing
-    height: window.innerHeight * 0.3,
+    height: 400,
   };
 
   let layoutITC = {
@@ -569,7 +571,7 @@
       title: "Y-axis",
     },
     autosize: true, // Disable automatic resizing
-    height: window.innerHeight * 0.3,
+    height: 400,
   };
 
   // Create a plotly object with the laser_data and layout
@@ -582,7 +584,7 @@
       success: function (response) {
         // Stop the plot updates
         showResetDashboardButton();
-        DashboardPlot(3000, false);
+        DashboardPlot(freqUpdate, false);
       },
       error: function (xhr, status, error) {
         // Handle any error that occurs during the request
@@ -594,7 +596,7 @@
   }
   function continueExperiment() {
     isUpdating = true;
-    updatePlot(3000, file_name_save);
+    updatePlot(freqUpdate, file_name_save);
   }
   let statusCaylarElement = $("#caylar_status");
   let statusLaserElement = $("#laser_status");
@@ -618,7 +620,6 @@
       device = ["Caylar", "Mercury", "Laser"];
     }
     devices = device;
-    console.log(changePage);
     const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
 
     // Include the CSRF token in the AJAX request headers
@@ -724,8 +725,8 @@
       },
       complete: function () {
         setTimeout(function () {
-          DashboardPlot(interval, false, devices);
-        }, interval);
+          DashboardPlot(freqUpdate, false, devices);
+        }, freqUpdate);
       },
     });
   }
@@ -753,7 +754,7 @@
         $("#messageUpdateExpContainer .alert").remove();
         if (plot) {
           isDashboardUpdating = true;
-          DashboardPlot(3000, true);
+          DashboardPlot(freqUpdate, true);
         }
       },
     });
@@ -837,7 +838,7 @@
         isDashboardUpdating = true;
         // Set the flag indicating that the script has been executed
         sessionStorage.setItem("script_executed", true);
-        DashboardPlot(3000, true);
+        DashboardPlot(freqUpdate, true);
       },
     });
   }
