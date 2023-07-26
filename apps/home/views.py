@@ -27,7 +27,11 @@ import os
 import csv
 from datetime import datetime
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
+
 from django.views.decorators.csrf import csrf_exempt
+import numpy as np
 def two_decimal(number):
     return round(number, 2)
 def find_csv(name_file, header):
@@ -80,14 +84,14 @@ def format_timestamps(timestamps):
         formatted_timestamps.append(formatted_timestamp)
 
     return formatted_timestamps
-
+import io
+import urllib, base64
 @csrf_exempt
 def plot_view(request):
     if request.method == "POST" and request.FILES.get("file"):
         file = request.FILES["file"]
-
         # Read the data from the file
-        data = np.loadtxt(file, delimiter='\t', skiprows=1)  # Assuming the data is tab-separated
+        data = np.loadtxt(file, delimiter='\t')  # Assuming the data is tab-separated
 
         # Separate the columns
         x = data[:, 0]
@@ -99,19 +103,27 @@ def plot_view(request):
         plt.ylabel("Y-axis")
 
         # Save the plot to a file with the specified name and path
-        today = date.today().strftime("%Y-%m-%d")
+        today = datetime.today().strftime("%Y-%m-%d")
         plot_directory = f"results/{today}"
         os.makedirs(plot_directory, exist_ok=True)
         plot_count = len(os.listdir(plot_directory))
-        plot_path = f"{plot_directory}/plot{plot_count + 1}.png"
+        plot_path = f"{plot_directory}/result.png"
+        plt.savefig(plot_path)
+        plt.close()
+        plt.plot(x, y)
+        plt.xlabel("X-axis")
+        plt.ylabel("Y-axis")
+
+        # Save the plot to a file with the specified name and path
+        plot_path = "apps/static/assets/img/theme/result.png"
         plt.savefig(plot_path)
         plt.close()
 
         # Return the plot URL to the frontend
-        plot_url = f"/{plot_path}"  # Assuming the static files are served from the root
-        return JsonResponse({"plotresult": plot_url})
+        plot_url = "static/assets/img/theme/result.png"  # Assuming the static files are served from the root
+        return JsonResponse({"plot_url": plot_url})
 
-    return render(request, "plot_template.html")
+    return render(request, "home/plotresult.html")
 def laser_page_view(request):
     """
     The `laser_page_view` function is a Django view that loads data from an XML file, updates the XML
@@ -158,7 +170,6 @@ def laser_page_view(request):
             if form.is_valid():
 
                 toptica_host["host"] = form.cleaned_data['laser_host']
-                toptica_host["port"] = form.cleaned_data['laser_port']
                 toptica_host["wavelength_act"] = form.cleaned_data['wavelength_act']
                 toptica_host["scan_end"] = form.cleaned_data['scan_end']
                 toptica_host["scan_start"] = form.cleaned_data['scan_start']
@@ -185,7 +196,6 @@ def laser_page_view(request):
             if form.is_valid():
 
                 toptica_host["host"] = form.cleaned_data['laser_host']
-                toptica_host["port"] = form.cleaned_data['laser_port']
                 dict_to_xml_file(toptica_host, "staticfiles/toptica.xml")
                 # Add success message to the Django messages framework
                 messages.success(request, 'Changes saved successfully in XML!')
@@ -224,7 +234,6 @@ def laser_page_view(request):
 
         form = LaserForm(initial={
             'laser_host': toptica_host["host"] if toptica_host["host"] is not None else '',
-            'laser_port': toptica_host["port"] if toptica_host["port"] is not None else '',
             'wavelength_act': toptica_host["wavelength_act"] if toptica_host["wavelength_act"] is not None else '',
             'scan_end': toptica_host["scan_end"] if toptica_host["scan_end"] is not None else '',
             'scan_start': toptica_host["scan_start"] if toptica_host["scan_start"] is not None else '',
