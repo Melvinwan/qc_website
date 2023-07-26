@@ -316,7 +316,7 @@ def caylar_page_view(request):
             else:
                 messages.warning(request, 'Cannot be updated!')
                 return redirect('caylar_page')
-        elif "updateconfig" in request.POST:
+        elif "updatefield" in request.POST:
             form = CaylarFormField(request.POST)
             if form.is_valid():
                 caylar_host["field"] = form.cleaned_data['caylar_field']
