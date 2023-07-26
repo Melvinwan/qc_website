@@ -188,7 +188,7 @@ class MagneticController(Controller):
         @param val - The parameter "val" represents the value that you want to set for the field.
         """
         logger.info("Field is set to "+str(val))
-        self.socket_put("SET_FIELD +"+str(val)+"\n")
+        self.socket_put_and_receive("SET_FIELD +"+str(val)+"\n")
 
     def set_current(self, val) -> None:
         """
@@ -196,7 +196,7 @@ class MagneticController(Controller):
         @param val - The parameter "val" represents the value that you want to set as the current.
         """
         logger.info("Current is set to "+str(val))
-        self.socket_put("SET_CURRENT +"+str(val)+"\n")
+        self.socket_put_and_receive("SET_CURRENT +"+str(val)+"\n")
 
     def get_field(self) -> str:
         """
