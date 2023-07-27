@@ -108,7 +108,7 @@
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-control-label" for="input-relax-delay">Relax Delay</label>
+                    <label class="form-control-label" for="input-relax-delay">Relax Delay (Clock Ticks)</label>
                     <input type="number" step="any" id="input-relax-delay" class="form-control" name="relax_delay" placeholder="Relax Delay" value="{{ form.relax_delay.value }}" />
                   </div>
                 </div>
@@ -122,7 +122,7 @@
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="form-control-label" for="input-pulse-freq">Pulse Frequency</label>
+                    <label class="form-control-label" for="input-pulse-freq">Readout Pulse Frequency (MHz)</label>
                     <input type="number" step="any" id="input-pulse-freq" class="form-control" name="pulse_freq" placeholder="Pulse Frequency" value="{{ form.pulse_freq.value|floatformat }}" />
                   </div>
                 </div>
@@ -158,7 +158,7 @@
               </div>
               <div class="col-md-6">
                 <div class="form-group">
-                  <label class="form-control-label" for="input-eom-length0">Pulse Length</label>
+                  <label class="form-control-label" for="input-eom-length0">Pulse Length (clock ticks)</label>
                   <input type="number" step="any" id="input-eom-length0" class="form-control" name="eom_length0" placeholder="Pulse Length 0" value="{{ form.eom_length0.value }}" />
                 </div>
               </div>
@@ -183,7 +183,7 @@
             </div>
             <div class="col-md-6">
               <div class="form-group">
-                <label class="form-control-label" for="input-eom-length1">Pulse Length</label>
+                <label class="form-control-label" for="input-eom-length1">Pulse Length (clock ticks)</label>
                 <input type="number" step="any" id="input-eom-length1" class="form-control" name="eom_length1" placeholder="Pulse Length 1" value="{{ form.eom_length1.value }}" />
               </div>
             </div>
@@ -197,7 +197,7 @@
                     <tr>
                       <th>Pulse Start (clock ticks)</th>
                       <th>Actual Time (ns)</th>
-                      <th>Pulse Frequency</th>
+                      <th>Pulse Frequency (MHz)</th>
                       <th>Pulse Gain</th>
                     </tr>
                   </thead>
@@ -246,10 +246,10 @@
             {% if formset1 %}
             <h6 class="heading-small text-muted mb-4">TTL Sequence</h6>
 
-            <h6>Pin 1: TTL</h6>
-            <h6>Pin 2: TTL</h6>
-            <h6>Pin 3: TTL</h6>
-            <h6>Pin 4: TTL</h6>
+            <h6>Pin 1: AOM</h6>
+            <h6>Pin 2: RF Switch</h6>
+            <h6>Pin 3: RF Switch</h6>
+            <h6>Pin 4: DAQ</h6>
             {{formset1.management_form}}
             <table id="form1-list">
               <thead>
