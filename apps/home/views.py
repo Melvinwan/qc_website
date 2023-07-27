@@ -809,43 +809,46 @@ def update_live_plot(request):
         data["message"]="The RFSoC is still running or not started yet."
     if ULaser != None:
         data['laser_status'] = "ON"
-        laser_scan_end = ULaser.report_scan_end()
-        laser_scan_start = ULaser.report_scan_start()
-        laser_scan_frequency = ULaser.report_scan_frequency()
-        laser_wavelength = ULaser.report_ctl_wavelength_act()
-        laser_current = ULaser.report_current_act()
-        laser_voltage = ULaser.report_voltage_act()
-        laser_emission = ULaser.report_emission()
-        laser_system_health = ULaser.report_system_health()
-        laser_column_headers = ['timestamp', 'scan frequency', 'wavelength','current','voltage','emission','system health']
-        laser_data_row = [timestamp, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
-        laser_csv_file_path = 'logging/'+datetime.now().strftime("%Y%m%d/")+'laser.csv'
-        append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
-        data['laser_scan_end']= laser_scan_end,
-        data['laser_scan_start']= laser_scan_start,
-        data['laser_scan_frequency']= laser_scan_frequency,
-        if (request.POST['changePage']=="true"):
-            data['laser_wavelength']= find_csv(laser_csv_file_path,'wavelength'),
-            data['laser_current']= find_csv(laser_csv_file_path,'current'),
-            data['laser_voltage']= find_csv(laser_csv_file_path,'voltage'),
-            data['timestampT']= find_csv(laser_csv_file_path,'timestamp'),
-        else:
-            data['laser_wavelength']= laser_wavelength,
-            data['laser_current']= laser_current,
-            data['laser_voltage']= laser_voltage,
-            data['timestampT']= timestamp,
-        data['laser_emission']= laser_emission,
-        data['laser_system_health']= laser_system_health,
+        try:
+            laser_scan_end = round(ULaser.report_scan_end(),4)
+            laser_scan_start = round(ULaser.report_scan_start(),4)
+            laser_scan_frequency = two_decimal(ULaser.report_scan_frequency())
+            laser_wavelength = round(ULaser.report_ctl_wavelength_act(),4)
+            laser_current = two_decimal(ULaser.report_current_act())
+            laser_voltage = round(ULaser.report_voltage_act(),4)
+            laser_emission = ULaser.report_emission()
+            laser_system_health = ULaser.report_system_health()
+            laser_column_headers = ['timestamp', 'scan frequency', 'wavelength','current','voltage','emission','system health']
+            laser_data_row = [timestamp, laser_scan_frequency, laser_wavelength,laser_current,laser_voltage,laser_emission,laser_system_health]
+            laser_csv_file_path = 'logging/'+datetime.now().strftime("%Y%m%d/")+'laser.csv'
+            append_to_csv(laser_csv_file_path, laser_data_row,laser_column_headers)
+            data['laser_scan_end']= laser_scan_end,
+            data['laser_scan_start']= laser_scan_start,
+            data['laser_scan_frequency']= laser_scan_frequency,
+            if (request.POST['changePage']=="true"):
+                data['laser_wavelength']= find_csv(laser_csv_file_path,'wavelength'),
+                data['laser_current']= find_csv(laser_csv_file_path,'current'),
+                data['laser_voltage']= find_csv(laser_csv_file_path,'voltage'),
+                data['timestampT']= find_csv(laser_csv_file_path,'timestamp'),
+            else:
+                data['laser_wavelength']= laser_wavelength,
+                data['laser_current']= laser_current,
+                data['laser_voltage']= laser_voltage,
+                data['timestampT']= timestamp,
+            data['laser_emission']= laser_emission,
+            data['laser_system_health']= laser_system_health,
+        except Exception as e:
+            print(e)
     if UCaylar !=None:
         data['caylar_status'] = "ON"
-        caylar_current = UCaylar.current
-        caylar_voltage = UCaylar.voltage
-        caylar_field = UCaylar.field
-        caylar_ADCDAC_temp = UCaylar.ADCDAC_temp
-        caylar_box_temp = UCaylar.box_temp
-        caylar_rack_temp = UCaylar.rack_temp
-        caylar_water_temp = UCaylar.water_temp
-        caylar_water_flow = UCaylar.water_flow
+        caylar_current = two_decimal(UCaylar.current)
+        caylar_voltage = two_decimal(UCaylar.voltage)
+        caylar_field = two_decimal(UCaylar.field)
+        caylar_ADCDAC_temp = two_decimal(UCaylar.ADCDAC_temp)
+        caylar_box_temp = two_decimal(UCaylar.box_temp)
+        caylar_rack_temp = two_decimal(UCaylar.rack_temp)
+        caylar_water_temp = two_decimal(UCaylar.water_temp)
+        caylar_water_flow = two_decimal(UCaylar.water_flow)
         caylar_column_headers = ['timestamp', 'current', 'voltage','field', 'ADCDAC temp', 'box temp', 'rack temp', 'water temp', 'water flow']
         caylar_data_row = [timestamp,caylar_current,caylar_voltage,caylar_field,caylar_ADCDAC_temp,caylar_box_temp,caylar_rack_temp,caylar_water_temp,caylar_water_flow]
         caylar_csv_file_path = 'logging/'+datetime.now().strftime("%Y%m%d/")+'caylar.csv'
@@ -873,7 +876,7 @@ def update_live_plot(request):
     if UmercuryITC!=None:
         data['mercury_status'] = "ON"
         itc_heater_power = UmercuryITC.report_heater_power()
-        itc_temperature = UmercuryITC.report_temperature()
+        itc_temperature = two_decimal(UmercuryITC.report_temperature())
         itc_data_row = [timestamp,itc_heater_power,itc_temperature]
         itc_column_headers = ['timestamp', 'Heater Power','temperature']
         itc_csv_file_path = 'logging/'+datetime.now().strftime("%Y%m%d/")+'itc.csv'

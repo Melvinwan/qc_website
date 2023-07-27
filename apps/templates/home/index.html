@@ -51,7 +51,7 @@
             <div>
               <div class="card-body">Emission: <span id="laser_emission">-</span></div>
               <div class="card-body">System Health: <span id="laser_system_health">-</span></div>
-              <div class="card-body">Scan Wavelength (nm): <span id="laser_scan_wavelength_number">-</span></div>
+              <div class="card-body">Actual Wavelength (nm): <span id="laser_scan_wavelength_number">-</span></div>
             </div>
           </div>
         </div>
@@ -174,10 +174,10 @@
     <div id="livePlotWavelength">
       <div class="row container-fluid">
         <!-- Placeholder for laser parameters -->
-        <div class="card-body">Scan End (V): <span id="laser_scan_end_number">-</span></div>
-        <div class="card-body">Scan Start (V): <span id="laser_scan_start_number">-</span></div>
-        <div class="card-body">Scan Frequency (Hz): <span id="laser_scan_frequency_number">-</span></div>
-        <div class="card-body">Scan Wavelength (nm): <span id="laser_scan_wavelength_number1">-</span></div>
+        <div class="card-body">Start (V): <span id="laser_scan_start_number">-</span></div>
+        <div class="card-body">End (V): <span id="laser_scan_end_number">-</span></div>
+        <div class="card-body">Frequency (Hz): <span id="laser_scan_frequency_number">-</span></div>
+        <div class="card-body">Actual Wavelength (nm): <span id="laser_scan_wavelength_number1">-</span></div>
         <div class="card-body">Current (mA): <span id="laser_current_number">-</span></div>
         <div class="card-body">Voltage (V): <span id="laser_voltage_number">-</span></div>
       </div>
@@ -676,10 +676,10 @@
         }
         if (response.mercury_status == "ON" && device.includes("Mercury")) {
           $("#ITCPlot").removeClass("hidden");
-          $("#itc_heater_power_number").text(response.itc_heater_power[0][response.itc_heater_power.length - 1]);
-          $("#itc_heater_power_number1").text(response.itc_heater_power[0][response.itc_heater_power.length - 1]);
-          $("#itc_temperature_number").text(response.itc_temperature[0][response.itc_temperature.length - 1]);
-          $("#itc_temperature_number1").text(response.itc_temperature[0][response.itc_temperature.length - 1]);
+          $("#itc_heater_power_number").text(response.itc_heater_power[0]);
+          $("#itc_heater_power_number1").text(response.itc_heater_power[0]);
+          $("#itc_temperature_number").text(response.itc_temperature[0]);
+          $("#itc_temperature_number1").text(response.itc_temperature[0]);
           // Update ITC data
           appendToList(itc_heater_power["y"], response.itc_heater_power[0]);
           appendToList(itc_temperature["y"], response.itc_temperature[0]);

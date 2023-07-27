@@ -49,7 +49,7 @@ class RFSoC_controller:
             if config==None:
                 self.configEOM={"freq_seq0": [1,1,2],
                         "gain_seq0": [1,1,2],
-                        "time_seq0":[50, 190,370,700],
+                        "time_seq0":[190,370,700],
                         "length0":100, # [Clock ticks]
                         "length1":100, # [Clock ticks]
                         # "pulse_freq":{"freq":1000, "gen_ch":0, "ro_ch":0}, #readout freq
@@ -65,8 +65,8 @@ class RFSoC_controller:
                         "pins":[1,2,0,3],
                         "time":[[0,400,800,1200],[0,400,800,1200],[0,400,800,1200],[0,400,800,1200]],
                         "timeseqformttl": [1.0, 1.0, 2.0],
-                        "pinsformttl": [[0], [1, 2], [0, 1], [2, 3]],
-                        "lengthseqttl": [1.0, 1.0, 4.0, 6.0]
+                        "pinsformttl": [[0], [1, 2], [0, 1]],
+                        "lengthseqttl": [1.0, 1.0, 4.0]
                 }
                 self.configG= {
                 "adc_trig_offset": 100, # [Clock ticks]
